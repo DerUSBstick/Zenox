@@ -37,11 +37,11 @@ class Schedule(commands.Cog):
     async def clean_db(self):
         await cleanDB.execute(self.client)
 
-    @tasks.loop(time=[datetime.time(hour, 0, 0, tzinfo=UTC_8) for hour in [8, 20]])
+    @tasks.loop(time=[datetime.time(hour, 0, 0, tzinfo=UTC_8) for hour in [1, 13]])
     async def request_wiki_codes(self):
         await wikiCodes.execute(self.client)
     
-    @tasks.loop(time=[datetime.time(hour, 0, 0, tzinfo=UTC_8) for hour in [10, 22]])
+    @tasks.loop(time=[datetime.time(hour, 0, 0, tzinfo=UTC_8) for hour in [3, 15]])
     async def publish_wiki_codes(self):
         await wikiCodes.check_publish(self.client)
 
