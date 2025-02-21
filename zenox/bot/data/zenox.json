@@ -1,0 +1,89 @@
+{
+    "dev": {
+        "GenshinImpact": {
+            "auto-stream-codes": {
+                "channel": 1303479803525074984,
+                "message": 1303842408190185584,
+                "stream_time": 1740297190,
+                "version": "Zenox",
+                "disabled": true
+            }
+        },
+        "StarRail": {
+            "auto-stream-codes": {
+                "channel": 1303479843614101576,
+                "message": 1303842409800532019,
+                "stream_time": 1740297190,
+                "version": "Zenox",
+                "disabled": true
+            }
+        },
+        "ZenlessZoneZero": {
+            "auto-stream-codes": {
+                "channel": 1303479878821347350,
+                "message": 1303842410891051068,
+                "stream_time": 1740297190,
+                "version": "Zenox",
+                "disabled": true
+            }
+        }
+    },
+    "test": {
+        "GenshinImpact": {
+            "auto-stream-codes": {
+                "channel": 1317817866438840320,
+                "message": 1317825450134732943,
+                "stream_time": 99999999999,
+                "version": "Zenox",
+                "disabled": true
+            }
+        },
+        "StarRail": {
+            "auto-stream-codes": {
+                "channel": 1317817939759599616,
+                "message": 1317825451481108550,
+                "stream_time": 1735731000,
+                "version": "Zenox",
+                "disabled": true
+            }
+        },
+        "ZenlessZoneZero": {
+            "auto-stream-codes": {
+                "channel": 1317817988824563723,
+                "message": 1317825452316033044,
+                "stream_time": 99999999999,
+                "version": "Zenox",
+                "disabled": true
+            }
+        }
+    },
+    "prod": {
+        "GenshinImpact": {
+            "auto-stream-codes": {
+                "channel": 1222568764285915136,
+                "message": 1339907392913277020,
+                "stream_time": 1,
+                "version": "Zenox",
+                "disabled": true
+            }
+        },
+        "StarRail": {
+            "auto-stream-codes": {
+                "channel": 1222568789670105129,
+                "message": 1339908133606129686,
+                "stream_time": 99999999999,
+                "version": "Zenox",
+                "disabled": true
+            }
+        },
+        "ZenlessZoneZero": {
+            "auto-stream-codes": {
+                "channel": 1222568824843272232,
+                "message": 1339907405651116113,
+                "stream_time": 1,
+                "version": "Zenox",
+                "disabled": true
+            }
+        }
+    }
+}
