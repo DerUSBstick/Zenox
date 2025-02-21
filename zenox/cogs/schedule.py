@@ -40,7 +40,6 @@ class Schedule(commands.Cog):
     @tasks.loop(time=[datetime.time(hour, 0, 0, tzinfo=UTC_8) for hour in [8, 20]])
     async def request_wiki_codes(self):
         await wikiCodes.execute(self.client)
-        await wikiCodes.check_publish(self.client)
     
     @tasks.loop(time=[datetime.time(hour, 0, 0, tzinfo=UTC_8) for hour in [10, 22]])
     async def publish_wiki_codes(self):
