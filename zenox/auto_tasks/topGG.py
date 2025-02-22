@@ -22,7 +22,7 @@ class TopGG:
                 async with aiohttp.ClientSession() as sess:
                     async with sess.post(self._url, headers=headers, json=data) as response:
                         response.raise_for_status()
-                        send_webhook(client.log_webhook_url, username="TopGG Task", content="Updated Guild Count on TopGG")
+                        await send_webhook(client.log_webhook_url, username="TopGG Task", content="Updated Guild Count on TopGG")
         except Exception as e:
             self._bot.capture_exception(e)
-            send_webhook(client.log_webhook_url, username="TopGG Task", content="Failed to update Guild Count on TopGG")
+            await send_webhook(client.log_webhook_url, username="TopGG Task", content="Failed to update Guild Count on TopGG")
