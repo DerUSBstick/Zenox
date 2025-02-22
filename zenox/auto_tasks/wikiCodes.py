@@ -228,7 +228,7 @@ class wikiCodes:
 
     @classmethod
     async def _publish(self, client: Zenox, game: Game, _codes: list[Code], _translations: dict[discord.Locale, dict[str, Embed | str]]) -> None:
-        _success, _failed, _forbidden = 0, 0, 0
+        _success, _failed, _forbidden, _no_channel, _no_role = 0, 0, 0, 0, 0
         GUILDS = [guild["id"] for guild in client.db.guilds.find({})]
         view = View(author=None, locale=discord.Locale.american_english)
         for code in _codes:
@@ -240,6 +240,7 @@ class wikiCodes:
                 displayWarning = False
 
                 if not guild.codes_config[game].channel:
+                    _no_channel += 1
                     continue
 
                 if guild.codes_config[game].role_ping:
@@ -247,6 +248,7 @@ class wikiCodes:
                     if not role:
                         displayWarning = True
                         guild.updateGameConfigValue(game, CodesConfig, "role_ping", None)
+                        _no_role += 1
                 
                 content = f'{_translations[guild.language]["content"]} {role.mention if role else ""} {"@everyone" if guild.codes_config[game].everyone_ping else ""} {_translations[guild.language]["norole"] if displayWarning else ""}'
                 ATTACHMENT = [discord.File("./zenox-assets/assets/genshin-impact/thumbnails/" + GAME_THUMBNAILS[game], filename="thumbnail.png")]
@@ -264,7 +266,7 @@ class wikiCodes:
         await send_webhook(
             webhook_url=client.log_webhook_url,
             username="WikiCodes Task",
-            content=f"Published {_success} Codes, {_failed} Failed, {_forbidden} Forbidden\nCodes in Queue for Game: {game.value}: {len(self._queued_codes[game])-len(_codes)}",
+            content=f"Published {_success} Codes, {_failed} Failed, {_forbidden} Forbidden, {_no_channel} No Channel, {_no_role} No Role\nCodes in Queue for {game.value}: {len(self._queued_codes[game])-len(_codes)}",
             embeds=[Embed(
                 locale=discord.Locale.american_english,
                 title="Published Codes",
