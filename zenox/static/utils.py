@@ -12,6 +12,7 @@ from.embeds import Embed
 from .constants import VERSION, UTC_8
 from . import emojis
 from ..db.mongodb import DB
+from ..l10n import LocaleStr
 from sentry_sdk.integrations.loguru import LoggingLevels, LoguruIntegration
 from ..static.constants import _supportCache as _cache
 
@@ -93,7 +94,7 @@ async def approve_request(guildid, number, client: discord.Client):
     embed = Embed(
         locale=discord.Locale.american_english,
         color=0xff0000 if number != _cache[guildid]["number"] else 0x0fff00,
-        title="Invalid Number submitted" if number != _cache[guildid]["number"] else "Request approved" #NoTranslation
+        title=LocaleStr(key="support_approve.invalid_number") if number != _cache[guildid]["number"] else LocaleStr(key="support_approve.success")
     )
     await message.edit(embed=embed)
     del _cache[guildid]

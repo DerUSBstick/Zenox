@@ -64,21 +64,22 @@ class GameSelector(Select["GuildSettingsUI"]):
         return
 
 class SupportNumberModal(Modal):
-    number_input = TextInput(label="Enter 4-digit Code to proceed", min_length=4, max_length=4, is_digit=True, min_value=1000, max_value=9999)
-    note_input = TextInput(style=discord.TextStyle.long, label="Please Read", default="After Approving, the user who created the ticket is authorised to request configuration updates, resending messages containing codes and more. Proceed with caution!", required=False)
+    number_input = TextInput(label=LocaleStr(key="support_number_modal.number_input.label"), min_length=4, max_length=4, is_digit=True, min_value=1000, max_value=9999)
+    note_input = TextInput(style=discord.TextStyle.long, label=LocaleStr(key="support_number_modal.note_input.label"), default=LocaleStr(key="support_number_modal.note_input.default"), required=False)
 
 class SupportApprove(Button["GuildSettingsUI"]):
     def __init__(self) -> None:
         super().__init__(
-            label=LocaleStr(key="support_request_approve"),
+            label=LocaleStr(key="support_approve.button.label"),
             style=discord.ButtonStyle.danger,
             row=3
         )
     
     async def callback(self, interaction):
         if str(interaction.guild.id) not in _cache:
-            return await interaction.response.send_message("It looks like this request has already been handled by someone", ephemeral=True)
-        support_modal = SupportNumberModal(title="Support Approval Request") # NoTranslation, Use config locale
+            ALREADY_HANDLED = LocaleStr(key="support_approve.already_done").translate(self.view.settings.language)
+            return await interaction.response.send_message(ALREADY_HANDLED, ephemeral=True)
+        support_modal = SupportNumberModal(title=LocaleStr(key="support_number_modal.title"))
         support_modal.translate(self.view.settings.language)
         await interaction.response.send_modal(support_modal)
         await support_modal.wait()
