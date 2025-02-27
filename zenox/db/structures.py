@@ -134,6 +134,13 @@ class EventReminderConfig:
             configDict[key] = item
         self.config: EventReminderDict = configDict
 
+class partnerData:
+    def __init__(self, data: dict[str, str | None]):
+        self.inviteUrl = data["inviteUrl"]
+        self.guildName = data["guildName"]
+        self.guildMemberCount = data["guildMemberCount"]
+        self.guildDescription = data["guildDescription"]
+
 class GuildConfig:
     cache = {}
 
@@ -173,6 +180,7 @@ class GuildConfig:
             Game.STARRAIL: EventReminderConfig(gld[DatabaseKey[Game.STARRAIL]]["event_reminders"]),
             Game.ZZZ: EventReminderConfig(gld[DatabaseKey[Game.ZZZ]]["event_reminders"])
         }
+        self.partnerData: partnerData = partnerData(gld["partnerData"])
 
         self.cache[self.id] = self
 
@@ -224,6 +232,12 @@ class GuildConfig:
                         "event_reminders": {
                             "streams": False
                         }
+                    },
+                    "partnerData": {
+                        "inviteUrl": None,
+                        "guildName": None,
+                        "guildMemberCount": None,
+                        "guildDescription": None
                     }
                 }
             )
@@ -253,6 +267,10 @@ class GuildConfig:
             self._update_val(f"{DatabaseKey[game.value]}.event_reminders.{key}", value)
         else:
             raise ValueError
+    
+    def updatePartnerData(self, key: str, value: str | None):
+        self.partnerData.__setattr__(key, value)
+        self._update_val(f"partnerData.{key}", value)
 
 class CodeReward:
     def __init__(self, reward: str, amount: int):

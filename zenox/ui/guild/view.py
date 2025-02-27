@@ -2,10 +2,11 @@ import discord
 import pathlib
 from discord import Locale, Member, User
 
-from .items.primaryOptions import LanguageSelector, GameSelector, SupportApprove
+from .items.primaryOptions import LanguageSelector, GameSelector, SupportApprove, PartnerMenu
 from .items.gameOptions import *
 from .items.pingPreferences import *
 from .items.codePreferences import *
+from .items.partnerPrimaryOptions import *
 from ..components import View, GoBackButton
 from ...static.utils import path_to_bytesio
 from ...static.embeds import DefaultEmbed
@@ -31,6 +32,8 @@ class GuildSettingsUI(View):
         self.add_item(GameSelector())
         if str(settings.id) in _cache:
             self.add_item(SupportApprove())
+        if "PARTNER_GUILD" in settings.flags:
+            self.add_item(PartnerMenu())
     
     @staticmethod
     def get_brand_image_filename(theme: str, locale: discord.Locale) -> str:
@@ -84,6 +87,10 @@ class GuildSettingsUI(View):
             case 'CodePreferences':
                 self.add_item(StreamRedemptionCodeToggle(self.settings.codes_config[self.game].stream_codes))
                 self.add_item(AllRedemptionCodesToggle(self.settings.codes_config[self.game].all_codes))
+            
+            case 'PartnerOptions':
+                self.add_item(SetInviteUrlButton())
+                self.add_item(SetGuildDescriptionButton())
 
         self.add_item(go_back_button)
         await interaction.response.edit_message(view=self)

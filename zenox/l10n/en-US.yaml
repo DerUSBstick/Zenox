@@ -46,3 +46,11 @@ special_program_embed.description: "{emj1} **Redeemable by clicking on the Butto
 no_codes_found: "No Codes found"
 stream_reminders_event.name: 'Version {version} "{title}" Special Program'
 stream_reminders_event.description: "**Watch via any of their official channels:**\n{youtube}[YouTube]({youtube_url})\n{twitch}[Twitch]({twitch_url})"
+partner_menu.button.label: "Partner Options"
+partner_options.invite_input.label: "Invite Link"
+partner_options.description_input.label: "Description"
+partner_options.description_input.placeholder: "Enter a description"
+partner_options.invite_button.label: "Set Invite Link"
+partner_options.invite_modal.title: "Set Partner Invite Link"
+partner_options.description_button.label: "Set Description"
+partner_options.description_modal.title: "Set Partner Description"

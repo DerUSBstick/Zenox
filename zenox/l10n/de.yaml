@@ -46,3 +46,11 @@ special_program_embed.description: "{emj1} **Einlösbar, indem sie auf die Schal
 no_codes_found: "Keine Codes gefunden"
 stream_reminders_event.name: 'Version {version} "{title}" Sondersendung'
 stream_reminders_event.description: "**Schaue über einen der offiziellen Kanäle: **\n{youtube}[YouTube]({youtube_url})\n{twitch}[Twitch]({twitch_url})"
+partner_menu.button.label: "Partneroptionen"
+partner_options.invite_input.label: "Einladungslink"
+partner_options.description_input.label: "Beschreibung"
+partner_options.description_input.placeholder: "Gib eine Beschreibung ein"
+partner_options.invite_button.label: "Einladungslink festlegen"
+partner_options.invite_modal.title: "Partner-Einladungslink festlegen"
+partner_options.description_button.label: "Beschreibung festlegen"
+partner_options.description_modal.title: "Partnerbeschreibung festlegen"

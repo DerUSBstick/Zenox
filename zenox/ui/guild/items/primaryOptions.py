@@ -63,6 +63,18 @@ class GameSelector(Select["GuildSettingsUI"]):
         await self.view.rebuild_ui(interaction, 'GameOptions', game=Game(selected))
         return
 
+class PartnerMenu(Button["GuildSettingsUI"]):
+    def __init__(self) -> None:
+        super().__init__(
+            label=LocaleStr(key="partner_menu.button.label"),
+            style=discord.ButtonStyle.secondary,
+            row=3
+        )
+    
+    async def callback(self, interaction: discord.Interaction) -> Any:
+        await self.view.rebuild_ui(interaction, 'PartnerOptions')
+        return
+
 class SupportNumberModal(Modal):
     number_input = TextInput(label=LocaleStr(key="support_number_modal.number_input.label"), min_length=4, max_length=4, is_digit=True, min_value=1000, max_value=9999)
     note_input = TextInput(style=discord.TextStyle.long, label=LocaleStr(key="support_number_modal.note_input.label"), default=LocaleStr(key="support_number_modal.note_input.default"), required=False)
