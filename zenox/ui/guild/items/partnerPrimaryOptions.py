@@ -50,7 +50,7 @@ class DescriptionInputModal(Modal):
             placeholder=LocaleStr(key="partner_options.description_input.placeholder"),
             row=0,
             style=discord.TextStyle.short,
-            max_length=128
+            max_length=256
     )
 
     def __init__(self, *, title: LocaleStr | str, default: str):
