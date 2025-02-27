@@ -132,6 +132,8 @@ class Dev(commands.GroupCog, group_name="dev"):
                 
                 if not guild.event_reminders[event_data.game].config["streams"]:
                     continue
+                if not type(EVENT_IMAGE) == bytes or not EVENT_IMAGE:
+                    EVENT_IMAGE = open(f"./zenox-assets/assets/event-reminders/{event_data.image}", "+rb").read()
                 await client.get_guild(guild.id).create_scheduled_event(
                     name=_translations[guild.language]["name"],
                     description=_translations[guild.language]["description"],
