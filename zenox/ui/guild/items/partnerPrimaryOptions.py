@@ -40,14 +40,22 @@ class InviteInputModal(Modal):
         row=0
     )
 
+    def __init__(self, *, title: LocaleStr | str, default: str):
+        self.invite_input.default = default
+        super().__init__(title=title)
+
 class DescriptionInputModal(Modal):
     description_input = TextInput(
-        label=LocaleStr(key="partner_options.description_input.label"),
-        placeholder=LocaleStr(key="partner_options.description_input.placeholder"),
-        row=0,
-        style=discord.TextStyle.short,
-        max_length=128
+            label=LocaleStr(key="partner_options.description_input.label"),
+            placeholder=LocaleStr(key="partner_options.description_input.placeholder"),
+            row=0,
+            style=discord.TextStyle.short,
+            max_length=128
     )
+
+    def __init__(self, *, title: LocaleStr | str, default: str):
+        self.description_input.default = default
+        super().__init__(title=title)
 
 class SetInviteUrlButton(Button["GuildSettingsUI"]):
     def __init__(self) -> None:
@@ -58,7 +66,7 @@ class SetInviteUrlButton(Button["GuildSettingsUI"]):
         )
     
     async def callback(self, interaction: discord.Interaction):
-        invite_modal = InviteInputModal(title=LocaleStr(key="partner_options.invite_modal.title"))
+        invite_modal = InviteInputModal(title=LocaleStr(key="partner_options.invite_modal.title"), default=self.view.settings.partnerData.inviteUrl)
         invite_modal.translate(self.view.settings.language)
         await interaction.response.send_modal(invite_modal)
         await invite_modal.wait()
@@ -83,7 +91,7 @@ class SetGuildDescriptionButton(Button["GuildSettingsUI"]):
         )
     
     async def callback(self, interaction: discord.Interaction):
-        description_modal = DescriptionInputModal(title=LocaleStr(key="partner_options.description_modal.title"))
+        description_modal = DescriptionInputModal(title=LocaleStr(key="partner_options.description_modal.title"), default=self.view.settings.partnerData.guildDescription)
         description_modal.translate(self.view.settings.language)
         await interaction.response.send_modal(description_modal)
         await description_modal.wait()
