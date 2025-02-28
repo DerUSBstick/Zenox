@@ -416,7 +416,8 @@ class SpecialProgam: # Update to only store data
         codes = ""
         if self.codes:
             for code in self.codes:
-                codes += f"{code.code} | **[Direct Link]({HOYO_REDEEM_URLS[self.game] + code.code})**\n"
+                DIRECT_LINK_STR = LocaleStr(key="direct_link").translate(locale)
+                codes += f"{code.code} | **[{DIRECT_LINK_STR}]({HOYO_REDEEM_URLS[self.game] + code.code})**\n"
                 view.add_item(item=Button(label=code.code, url=HOYO_REDEEM_URLS[self.game] + code.code))
         
         embed = Embed(
