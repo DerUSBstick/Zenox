@@ -1,3 +1,4 @@
+# Modified Version of https://github.com/seriaati/hoyo-buddy/blob/9c3eebc9bc0c6296bc77285a3b015c10b20dbce0/hoyo_buddy/ui/components.py
 import discord
 import io
 import contextlib
