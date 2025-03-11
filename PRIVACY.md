@@ -28,3 +28,7 @@ Guild Data is stored as long as it is necessary for the operation of Zenox. Guil
 ## Information We Share
 
 Zenox does not share any data with third parties. We do not sell your data to advertisers or other companies.
+
+# Your Consent
+
+By using Zenox, you consent to this Privacy Policy. If you have any questions or concerns, please contact us at [dev.zenox@gmail.com](mailto:dev.zenox@gmail.com)
