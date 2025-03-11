@@ -11,6 +11,7 @@
 
 ## Quick Overview
 ![Never Miss a Reward again](https://iili.io/2C70HZB.png)
+![Get Notified about Special Programs](https://iili.io/3qhsv3u.png)
 
 ## Features
 
