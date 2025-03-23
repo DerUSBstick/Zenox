@@ -21,8 +21,13 @@ class client_stats:
     @classmethod
     async def execute(self, client: Zenox):
         try:
-            member_count = sum(guild.member_count for guild in client.guilds)
+            member_count = 0
             guild_count = len(client.guilds)
+
+            for guild in client.guilds:
+                member_count += guild.member_count
+                DB.guilds.update_one({"_id": guild.id}, {"$set": {"memberCount": guild.member_count}})
+
             DB.const.update_one(
                 {"_id": "guild_growth"},
                 {"$push": {"growth": {"date": datetime.now(), "guilds": guild_count}}},

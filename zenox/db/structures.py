@@ -165,6 +165,7 @@ class GuildConfig:
             gld = DB.guilds.find_one({"id": guildID})
         
         self.id: int = gld["id"]
+        self.memberCount: int | None = gld["memberCount"]
         self.features: list = gld["features"]
         self.flags: list = gld["flags"]
         self.language: discord.Locale = discord.Locale(gld["language"])
@@ -192,6 +193,7 @@ class GuildConfig:
             DB.guilds.insert_one(
                 {
                     "id": guildID,
+                    "memberCount": None,
                     "features": features,
                     "flags": [],
                     "language": "en-US",
