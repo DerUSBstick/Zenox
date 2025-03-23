@@ -15,3 +15,6 @@ testing/
 
 # VS Code
 .vscode/
+
+# Ignore any screenlog files
+screenlog.*
