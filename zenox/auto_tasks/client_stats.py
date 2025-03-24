@@ -26,7 +26,7 @@ class client_stats:
 
             for guild in client.guilds:
                 member_count += guild.member_count
-                DB.guilds.update_one({"_id": guild.id}, {"$set": {"memberCount": guild.member_count}})
+                DB.guilds.update_one({"id": guild.id}, {"$set": {"memberCount": guild.member_count}})
 
             DB.const.update_one(
                 {"_id": "guild_growth"},
