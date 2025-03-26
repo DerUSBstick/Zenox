@@ -1,7 +1,7 @@
 import discord
 from typing import TYPE_CHECKING, Any
 from zenox.l10n import LocaleStr
-from zenox.static.constants import ZENOX_LOCALES, _supportCache as _cache
+from zenox.static.constants import ZENOX_LOCALES, _supportCache as _cache, GAME_TO_EMOJI
 from zenox.static.enums import Game
 from ...components import Select, SelectOption, TextInput, Button, Modal
 from zenox.static.utils import approve_request
@@ -52,7 +52,8 @@ class GameSelector(Select["GuildSettingsUI"]):
             [
                 SelectOption(
                     label=game,
-                    value=game
+                    value=game,
+                    emoji=GAME_TO_EMOJI[game]
                 )
                 for game in Game
             ]

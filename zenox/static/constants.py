@@ -45,6 +45,12 @@ WIKI_PAGES: dict[Game, str | None] = {
     Game.ZZZ: None
 }
 
+GAME_TO_EMOJI: dict[Game, str] = {
+    Game.GENSHIN: "<:LOGO_GENSHIN:1352032994382188614>",
+    Game.STARRAIL: "<:LOGO_STARRAIL:1352033070219526187>",
+    Game.ZZZ: "<:LOGO_ZENLESS:1352033174640922724>"
+}
+
 GAME_THUMBNAILS: dict[Game, str] = {
     Game.GENSHIN: "Icon_Paimon_Menu.png",
     Game.STARRAIL: "Icon_Pom_Menu.png",
