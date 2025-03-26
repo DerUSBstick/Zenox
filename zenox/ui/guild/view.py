@@ -2,7 +2,7 @@ import discord
 import pathlib
 from discord import Locale, Member, User
 
-from .items.primaryOptions import LanguageSelector, GameSelector, SupportApprove, PartnerMenu
+from .items.primaryOptions import LanguageSelector, GameSelector, SupportApprove, PartnerMenu, SupportButton
 from .items.gameOptions import *
 from .items.pingPreferences import *
 from .items.codePreferences import *
@@ -34,6 +34,7 @@ class GuildSettingsUI(View):
             self.add_item(SupportApprove())
         if "PARTNER_GUILD" in settings.flags:
             self.add_item(PartnerMenu())
+        self.add_item(SupportButton())
     
     @staticmethod
     def get_brand_image_filename(theme: str, locale: discord.Locale) -> str:

@@ -99,3 +99,11 @@ class SupportApprove(Button["GuildSettingsUI"]):
         if incomplete:
             return
         await approve_request(interaction.guild.id, support_modal.number_input.value, interaction.client)
+
+class SupportButton(Button["GuildSettingsUI"]):
+    def __init__(self) -> None:
+        super().__init__(
+            label=LocaleStr(key="support_button.label"),
+            style=discord.ButtonStyle.link,
+            url="https://discord.gg/BsaUkhWs8T"
+        )
