@@ -18,3 +18,5 @@ testing/
 
 # Ignore any screenlog files
 screenlog.*
+
+zenox/bot/data/text_maps/
