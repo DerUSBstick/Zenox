@@ -40,9 +40,7 @@ async def send_webhook(webhook_url, username="Zenox Logs", *, content: str=MISSI
         await webhook.send(content=content, embed=embed, embeds=embeds, username=username)
 
 def ephemeral(interaction: discord.Interaction):
-    if interaction.guild is None:
-        return False
-    return not interaction.app_permissions.send_messages
+    return not interaction.app_permissions.embed_links
 
 def generate_id(length=5):
     characters = string.ascii_letters + string.digits
