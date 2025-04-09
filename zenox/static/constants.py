@@ -15,6 +15,11 @@ ZENOX_LOCALES: dict[discord.Locale, dict[str, str]] = {
     # discord.Locale.russian: {"name": "Russian", "emoji": "🇷🇺"}
 }
 
+LOCALE_TO_TEXTMAP: dict[discord.Locale, str] = {
+    discord.Locale.american_english: "TextMapEN",
+    discord.Locale.german: "TextMapDE"
+}
+
 DatabaseKey: Final[dict[Game, str]] = {
     Game.GENSHIN: "GenshinImpact",
     Game.STARRAIL: "StarRail",
