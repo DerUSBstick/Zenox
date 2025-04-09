@@ -40,6 +40,7 @@ class cleanDB:
         self._start = time.time()
 
         guilds: list[int] = []
+        db_guilds: list[int] = []
         for guild in self._bot.guilds:
             guilds.append(guild.id)
         DB_GUILDS = self._bot.db.guilds.find({},{"_id": 0, "id":1})
@@ -47,6 +48,7 @@ class cleanDB:
             try:
                 guild = GuildConfig(guild['id'])
                 if guild.id in guilds:
+                    db_guilds.append(guild.id)
                     if guild.pending_deletion:
                         guild.updatePendingDeletion(False)
                         self.__incr_val('restored')
@@ -62,5 +64,9 @@ class cleanDB:
             except Exception as e:
                 self._bot.capture_exception(e)
                 self.__incr_val('error')
+        
+        for guild in guilds:
+            if guild not in db_guilds:
+                GuildConfig(guild)
         self._end = time.time()
         await send_webhook(self._bot.log_webhook_url, username="cleanDB Task", embed=self.__get_embed())
