@@ -27,7 +27,29 @@ class Dev(commands.GroupCog, group_name="dev"):
     # https://github.com/Rapptz/discord.py/discussions/9161
     def is_owner(i: discord.Interaction):
         return i.user.id == 585834029484343298
-    
+
+    @app_commands.command(
+        name=locale_str("shards"),
+        description=locale_str("Display Shard Information")
+    )
+    @app_commands.check(is_owner)
+    async def shards(self, interaction: discord.Interaction):
+        embed = Embed(
+            locale=discord.Locale("en-US"),
+            color=0x005fff,
+            title="Shard Informations"
+        )
+        
+        for shard in self.client.shards.values():
+            shard_id = shard.id
+            latency = shard.latency*1000  # Convert to ms
+            embed.add_field(
+                name=f"Shard [{shard_id}]:",
+                value=f"**Latency:** `{latency:.0f}ms`\n",
+                inline=True
+            )
+        await interaction.response.send_message(embed=embed) 
+
     @app_commands.command(
         name=locale_str("request"),
         description=locale_str("Request Permission Check for Guild")
