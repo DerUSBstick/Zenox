@@ -5,6 +5,8 @@ import discord
 import git
 import aiohttp
 import string, random, datetime
+import genshin
+import dotenv
 
 from discord.utils import MISSING
 from .enums import Game, GenshinCity
@@ -14,7 +16,7 @@ from . import emojis
 from ..db.mongodb import DB
 from ..l10n import LocaleStr
 from sentry_sdk.integrations.loguru import LoggingLevels, LoguruIntegration
-from ..static.constants import _supportCache as _cache
+from ..static.constants import _supportCache as _cache, ZX_GAME_TO_GPY_GAME
 
 def init_sentry() -> None:
     sentry_sdk.init(
@@ -39,6 +41,49 @@ async def send_webhook(webhook_url, username="Zenox Logs", *, content: str=MISSI
         webhook = discord.Webhook.from_url(webhook_url, session=session)
         await webhook.send(content=content, embed=embed, embeds=embeds, username=username)
 
+def parse_cookie(cookie: str) -> dict[str, str]:
+    """Parse a cookie string into a dictionary."""
+    req_cookies = {}
+    for pair in cookie.split():
+        key, value = pair.split("=", 1)
+        req_cookies[key] = value.strip("'")
+    return req_cookies
+
+
+async def generate_hoyolab_token() -> None:
+    """Generate Hoyolab cookies using app password"""
+    cookies = await genshin.Client().login_with_password(
+        account=os.getenv("HOYOLAB_EMAIL"),
+        password=os.getenv("HOYOLAB_PASSWORD"),
+    )
+    # Update HOYOLAB_COOKIES environment variable
+    env_path = '.env'
+    os.environ["HOYOLAB_COOKIES"] = str(cookies)
+    dotenv.set_key(env_path, "HOYOLAB_COOKIES", str(cookies))
+
+async def redeem_code(code: str, game: Game) -> int:
+    try:
+        await genshin.Client(cookies=parse_cookie(os.getenv("HOYOLAB_COOKIES"))).redeem_code(
+            code=code,
+            game=ZX_GAME_TO_GPY_GAME[game],
+            uid=None
+        )
+        return 1
+    except Exception as e:
+        if isinstance(e, genshin.errors.InvalidCookies):
+            # Refresh cookie and try again
+            await generate_hoyolab_token()
+            try:
+                await genshin.Client(cookies=parse_cookie(os.getenv("HOYOLAB_COOKIES"))).redeem_code(
+                    code=code,
+                    game=ZX_GAME_TO_GPY_GAME[game],
+                    uid=None
+                )
+                return 1
+            except Exception as e:
+                raise e
+        else:
+            raise e
 def ephemeral(interaction: discord.Interaction):
     return not interaction.app_permissions.embed_links
 
