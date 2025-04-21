@@ -69,21 +69,15 @@ async def redeem_code(code: str, game: Game) -> int:
             uid=None
         )
         return 1
-    except Exception as e:
-        if isinstance(e, genshin.errors.InvalidCookies):
-            # Refresh cookie and try again
-            await generate_hoyolab_token()
-            try:
-                await genshin.Client(cookies=parse_cookie(os.getenv("HOYOLAB_COOKIES"))).redeem_code(
-                    code=code,
-                    game=ZX_GAME_TO_GPY_GAME[game],
-                    uid=None
-                )
-                return 1
-            except Exception as e:
-                raise e
-        else:
-            raise e
+    except genshin.errors.InvalidCookies as e:
+        # Refresh cookie and try again
+        await generate_hoyolab_token()
+        await genshin.Client(cookies=parse_cookie(os.getenv("HOYOLAB_COOKIES"))).redeem_code(
+            code=code,
+            game=ZX_GAME_TO_GPY_GAME[game],
+            uid=None
+        )
+        return 1
 def ephemeral(interaction: discord.Interaction):
     return not interaction.app_permissions.embed_links
 

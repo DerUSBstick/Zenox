@@ -183,7 +183,9 @@ class wikiCodes:
                     elif isinstance(e, (genshin.errors.RedemptionClaimed, genshin.errors.RedemptionInvalid)) or e.retcode in [-2024, -2002]:
                         _removed.append((queued_codes, e.retcode, e.msg))
                     else:
-                        raise e
+                        self._stop = True
+                        client.capture_exception(e)
+                        return
                     self._queued_codes[game].pop(0)
                 except Exception as e:
                     client.capture_exception(e)
