@@ -14,6 +14,7 @@ from ..db.structures import Code, CodeReward, GuildConfig, CodesConfig
 from ..bot.bot import Zenox
 from ..ui.components import View, Button
 
+# Merge execute and check_publish into one function at a later point
 class wikiCodes:
     
     _queued_codes: dict[Game, list[list[Code]]] = {}
@@ -144,21 +145,6 @@ class wikiCodes:
             for i, queued_codes in enumerate(self._queued_codes[game].copy(), start=1):
                 if i > self._limit:
                     break
-                # This check might be removed since we try to redeem the code
-                if not " ".join(x.code for x in queued_codes) in _curr_codes:
-                    res = self._queued_codes[game].pop(0)
-                    await send_webhook(
-                        webhook_url=client.log_webhook_url,
-                        username="WikiCodes Task",
-                        content="Code not found in Wiki anymore",
-                        embeds=[Embed(
-                            locale=discord.Locale.american_english,
-                            title="Code not found",
-                            description=f"Code: {queued_codes[0].code} | Game: {queued_codes[0].game.value}",
-                            color=0xff0000
-                        )]
-                    )
-                    continue
                 try:
                     await asyncio.sleep(5) # Rate limit for redeeming codes
                     await redeem_code(queued_codes[0].code, game)
@@ -179,13 +165,14 @@ class wikiCodes:
                         self._stop = True
                         client.capture_exception(e)
                         return
-                    elif isinstance(e, (genshin.errors.RedemptionClaimed, genshin.errors.RedemptionInvalid)) or e.retcode in [-2024, -2002]:
+                    elif isinstance(e, (genshin.errors.RedemptionClaimed, genshin.errors.RedemptionInvalid)) or e.retcode in [-2024, -2002, -2017]:
                         _removed.append((queued_codes, e.retcode, e.msg))
                     else:
                         self._stop = True
                         client.capture_exception(e)
                         return
                     self._queued_codes[game].pop(0)
+                    continue
                 except Exception as e:
                     client.capture_exception(e)
                     self._stop = True
