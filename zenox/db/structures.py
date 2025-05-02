@@ -305,6 +305,7 @@ class Code:
         self.discovered_unix: int | None = gld["discovered_unix"]
         self.expire_unix: int | None = gld["expire_unix"]
         self.published: bool = gld["published"]
+        self.redeemed = gld["redeemed"] 
 
         self.cache[game][code] = self
 
@@ -326,7 +327,8 @@ class Code:
             "rewards": [],
             "discovered_unix": None,
             "expire_unix": None,
-            "published": False
+            "published": False,
+            "redeemed": None
         })
         
 
