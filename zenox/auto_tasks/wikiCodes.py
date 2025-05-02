@@ -50,7 +50,6 @@ class wikiCodes:
                 codes_data = self._get_codes(game)
                 if len(self._row_headers) != len(codes_data.columns) or any(self._row_headers[i] != x for i, x in enumerate(codes_data)): # Verify Table Headers
                     raise WikiCodesHeaderMismatchError
-                
                 for code_data in codes_data.iterrows():
                     code_names = re.sub(r"\[.*", "", code_data[1].iloc[0]).replace("Quick Redeem", "").rstrip()
                     if any(x.lower() in self._blocked_lower for x in code_names.split(" ")) or code_names in self._blocked:
@@ -142,7 +141,7 @@ class wikiCodes:
             _codes: list[Code] = []
             _removed: list[list[list[Code], int, str]] = []
 
-            for i, queued_codes in enumerate(self._queued_codes[game].copy()):
+            for i, queued_codes in enumerate(self._queued_codes[game].copy(), start=1):
                 if i > self._limit:
                     break
                 # This check might be removed since we try to redeem the code
