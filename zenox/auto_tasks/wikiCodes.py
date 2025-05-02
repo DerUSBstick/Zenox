@@ -77,7 +77,7 @@ class wikiCodes:
                             for reward in code_rewards:
                                 code._add_reward(CodeReward(str(reward[0]).lstrip(), int(str(reward[1]).replace(",", ""))))
                         codes.append(code)
-                    if not (codes[0].published or any(codes[0].code == x[0].code for x in self._queued_codes[game]) or codes[0].is_china or codes[0].redeemed != None):
+                    if not (codes[0].published or any(codes[0].code == x[0].code for x in self._queued_codes[game]) or codes[0].is_china or codes[0].redeemed is not None):
                         """Make sure code hasn't been published yet or is already in Queue"""
                         self._queued_codes[game].append((codes))
                         _added_to_queue.append(codes[0])
@@ -171,7 +171,8 @@ class wikiCodes:
                         self._stop = True
                         client.capture_exception(e)
                         return
-                    self._queued_codes[game].pop(0)
+                    index = self._queued_codes[game].index(queued_codes)
+                    self._queued_codes[game].pop(index)
                     continue
                 except Exception as e:
                     client.capture_exception(e)
