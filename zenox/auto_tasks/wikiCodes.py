@@ -1,17 +1,20 @@
 import re
 import time
 import discord
+import genshin
+import asyncio
 import pandas as pd
 from ..static.exceptions import WikiCodesHeaderMismatchError, WikiCodesDataMismatchError
 from ..static.constants import Game, WIKI_PAGES, ZENOX_LOCALES, HOYO_REDEEM_URLS, GAME_THUMBNAILS
 from ..l10n import LocaleStr
 from ..static.embeds import Embed
-from ..static.utils import get_emoji, send_webhook
+from ..static.utils import get_emoji, send_webhook, redeem_code
 from ..static import emojis
 from ..db.structures import Code, CodeReward, GuildConfig, CodesConfig
 from ..bot.bot import Zenox
 from ..ui.components import View, Button
 
+# Merge execute and check_publish into one function at a later point
 class wikiCodes:
     
     _queued_codes: dict[Game, list[list[Code]]] = {}
@@ -36,6 +39,8 @@ class wikiCodes:
 
     @classmethod
     async def execute(self, client: Zenox):
+        if self._stop:
+            return
         try:
             _added_to_queue: list[Code] = []
             if not self._queued_codes:
@@ -46,7 +51,6 @@ class wikiCodes:
                 codes_data = self._get_codes(game)
                 if len(self._row_headers) != len(codes_data.columns) or any(self._row_headers[i] != x for i, x in enumerate(codes_data)): # Verify Table Headers
                     raise WikiCodesHeaderMismatchError
-                
                 for code_data in codes_data.iterrows():
                     code_names = re.sub(r"\[.*", "", code_data[1].iloc[0]).replace("Quick Redeem", "").rstrip()
                     if any(x.lower() in self._blocked_lower for x in code_names.split(" ")) or code_names in self._blocked:
@@ -73,7 +77,7 @@ class wikiCodes:
                             for reward in code_rewards:
                                 code._add_reward(CodeReward(str(reward[0]).lstrip(), int(str(reward[1]).replace(",", ""))))
                         codes.append(code)
-                    if not (codes[0].published or any(codes[0].code == x[0].code for x in self._queued_codes[game]) or codes[0].is_china):
+                    if not (codes[0].published or any(codes[0].code == x[0].code for x in self._queued_codes[game]) or codes[0].is_china or codes[0].redeemed is not None):
                         """Make sure code hasn't been published yet or is already in Queue"""
                         self._queued_codes[game].append((codes))
                         _added_to_queue.append(codes[0])
@@ -133,28 +137,58 @@ class wikiCodes:
         for game in Game:
             if not WIKI_PAGES[game]:
                 continue
-
             _curr_codes: list = [re.sub(r"\[.*", "", x[1].iloc[0]).replace("Quick Redeem", "").rstrip() for x in self._get_codes(game).iterrows()] # No need for filtering for blocked words, because they can't be present in the queue
             _rewards: list[CodeReward] = []
             _codes: list[Code] = []
+            _removed: list[list[list[Code], int, str]] = []
 
-            for i, queued_codes in enumerate(self._queued_codes[game].copy()):
+            for i, queued_codes in enumerate(self._queued_codes[game].copy(), start=1):
                 if i > self._limit:
                     break
-                if not " ".join(x.code for x in queued_codes) in _curr_codes:
-                    res = self._queued_codes[game].pop(i)
+                try:
+                    await asyncio.sleep(5) # Rate limit for redeeming codes
+                    await redeem_code(queued_codes[0].code, game)
+                    queued_codes[0]._update_val("redeemed", True)
+                except genshin.errors.GenshinException as e:
+                    if e.retcode == -100:
+                        await send_webhook(
+                            webhook_url=client.log_webhook_url,
+                            username="WikiCodes Task",
+                            content="Invalid Cookies",
+                            embeds=[Embed(
+                                locale=discord.Locale.american_english,
+                                title="Invalid Cookies",
+                                description=str(e),
+                                color=0xff0000
+                            )]
+                        )
+                        self._stop = True
+                        client.capture_exception(e)
+                        return
+                    elif isinstance(e, (genshin.errors.RedemptionClaimed, genshin.errors.RedemptionInvalid)) or e.retcode in [-2024, -2002, -2017]:
+                        _removed.append((queued_codes, e.retcode, e.msg))
+                    else:
+                        self._stop = True
+                        client.capture_exception(e)
+                        return
+                    index = self._queued_codes[game].index(queued_codes)
+                    self._queued_codes[game].pop(index)
+                    continue
+                except Exception as e:
+                    client.capture_exception(e)
+                    self._stop = True
                     await send_webhook(
                         webhook_url=client.log_webhook_url,
                         username="WikiCodes Task",
-                        content="Code not found in Wiki anymore",
+                        content="Error while redeeming code",
                         embeds=[Embed(
                             locale=discord.Locale.american_english,
-                            title="Code not found",
-                            description=f"Code: {queued_codes[0].code} | Game: {queued_codes[0].game.value}",
+                            title="Error while redeeming code",
+                            description=str(e),
                             color=0xff0000
                         )]
                     )
-                    continue
+                    return
                 _codes.append(queued_codes[0]) # Only add the first Code from the list as all the codes are tied together
                 for reward in queued_codes[0].rewards:
                     _exist = False
@@ -164,7 +198,21 @@ class wikiCodes:
                             code_reward.amount += reward.amount
                     if not _exist:
                         _rewards.append(reward)
-
+            if _removed:
+                for code in _removed:
+                    for _code in code[0]:
+                        _code._update_val("redeemed", False)
+                await send_webhook(
+                    webhook_url=client.log_webhook_url,
+                    username="WikiCodes Task",
+                    content="Removed Codes from Queue",
+                    embeds=[Embed(
+                        locale=discord.Locale.american_english,
+                        title="Removed Codes",
+                        description="\n".join([f"Code: {code[0][0].code} | Retcode: {code[1]} | Message: {code[2]}" for code in _removed]),
+                        color=0xff0000
+                    )]
+                )
             if not _codes:
                 continue
             _translations = self._pre_translate(game, _codes, _rewards)

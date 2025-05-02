@@ -19,4 +19,7 @@ testing/
 # Ignore any screenlog files
 screenlog.*
 
+# Migration Scripts
+migration/
+
 zenox/bot/data/text_maps/

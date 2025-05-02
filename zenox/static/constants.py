@@ -47,7 +47,7 @@ HOYO_REDEEM_URLS: dict[Game, str] = {
 WIKI_PAGES: dict[Game, str | None] = {
     Game.GENSHIN: "https://genshin-impact.fandom.com/wiki/Promotional_Code",
     Game.STARRAIL: "https://honkai-star-rail.fandom.com/wiki/Redemption_Code",
-    Game.ZZZ: None
+    Game.ZZZ: "https://zenless-zone-zero.fandom.com/wiki/Redemption_Code"
 }
 
 GAME_TO_EMOJI: dict[Game, str] = {
