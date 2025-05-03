@@ -24,8 +24,7 @@ Zenox provides features for selected Hoyoverse games
 Features | Genshin Impact | Honkai: Star Rail | Zenless Zone Zero
 |---|---|---|---|
 Configure all Server supported features via this command | ✅ | ✅ | ✅
-Get alerts for Special Program redemption codes | ✅ | ✅ | ✅
-Get alerts for all redemption codes | ✅ | ✅ | ❌
+Get alerts for redemption codes | ✅ | ✅ | ✅
 Be notified about upcoming special programs | ✅ | ✅ | ✅
 
 ## User Features
