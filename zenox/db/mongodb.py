@@ -47,5 +47,19 @@ class HoyoverseDB:
     def codes(self) -> collection.Collection:
         return self._DB["codes"]
 
+class AnalyticsDB:
+    _DB = None
+
+    def __init__(self):
+        if env == "prod":
+            self._DB = CLUSTER["analytics"]
+        else:
+            self._DB = CLUSTER[f"analytics_{env}"]
+
+    @property
+    def reminders(self) -> collection.Collection:
+        return self._DB["reminders"]
+
 DB = MongoDB()
 HOYOVERSEDB = HoyoverseDB()
+ANALYTICSDB = AnalyticsDB()
