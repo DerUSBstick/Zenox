@@ -207,7 +207,7 @@ class Dev(commands.GroupCog, group_name="dev"):
     @classmethod
     async def _create_events(self, client: Zenox, event_data: EventReminder) -> tuple[int, int, int]:
         _success, _forbidden, _failed = 0, 0, 0
-        created_events: list[int, int] = []
+        created_events: list[tuple[int, int]] = []
         GUILDS = [guild["id"] for guild in client.db.guilds.find({})]
         EVENT_IMAGE = open(f"./zenox-assets/assets/event-reminders/{event_data.image}", "+rb").read()
         _translations = self._pre_translate_schedule_stream(event_data)

@@ -362,7 +362,7 @@ class EventReminder:
         self.end: datetime.datetime | None = gld["end"].replace(tzinfo=pytz.UTC) if gld["end"] != None else None
         self.image: str | None = gld["image"]
         self.published: bool = gld["published"]
-        self.events: dict[int, int] = gld["events"] if gld["events"] else [] # Temporarily stores all created events, cleaned after analytics concluded
+        self.events: list[tuple[int, int]] = gld["events"] if gld["events"] else [] # Temporarily stores all created events, cleaned after analytics concluded
     
     def _update_val(self, key: str, value: any, operator: str = "$set") -> None:
         self.__setattr__(key, value)
