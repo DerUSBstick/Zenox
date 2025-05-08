@@ -41,7 +41,7 @@ class Zenox(commands.AutoShardedBot):
             tree_cls=CommandTree,
             allowed_contexts=discord.app_commands.AppCommandContext(guild=True, dm_channel=True, private_channel=False),
             allowed_installs=discord.app_commands.AppInstallationType(guild=True, user=False),
-            activity=discord.CustomActivity(f"German 🇩🇪 Now Supported")
+            activity=discord.CustomActivity(f"{self.version} | ZZZ Full Support")
         )
 
     async def setup_hook(self) -> None:
