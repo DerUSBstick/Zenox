@@ -87,7 +87,7 @@ class confirmButton(Button["HoyolabCodesUI"]):
 
         for guild in guilds:
             try:
-                role = None 
+                role = None
                 guild = GuildConfig(guild)
                 guildObject = client.get_guild(guild.id)
                 LANG = guild.language
