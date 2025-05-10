@@ -9,7 +9,7 @@ from zenox.db.structures import GuildConfig
 
 class PrometheusCog(commands.Cog):
     port: int = 8000
-    inital = False
+    initial = False
 
     def __init__(self, client: Zenox):
         self.client = client
@@ -40,9 +40,9 @@ class PrometheusCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        if self.inital:
+        if self.initial:
             return
-        self.inital = True
+        self.initial = True
 
         GUILD_GAUGE.set(len(self.client.guilds))
         GUILD_MEMBER_GAUGE.set(sum(guild.member_count for guild in self.client.guilds))
