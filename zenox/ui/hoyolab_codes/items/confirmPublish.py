@@ -56,7 +56,7 @@ class confirmButton(Button["HoyolabCodesUI"]):
     async def publishToGuild(self, client: Zenox, guild_id: int) -> bool:
         # Only used for publishing to a single guild
         try:
-            role = None # FIX: UnboundLocalError: local variable 'role' referenced before assignment
+            role = None 
             guild = GuildConfig(guild_id)
             guildObject = client.get_guild(guild.id)
             LANG = guild.language
@@ -87,7 +87,7 @@ class confirmButton(Button["HoyolabCodesUI"]):
 
         for guild in guilds:
             try:
-                role = None # FIX: UnboundLocalError: local variable 'role' referenced before assignment
+                role = None 
                 guild = GuildConfig(guild)
                 guildObject = client.get_guild(guild.id)
                 LANG = guild.language
