@@ -1,10 +1,11 @@
 import re
-import time
+import time, datetime
 import discord
 import genshin
 import asyncio
 import pandas as pd
 from ..static.exceptions import WikiCodesHeaderMismatchError, WikiCodesDataMismatchError
+from zenox.db.mongodb import ANALYTICSDB
 from ..static.constants import Game, WIKI_PAGES, ZENOX_LOCALES, HOYO_REDEEM_URLS, GAME_THUMBNAILS
 from ..l10n import LocaleStr
 from ..static.embeds import Embed
@@ -322,3 +323,16 @@ class wikiCodes:
                 color=0x00ff00
             )]
         )
+
+        ANALYTICSDB.wiki_codes.insert_one({
+            "type": "send_wiki_codes",
+            "game": game.value,
+            "time": datetime.datetime.now(),
+            "stats": {
+                "success": _success,
+                "failed": _failed,
+                "forbidden": _forbidden,
+                "no_channel": _no_channel,
+                "no_role": _no_role
+            }
+        })
