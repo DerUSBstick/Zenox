@@ -87,7 +87,7 @@ class confirmButton(Button["HoyolabCodesUI"]):
 
         for guild in guilds:
             try:
-                role = None # FIX: UnboundLocalError: local variable 'role' referenced before assignment
+                role = None
                 guild = GuildConfig(guild)
                 guildObject = client.get_guild(guild.id)
                 LANG = guild.language
