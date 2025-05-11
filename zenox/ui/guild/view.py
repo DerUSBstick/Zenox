@@ -11,7 +11,7 @@ from ..components import View, GoBackButton
 from ...static.utils import path_to_bytesio
 from ...static.embeds import DefaultEmbed
 from ...static.enums import Game
-from ...db.structures import GuildConfig, CodesConfig, EventReminderConfig, SpecialProgam
+from ...db.structures import GuildConfig, CodesConfig, EventReminderConfig, SpecialProgram
 from ...static.constants import _supportCache as _cache
 
 class GuildSettingsUI(View):
