@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Any
 from discord.utils import MISSING
 from ...components import ChannelSelect, RoleSelect, ToggleButton, Button, Modal, TextInput
 from zenox.l10n import LocaleStr
-from zenox.db.structures import CodesConfig, EventReminderConfig, SpecialProgam
+from zenox.db.structures import CodesConfig, EventReminderConfig, SpecialProgram
 
 if TYPE_CHECKING:
     from ..view import GuildSettingsUI
@@ -74,6 +74,6 @@ class TestButton(Button["GuildSettingsUI"]):
     
     async def callback(self, interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=False, thinking=True)
-        special_program = SpecialProgam(self.view.game, "Zenox")
+        special_program = SpecialProgram(self.view.game, "Zenox")
         _, embed, attachments = await special_program.buildMessage(interaction.client, self.view.settings.language)
         await interaction.followup.send(embed=embed, files=attachments)

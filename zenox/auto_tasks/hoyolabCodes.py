@@ -6,7 +6,7 @@ from typing import ClassVar
 from ..bot.bot import Zenox
 from ..static.enums import Game
 from ..static.constants import HOYOLAB_GAME_IDS, GAME_THUMBNAILS
-from ..db.structures import SpecialProgam, Code, CodeReward
+from ..db.structures import SpecialProgram, Code, CodeReward
 from zenox.ui.hoyolab_codes.view import HoyolabCodesUI
 from ..l10n import translator
 
@@ -27,7 +27,7 @@ class hoyolabCodes:
 
     async def update_message(self):
         for game in Game:
-            special_program = SpecialProgam(game, self._bot.config.auto_stream_codes_config[game].version)
+            special_program = SpecialProgram(game, self._bot.config.auto_stream_codes_config[game].version)
             
             _, embed, _ = await special_program.buildMessage(self._bot, locale=discord.Locale("en-US"))
             view = HoyolabCodesUI(author=None, data=special_program, locale=discord.Locale("en-US"))
@@ -82,7 +82,7 @@ class hoyolabCodes:
         resp_json = response.json()
         return resp_json
     
-    def _parse_data(self, response_data, special_program: SpecialProgam):
+    def _parse_data(self, response_data, special_program: SpecialProgram):
         module_data = None
         # Check if Module 7 exists in data (7 = Stream Codes)
         for i, module in enumerate(response_data['data']['modules']):
@@ -119,9 +119,9 @@ class hoyolabCodes:
           return 1
         elif self._bot.config.auto_stream_codes_config[game].stream_time - time.time() > 0: # Stream hasn't started yet
           return 2
-        elif SpecialProgam(game, version).published: # Codes have been distributed already
+        elif SpecialProgram(game, version).published: # Codes have been distributed already
           return 3
-        elif SpecialProgam(game, version).found: # Codes have been found
+        elif SpecialProgram(game, version).found: # Codes have been found
             return 5
         return 4
 
@@ -133,7 +133,7 @@ class hoyolabCodes:
             _state = self._get_state(self, game, self._bot.config.auto_stream_codes_config[game].version)
             if _state not in [4, 5]:
               continue
-            special_program = SpecialProgam(game, self._bot.config.auto_stream_codes_config[game].version)
+            special_program = SpecialProgram(game, self._bot.config.auto_stream_codes_config[game].version)
 
             if _state == 4: # No need to send request, if we already know the codes
               response_data = await self._api_request(self, game)

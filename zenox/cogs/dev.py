@@ -84,6 +84,7 @@ class Dev(commands.GroupCog, group_name="dev"):
         await interaction.followup.send(embed=embed)
         # Also store in DB
         ANALYTICSDB.reminders.insert_one({
+            "type": "event_analytics",
             "game": game.value,
             "version": version,
             "stats": stats
@@ -187,12 +188,24 @@ class Dev(commands.GroupCog, group_name="dev"):
         event_data._update_val("end", datetime.datetime.fromtimestamp(end, pytz.UTC))
         event_data._update_val("image", image.filename)
 
-        _success, _forbidden, _failed = await self._create_events(interaction.client, event_data)
+        _success, _forbidden, _failed, _disabled = await self._create_events(interaction.client, event_data)
 
         event_data._update_val("published", True)
 
         await interaction.followup.send(f"Successfully scheduled {game} stream for {version} in {_success} guilds. {_forbidden} guilds missing create event permissions. {_failed} guilds failed to create event.", ephemeral=True)
         await send_webhook(interaction.client.log_webhook_url, content=f"Successfully scheduled {game} stream for {version} in {_success} guilds. {_forbidden} guilds missing create event permissions. {_failed} guilds failed to create event.")
+
+        ANALYTICSDB.reminders.insert_one({
+            "type": "create_events",
+            "game": game.value,
+            "version": version,
+            "stats": {
+                "success": _success,
+                "forbidden": _forbidden,
+                "failed": _failed,
+                "disabled": _disabled
+            }
+        })
 
     @classmethod
     def _pre_translate_schedule_stream(self, eventData: EventReminder) -> dict[discord.Locale, dict[str, str]]:
@@ -205,8 +218,8 @@ class Dev(commands.GroupCog, group_name="dev"):
         return _translations
     
     @classmethod
-    async def _create_events(self, client: Zenox, event_data: EventReminder) -> tuple[int, int, int]:
-        _success, _forbidden, _failed = 0, 0, 0
+    async def _create_events(self, client: Zenox, event_data: EventReminder) -> tuple[int, int, int, int]:
+        _success, _forbidden, _failed, _disabled = 0, 0, 0, 0
         created_events: list[tuple[int, int]] = []
         GUILDS = [guild["id"] for guild in client.db.guilds.find({})]
         EVENT_IMAGE = open(f"./zenox-assets/assets/event-reminders/{event_data.image}", "+rb").read()
@@ -216,6 +229,7 @@ class Dev(commands.GroupCog, group_name="dev"):
                 guild = GuildConfig(guild)
                 
                 if not guild.event_reminders[event_data.game].config["streams"]:
+                    _disabled += 1
                     continue
                 if not type(EVENT_IMAGE) == bytes or not EVENT_IMAGE:
                     EVENT_IMAGE = open(f"./zenox-assets/assets/event-reminders/{event_data.image}", "+rb").read()
@@ -238,7 +252,7 @@ class Dev(commands.GroupCog, group_name="dev"):
                 client.capture_exception(e)
                 _failed += 1
         event_data._update_val("events", created_events)
-        return _success, _forbidden, _failed
+        return _success, _forbidden, _failed, _disabled
 
 
 async def setup(client: Zenox):

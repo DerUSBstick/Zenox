@@ -13,3 +13,4 @@ pytz==2025.2
 PyYAML==6.0.1
 requests==2.31.0
 sentry-sdk==2.15.0
+prometheus-client==0.21.1

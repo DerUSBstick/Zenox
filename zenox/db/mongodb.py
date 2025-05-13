@@ -60,6 +60,14 @@ class AnalyticsDB:
     def reminders(self) -> collection.Collection:
         return self._DB["reminders"]
 
+    @property
+    def wiki_codes(self) -> collection.Collection:
+        return self._DB["wiki_codes"]
+    
+    @property
+    def hoyolab_codes(self) -> collection.Collection:
+        return self._DB["hoyolab_codes"]
+
 DB = MongoDB()
 HOYOVERSEDB = HoyoverseDB()
 ANALYTICSDB = AnalyticsDB()

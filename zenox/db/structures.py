@@ -384,7 +384,7 @@ class EventReminder:
             }
         )
 
-class SpecialProgam: # Update to only store data
+class SpecialProgram: # Update to only store data
     cache = {Game.GENSHIN: {}, Game.STARRAIL: {}, Game.ZZZ: {}}
 
     @classmethod

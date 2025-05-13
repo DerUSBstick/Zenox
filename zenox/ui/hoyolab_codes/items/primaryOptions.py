@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from ...components import View, Button, Modal, TextInput, GoBackButton
 from discord import User, Member
 from discord import Locale
-from zenox.db.structures import SpecialProgam, GuildConfig, Game, DB, CodesConfig
+from zenox.db.structures import SpecialProgram, GuildConfig, Game, DB, CodesConfig
 from zenox.l10n import Translator, LocaleStr
 from zenox.static import emojis
 from zenox.bot.bot import Zenox

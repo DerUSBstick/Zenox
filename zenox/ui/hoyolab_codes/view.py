@@ -2,7 +2,7 @@ import discord
 from ..components import View, Button, Modal, TextInput, GoBackButton
 from discord import User, Member
 from discord import Locale
-from zenox.db.structures import SpecialProgam, GuildConfig, Game, DB, CodesConfig
+from zenox.db.structures import SpecialProgram, GuildConfig, Game, DB, CodesConfig
 from zenox.l10n import Translator, LocaleStr
 from zenox.static import emojis
 from zenox.bot.bot import Zenox
@@ -17,7 +17,7 @@ class HoyolabCodesUI(View):
             *,
             author: User | Member,
             locale: Locale,
-            data: SpecialProgam
+            data: SpecialProgram
     ):
         super().__init__(author=author, locale=locale)
 
@@ -26,7 +26,7 @@ class HoyolabCodesUI(View):
         self.add_item(publishGuildButton())
         self.add_item(publishDevGuildButton())
         
-        self.data: SpecialProgam = data
+        self.data: SpecialProgram = data
         self.action: Literal["Global", "Guild", "Dev"] | None = None
         self.guild_id: int | None = None
     
