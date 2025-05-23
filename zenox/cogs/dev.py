@@ -58,24 +58,28 @@ class Dev(commands.GroupCog, group_name="dev"):
             "scheduled": 0,
             "active": 0,
             "completed": 0,
-            "cancelled": 0
+            "cancelled": 0,
+            "error": 0
         }
         for guild_data in events.events:
-            guild = self.client.get_guild(guild_data[0])
-            if guild is None:
-                stats["guild_not_found"] += 1
-                continue
-            event = await guild.fetch_scheduled_event(guild_data[1])
-            if event is None:
-                stats["event_not_found"] += 1
-                continue
-            stats["interested_count"] += event.user_count
-            event_status = event.status.name
-            if event_status == "canceled": # Alias
-                event_status = "cancelled"
-            elif event_status == "ended": # Alias
-                event_status = "completed"
-            stats[event_status] += 1
+            try:
+                guild = self.client.get_guild(guild_data[0])
+                if guild is None:
+                    stats["guild_not_found"] += 1
+                    continue
+                event = await guild.fetch_scheduled_event(guild_data[1])
+                if event is None:
+                    stats["event_not_found"] += 1
+                    continue
+                stats["interested_count"] += event.user_count
+                event_status = event.status.name
+                if event_status == "canceled": # Alias
+                    event_status = "cancelled"
+                elif event_status == "ended": # Alias
+                    event_status = "completed"
+                stats[event_status] += 1
+            except:
+                stats["error"] += 1
         embed = Embed(
             locale=discord.Locale.american_english,
             color=0x005fff,
