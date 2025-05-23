@@ -37,7 +37,8 @@ class Dev(commands.GroupCog, group_name="dev"):
         await interaction.response.defer(thinking=True, ephemeral=True)
         res = ANALYTICSDB.reminders.find_one({
             "game": game.value,
-            "version": version
+            "version": version,
+            "type": "event_analytics"
         })
         if res is not None:
             return await interaction.followup.send(f"Stream Analytics for `{game}` version `{version}` already exists", ephemeral=True)
