@@ -36,7 +36,12 @@ class PrometheusCog(commands.Cog):
     async def update_locales(self):
         GUILD_LOCALE_GAUGE.clear()
         for guild in self.client.guilds:
-            GUILD_LOCALE_GAUGE.labels(guild.preferred_locale).inc()
+            db_res = self.client.db.guilds.find_one({"id": guild.id}, {"language": 1})
+            if db_res is None or db_res["language"] == "en-US":
+                locale = guild.preferred_locale
+            else:
+                locale = Locale(db_res["language"])
+            GUILD_LOCALE_GAUGE.labels(locale).inc()
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -50,7 +55,7 @@ class PrometheusCog(commands.Cog):
 
         for guild in self.client.guilds:
             db_res = self.client.db.guilds.find_one({"id": guild.id}, {"language": 1})
-            if db_res and db_res["language"] == "en-US":
+            if db_res is None or db_res["language"] == "en-US":
                 GUILD_LOCALE_GAUGE.labels(guild.preferred_locale).inc()
             else:
                 GUILD_LOCALE_GAUGE.labels(Locale(db_res["language"])).inc()
