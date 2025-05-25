@@ -65,3 +65,4 @@ about_command.desc: "This bot is designed to help you keep track of the latest c
 about_command.guild_count: "Guild Count"
 about_command.ram_usage: "RAM Usage"
 about_command.uptime: "Uptime"
+manual_codes_embed.start.description: "Click the button below to enter all codes manually, comma separated"
