@@ -1,4 +1,5 @@
 from prometheus_client import Gauge, Counter
+from typing import Final
 
 METRIC_PREFIX = "discord_"
 
@@ -53,4 +54,16 @@ GUILD_LOCALE_GAUGE = Gauge(
 UPTIME_GAUGE = Gauge(
     METRIC_PREFIX + "uptime",
     "Start time of the bot",
+)
+
+SLASH_COMMANDS: Final[Counter] = Counter(
+    METRIC_PREFIX + "on_slash_command",
+    "Number of times slash commands are called",
+    ["shard", "command"],
+)
+
+COMMANDS_DAILY_TOTAL: Final[Counter] = Counter(
+    METRIC_PREFIX + "commands_daily_total",
+    "Total number of slash commands used per day",
+    ["date"],
 )

@@ -8,7 +8,9 @@ from .metrics import (
     CPU_USAGE_GAUGE,
     MEMORY_USAGE_GAUGE,
     GUILD_LOCALE_GAUGE,
-    UPTIME_GAUGE
+    UPTIME_GAUGE,
+    SLASH_COMMANDS,
+    COMMANDS_DAILY_TOTAL
 )
 
 __all__ = [
@@ -21,5 +23,7 @@ __all__ = [
     "CPU_USAGE_GAUGE",
     "MEMORY_USAGE_GAUGE",
     "GUILD_LOCALE_GAUGE",
-    "UPTIME_GAUGE"
+    "UPTIME_GAUGE",
+    "SLASH_COMMANDS",
+    "COMMANDS_DAILY_TOTAL"
 ]
