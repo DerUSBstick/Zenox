@@ -1,4 +1,6 @@
 import discord
+from discord import app_commands
+from discord.app_commands import locale_str
 import pytz
 import itertools
 import psutil
@@ -6,6 +8,8 @@ from datetime import datetime
 from discord.ext import commands, tasks
 
 from ..bot.bot import Zenox
+from ..static.embeds import DefaultEmbed
+from ..l10n import LocaleStr
 
 class Others(commands.Cog):
     def __init__(self, client: Zenox):
@@ -45,6 +49,38 @@ class Others(commands.Cog):
     @update_vcs_state.before_loop
     async def before_loops(self) -> None:
         await self.client.wait_until_ready()
+    
+    @app_commands.command(
+        name=locale_str("about"),
+        description=locale_str("Get information about the bot.", key="about_command")
+    )
+    async def about(self, interaction: discord.Interaction) -> None:
+        await interaction.response.defer(ephemeral=True)
+
+        locale = interaction.locale
+        embed = DefaultEmbed(
+            locale,
+            title=f"{self.client.user.name if self.client.user else 'Zenox'} {self.client.version}",
+            description=LocaleStr(key="about_command.desc", locale=locale),
+        )
+
+        # guild count
+        embed.add_field(
+            name=LocaleStr(key="about_command.guild_count"), value=str(len(interaction.client.guilds))
+        )
+
+        # ram usage
+        embed.add_field(
+            name=LocaleStr(key="about_command.ram_usage"), value=f"{self.client.ram_usage:.2f} MB"
+        )
+
+        # uptime
+        uptime = discord.utils.format_dt(self.client.uptime, "R")
+        embed.add_field(name=LocaleStr(key="about_command.uptime"), value=uptime)
+
+        embed.set_image(url="https://cdn.alekeagle.me/62V2cKrg9m.png")
+
+        await interaction.followup.send(embed=embed)
 
 async def setup(client: Zenox) -> None:
     await client.add_cog(Others(client))

@@ -5,7 +5,7 @@ import git
 from discord.ext import commands
 from aiohttp import ClientSession
 from loguru import logger
-
+import psutil
 from pathlib import Path
 
 from.command_tree import CommandTree
@@ -32,6 +32,7 @@ class Zenox(commands.AutoShardedBot):
         self.config = config
         self.db = DB
         self.log_webhook_url = os.getenv(f"LOGS_WEBHOOK_{env.upper()}")
+        self.process = psutil.Process()
 
         super().__init__(
             command_prefix=commands.when_mentioned,
@@ -62,3 +63,7 @@ class Zenox(commands.AutoShardedBot):
         if isinstance(e, discord.NotFound) and e.code == 10062:
             return
         sentry_sdk.capture_exception(e)
+    
+    @property
+    def ram_usage(self) -> float:
+        return self.process.memory_info().rss / 1024**2
