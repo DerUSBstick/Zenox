@@ -63,6 +63,13 @@ GAME_THUMBNAILS: dict[Game, str] = {
 }
 """Static Icons for redemption codes embed"""
 
+LINKING_IMAGE_GUIDE: dict[Game, str] = {
+    Game.GENSHIN: "https://cdn.alekeagle.me/PLNt4iCvit.png",
+    Game.STARRAIL: "https://cdn.alekeagle.me/dfTz2Cqa94.png",
+    Game.ZZZ: "https://cdn.alekeagle.me/FiQZh_cnxs.png"
+}
+"""Image guide for linking UIDs in the embed"""
+
 ZX_GAME_TO_GPY_GAME: dict[Game, genshin.Game] = {
     Game.GENSHIN: genshin.Game.GENSHIN,
     Game.STARRAIL: genshin.Game.STARRAIL,

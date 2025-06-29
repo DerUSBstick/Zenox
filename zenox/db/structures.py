@@ -5,6 +5,7 @@ import os
 import argparse
 import pytz
 import sentry_sdk
+from dataclasses import dataclass
 from dateutil import parser
 from .mongodb import DB, HOYOVERSEDB
 from ..static import emojis
@@ -473,3 +474,13 @@ class SpecialProgram: # Update to only store data
                 "codes": []
             }
         )
+
+@dataclass
+class LinkingEntryTemplate:
+    method: Literal["UID"]
+    uid: list[str] 
+    game: Game
+    user_id: int
+    started: datetime.datetime
+    code: int
+    interaction: discord.Interaction
