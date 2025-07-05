@@ -55,6 +55,27 @@ class Config:
         with open("./zenox/bot/data/zenox.json", "w+") as file:
             json.dump(cfg, file, indent=4)
 
+class AccountOwner:
+    def __init__(self, userhash: str, username: str) -> None:
+        self.userhash = userhash
+        self.username: str = username
+
+class HoyolabAccount:
+    def __init__(self, hoyolab_id) -> None:
+        self.hoyolab_id: str = hoyolab_id
+
+class GameAccount:
+    def __init__(self, uid: str, game: str) -> None:
+        gld = DB.accounts.find_one({"uid": uid, "game": game})
+        if not gld:
+            raise ValueError(f"GameAccount with uid {uid} and game {game} does not exist in the database.")
+        self.uid: str = gld["uid"]
+        self.game: Game = Game(gld["game"])
+        self.linked_date: datetime.datetime = parser.isoparse(gld["linked_date"])
+        self.enka_owner: AccountOwner | None = AccountOwner(**gld["owner"]) if gld["owner"] else None
+        self.hoyolab_owner: HoyolabAccount | None = HoyolabAccount(**gld["hoyolab"]) if gld["hoyolab"] else None
+        self.user_id: int = gld["user_id"]
+
 class UserSettings:
     def __init__(self, settings: dict[str, str | bool]) -> None:
         self.language: discord.Locale = discord.Locale(settings["language"])
@@ -88,6 +109,7 @@ class UserConfig:
         self.features: list = gld["features"]
         self.flags: list = gld["flags"]
         self.settings: UserSettings = UserSettings(gld["settings"])
+        self.accounts: list[GameAccount] = [GameAccount(**x) for x in gld["accounts"]] if "accounts" in gld else []
 
     @classmethod
     def addUser(self, userID: int) -> None:
@@ -116,6 +138,21 @@ class UserConfig:
         self._update_val("settings.language", settings.language.value)
         self._update_val("settings.dark_mode", settings.dark_mode)
         self._update_val("settings.dyk", settings.dyk)
+    
+    def addAccount(self, account: GameAccount) -> None:
+        """Add a new game account to the user config."""
+        if not isinstance(account, GameAccount):
+            raise TypeError("account must be an instance of GameAccount")
+        self.accounts.append(account)
+        DB.users.update_one({"id": self.id}, {"$push": {"accounts": account.__dict__}})
+
+    def removeAccount(self, account: GameAccount) -> None:
+        """Remove a game account from the user config and .accounts ."""
+        if not isinstance(account, GameAccount):
+            raise TypeError("account must be an instance of GameAccount")
+        self.accounts.remove(account)
+        DB.users.update_one({"id": self.id}, {"$pull": {"accounts": {"uid": account.uid, "game": account.game.value}}})
+    
 
 class CodesConfig:
     def __init__(self, config: dict[str, int | bool | None]):
@@ -478,9 +515,18 @@ class SpecialProgram: # Update to only store data
 @dataclass
 class LinkingEntryTemplate:
     method: Literal["UID"]
-    uid: list[str] 
-    game: Game
+    data: list[tuple[str, Game]]
     user_id: int
     started: datetime.datetime
     code: int
     interaction: discord.Interaction
+
+class GameAccountTemplate(GameAccount):
+    def __init__(self, uid: str, game: str, user_id: int, owner: AccountOwner | None = None, hoyolab: HoyolabAccount | None = None) -> None:
+        super().__init__(uid, game)
+        self.uid: str = uid
+        self.game: Game = Game(game)
+        self.linked_date: datetime.datetime = datetime.datetime.now(pytz.UTC)
+        self.enka_owner: AccountOwner | None = owner
+        self.hoyolab_owner: HoyolabAccount | None = hoyolab
+        self.user_id: int = user_id

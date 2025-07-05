@@ -61,7 +61,8 @@ class GameSelector(Select["LinkingUI"]):
         
         uid = modal.uid_input.value
         
-        link_code = random.randint(1000, 9999)
+        # link_code = random.randint(1000, 9999)
+        link_code = 18461
         entry = LinkingEntryTemplate(
             method=self.view.method,
             uid=[uid],

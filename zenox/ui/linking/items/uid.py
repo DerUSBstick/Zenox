@@ -1,13 +1,11 @@
 import discord
-from typing import TYPE_CHECKING, Any
+from typing import Any
 from zenox.static.enums import Game
 from zenox.l10n import LocaleStr
 from ...components import Select, SelectOption, Modal, TextInput
 
-if TYPE_CHECKING:
-    from ..view import LinkingUI
 
-class UIDInput(Modal["LinkingUI"]):
+class UIDInput(Modal):
     uid_input = TextInput(
                 label=LocaleStr(key="linking_uid_input.label"),
                 placeholder=LocaleStr(key="linking_uid_input.placeholder"),
@@ -17,8 +15,12 @@ class UIDInput(Modal["LinkingUI"]):
                 max_length=10,
                 style=discord.TextStyle.short,
             )
-    def __init__(self) -> None:
+    def __init__(self, *, min_length: int, max_length: int) -> None:
         super().__init__(
             title=LocaleStr(key="linking_uid_input.title"),
             custom_id="linking:uid_input"
         )
+        if min_length:
+            self.uid_input.min_length = min_length
+        if max_length:
+            self.uid_input.max_length = max_length

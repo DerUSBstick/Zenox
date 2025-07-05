@@ -4,6 +4,7 @@ from zenox.l10n import LocaleStr
 from zenox.static.embeds import DefaultEmbed
 from ...components import Select, SelectOption
 from .game import GameSelector
+from .uid import UIDInput
 
 if TYPE_CHECKING:
     from ..view import LinkingUI
@@ -21,9 +22,10 @@ class MethodSelector(Select["LinkingUI"]):
             [
                 SelectOption(
                     label=method,
-                    value=method
+                    value=method,
+                    description=LocaleStr(key=f"linking_method_select.description.{method.lower()}"),
                 )
-                for method in ["UID"]
+                for method in ["Hoyolab", "UID"]
             ]
         )
         return options
@@ -32,17 +34,28 @@ class MethodSelector(Select["LinkingUI"]):
         selected = self.values[0]
         self.view.method = selected
         
-        if self.view.method == "UID":
-            embed = DefaultEmbed(
-                locale=self.view.locale,
-                title=LocaleStr(key="linking_embed_title.game"),
-                description=LocaleStr(key="linking_embed_description.game")
-            )
+        if self.view.method == "Hoyolab":
+            modal = UIDInput(min_length=7, max_length=10)
+            modal.translate(self.view.locale)
+            await interaction.response.send_modal(modal)
+            await modal.wait()
+            if modal.incomplete:
+                return
+            uid = modal.uid_input.value
+            await self.view.hoyolab_linking(uid, interaction)
 
-            self.view.clear_items()
-            self.view.add_item(GameSelector())
 
-            await interaction.response.edit_message(
-                embed=embed,
-                view=self.view
-            )
+        # elif self.view.method == "UID":
+        #     embed = DefaultEmbed(
+        #         locale=locale,
+        #         title=LocaleStr(key="linking_embed_title.game"),
+        #         description=LocaleStr(key="linking_embed_description.game")
+        #     )
+
+        #     self.view.clear_items()
+        #     self.view.add_item(GameSelector())
+
+        #     await interaction.response.edit_message(
+        #         embed=embed,
+        #         view=self.view
+        #     )

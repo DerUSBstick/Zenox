@@ -31,6 +31,9 @@ HOYOLAB_GAME_IDS: dict[Game, int] = {
     Game.STARRAIL: 6,
     Game.ZZZ: 8
 }
+HOYOLAB_GAME_ID_TO_GAME: dict[int, Game] = {v: k for k, v in HOYOLAB_GAME_IDS.items()}
+
+SUPPORTED_LINKING_GAMES: list[int] = [2, 6, 8]
 
 HOYO_OFFICIAL_CHANNELS: dict[Game, dict[str, str]] = {
     Game.GENSHIN: {"YouTube": "https://www.youtube.com/@GenshinImpact", "Twitch": "https://www.twitch.tv/genshinimpactofficial"},
@@ -69,6 +72,7 @@ LINKING_IMAGE_GUIDE: dict[Game, str] = {
     Game.ZZZ: "https://cdn.alekeagle.me/FiQZh_cnxs.png"
 }
 """Image guide for linking UIDs in the embed"""
+HOYOLAB_LINKING_GUIDE = "https://cdn.alekeagle.me/dq3KhewfoY.png"
 
 ZX_GAME_TO_GPY_GAME: dict[Game, genshin.Game] = {
     Game.GENSHIN: genshin.Game.GENSHIN,

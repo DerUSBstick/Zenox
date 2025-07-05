@@ -23,6 +23,11 @@ class MongoDB:
     def users(self) -> collection.Collection:
         # Stores config for all users
         return self._DB["users"]
+    
+    @property
+    def accounts(self) -> collection.Collection:
+        # Stores linkable game accounts
+        return self._DB["accounts"]
 
     @property
     def const(self) -> collection.Collection:
