@@ -514,7 +514,8 @@ class SpecialProgram: # Update to only store data
 
 @dataclass
 class LinkingEntryTemplate:
-    method: Literal["UID"]
+    method: Literal["UID", "Hoyolab"]
+    hoyolab_id: str | None
     data: list[tuple[str, Game]]
     user_id: int
     started: datetime.datetime

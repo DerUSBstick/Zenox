@@ -4,11 +4,17 @@
 import discord
 import datetime
 import requests
+import asyncio
+import aiohttp
+import os
 from discord.ext import tasks
 from zenox.db.structures import LinkingEntryTemplate, UserConfig, GameAccountTemplate, DB
 from zenox.l10n import LocaleStr
 from zenox.static.embeds import DefaultEmbed
 from zenox.static.enums import Game
+from zenox.static.utils import generate_hoyolab_token, parse_cookie
+from zenox.bot.error_handler import get_error_embed
+from zenox.static.exceptions import HoyolabAPIError
 
 class LinkingCacheManager:
     REQUEST_URL = {
@@ -24,6 +30,8 @@ class LinkingCacheManager:
 
     def __init__(self):
         self._linkingCache: list[LinkingEntryTemplate] = []
+        self.queue: asyncio.Queue[LinkingEntryTemplate] = asyncio.Queue()
+        self.finalize_entries.start()
         self.check_entries.start()
 
     @property
@@ -67,6 +75,8 @@ class LinkingCacheManager:
         """Remove an entry from the linking cache by the Object"""
         self._linkingCache.remove(obj)
     
+
+    # Rework
     def check_uid(self, uid: str, game: Game, code: int) -> tuple[bool, str | None]:
         print(f"Checking UID: {uid} for game: {game}")
         """Verify a UID by checking it's signature for the code."""
@@ -89,6 +99,16 @@ class LinkingCacheManager:
             return False, None
         except:
             return False, "check_uid_unknown_error"
+    
+    @tasks.loop(seconds=10)
+    async def finalize_entries(self) -> None:
+        """Finalize entries in the linking cache."""
+        while not self.queue.empty():
+            entry = await self.queue.get()
+            if entry.method == "Hoyolab":
+                for uid, game in entry.data:
+                    print(uid, game)
+            
 
     @tasks.loop(seconds=15)
     async def check_entries(self) -> None:
@@ -109,7 +129,71 @@ class LinkingCacheManager:
                         view=None
                     )
                     self.remove_entry(entry)
+                elif entry.method == "Hoyolab":
+                    headers = {
+                        "accept": "application/json, text/plain, */*",
+                        "accept-encoding": "gzip, deflate, br, zstd",
+                        "accept-language": "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7",
+                        "content-type": "application/json",
+                        "origin": "https://www.hoyolab.com",
+                        "priority": "u=1, i",
+                        "referer": "https://www.hoyolab.com/",
+                        "sec-ch-ua": '"Google Chrome";v="137", "Chromium";v="137", "Not/A)Brand";v="24"',
+                        "sec-ch-ua-mobile": "?0",
+                        "sec-ch-ua-platform": '"Windows"',
+                        "sec-fetch-dest": "empty",
+                        "sec-fetch-mode": "cors",
+                        "sec-fetch-site": "same-site",
+                        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+                        "x-rpc-app_version": "3.10.0",
+                        "x-rpc-client_type": "4",
+                        "x-rpc-device_id": "3672d835-01ce-4a75-a65b-ea56abbfb3f8",
+                        "x-rpc-hour": "18",
+                        "x-rpc-language": "en-us",
+                        "x-rpc-lrsag": "",
+                        "x-rpc-page_info": '{"pageName":"","pageType":"","pageId":"","pageArrangement":"","gameId":""}',
+                        "x-rpc-page_name": "",
+                        "x-rpc-show-translated": "false",
+                        "x-rpc-source_info": '{"sourceName":"","sourceType":"","sourceId":"","sourceArrangement":"","sourceGameId":""}',
+                        "x-rpc-sys_version": "Windows NT 10.0",
+                        "x-rpc-timezone": "Europe/Berlin",
+                        "x-rpc-weekday": "7"
+                    }
+                    async with aiohttp.ClientSession(cookies=parse_cookie(os.getenv("HOYOLAB_COOKIES")), headers=headers) as session:
+                        response = await session.post(
+                            f"https://bbs-api-os.hoyolab.com/community/painter/wapi/user/full",
+                            timeout=5,
+                            json={"scene": 1, "uid": entry.hoyolab_id}
+                        )
+                        data = await response.json()
+                        if data["retcode"] == 10001:
+                            await generate_hoyolab_token()
+                            session.cookie_jar.update_cookies(parse_cookie(os.getenv("HOYOLAB_COOKIES")))
+                            response = await session.post(
+                                f"https://bbs-api-os.hoyolab.com/community/painter/wapi/user/full",
+                                timeout=5,
+                                json={"uid": entry.hoyolab_id}
+                            )
+                            data = await response.json()
+                        if response.status != 200 or data["retcode"] != 0:
+                            raise HoyolabAPIError
+                        if str(entry.code) in data["data"]["user_info"]["introduce"]:
+                            embed = DefaultEmbed(
+                                locale=entry.interaction.locale,
+                                title=LocaleStr(key="hoyolab_linking_embed_title.success"),
+                                description=LocaleStr(key="hoyolab_linking_embed_description.success")
+                            )
+                            await entry.interaction.followup.edit_message(
+                                message_id=entry.interaction.message.id,
+                                embed=embed,
+                                view=None
+                            )
+                            await self.queue.put(entry)
+                            self.remove_entry(entry)
+                            
+
                 elif entry.method == "UID":
+                    # Rework
                     # Unreachable UID check, because UID is not a method atm
                     url = self.REQUEST_URL[entry.data[0][1]].format(uid=entry.data[0][0])
                     try:
@@ -162,6 +246,14 @@ class LinkingCacheManager:
                         continue
                 print(f"Checking entry: {entry}")
             except Exception as e:
-                ...
+                embed, recognized = get_error_embed(e, entry.interaction.locale)
+                if not recognized:
+                    entry.interaction.client.capture_exception(e)
+                await entry.interaction.followup.edit_message(
+                    message_id=entry.interaction.message.id,
+                    embed=embed,
+                    view=None
+                )
+                self.remove_entry(entry)
 
 linking_cache = LinkingCacheManager()

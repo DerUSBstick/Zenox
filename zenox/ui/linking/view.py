@@ -138,6 +138,7 @@ class LinkingUI(View):
                     return
                 entry = LinkingEntryTemplate(
                     method="Hoyolab",
+                    hoyolab_id=hoyolab_id,
                     data=accounts,
                     user_id=interaction.user.id,
                     started=discord.utils.utcnow(),
@@ -152,7 +153,7 @@ class LinkingUI(View):
                 )
                 embed.add_field(
                     name=LocaleStr(key="hoyolab_linking_embed_field.hoyolab_id"),
-                    value=f"```\n********```",
+                    value=f"```\n{hoyolab_id}```",
                     inline=False
                 )
                 embed.add_field(
