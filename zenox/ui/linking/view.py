@@ -1,6 +1,7 @@
 import discord
 import aiohttp
 import os
+import random
 from discord import Locale, Member, User
 from typing import Literal
 from zenox.l10n import LocaleStr
@@ -151,7 +152,7 @@ class LinkingUI(View):
                     data=accounts,
                     user_id=interaction.user.id,
                     started=discord.utils.utcnow(),
-                    code=18461, # Placeholder code
+                    code=random.randint(10000, 99999),
                     interaction=interaction
                 )
 
@@ -249,7 +250,7 @@ class LinkingUI(View):
                 data=[(uid, game)],
                 user_id=interaction.user.id,
                 started=discord.utils.utcnow(),
-                code=18461,  # Placeholder code
+                code=18461, # random.randint(10000, 99999),
                 interaction=interaction
             )
             embed = DefaultEmbed(

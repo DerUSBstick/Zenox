@@ -27,6 +27,11 @@ class LinkingCacheManager:
         Game.STARRAIL: ["detailInfo", "signature"],
         Game.ZZZ: ["PlayerInfo", "SocialDetail", "Desc"]
     }
+    NICKNAME = {
+        Game.GENSHIN: ["playerInfo", "nickname"],
+        Game.STARRAIL: ["detailInfo", "nickname"],
+        Game.ZZZ: ["PlayerInfo", "SocialDetail", "ProfileDetail", "Nickname"]
+    }
 
     def __init__(self):
         self._linkingCache: list[LinkingEntryTemplate] = []
@@ -117,9 +122,13 @@ class LinkingCacheManager:
                                 raise EnkaAPIError(status_code=response.status)
                             if "owner" in response_json and response_json["owner"]:
                                 enka = AccountOwner(userhash=response_json["owner"]["hash"], username=response_json["owner"]["username"])
+                            nickname = response_json
+                            for key in self.NICKNAME[game]:
+                                nickname = nickname[key]
                             hlb = HoyolabAccount(hoyolab_id=entry.hoyolab_id)
                             account = GameAccountTemplate(
                                 uid=uid,
+                                username=nickname,
                                 game=game.value,
                                 user_id=entry.user_id,
                                 owner=enka,
@@ -237,6 +246,9 @@ class LinkingCacheManager:
                         if response.status != 200:
                             raise EnkaAPIError(status_code=response.status)
                         
+                        nickname = response_json
+                        for key in self.NICKNAME[game]:
+                            nickname = nickname[key]
                         signature = response_json
                         for key in self.SIGNATURE[game]:
                             signature = signature[key]
@@ -259,6 +271,7 @@ class LinkingCacheManager:
                                 enka = AccountOwner(userhash=response_json["owner"]["hash"], username=response_json["owner"]["username"])
                             account = GameAccountTemplate(
                                 uid=uid,
+                                username=nickname,
                                 game=game.value,
                                 user_id=entry.user_id,
                                 owner=enka,

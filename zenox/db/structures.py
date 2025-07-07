@@ -81,6 +81,8 @@ class GameAccount:
         if not gld:
             raise ValueError(f"GameAccount with uid {uid} and game {game} does not exist in the database.")
         self.uid: str = gld["uid"]
+        self.username: str = gld["username"]
+        self.public: bool = gld["public"]
         self.game: Game = Game(gld["game"])
         self.linked_date: datetime.datetime = parser.isoparse(gld["linked_date"])
         self.enka_owner: AccountOwner | None = AccountOwner(**gld["owner"]) if gld["owner"] else None
@@ -90,6 +92,8 @@ class GameAccount:
     def to_dict(self) -> dict[str, Any]:
         return {
             "uid": self.uid,
+            "username": self.username,
+            "public": self.public,
             "game": self.game.value,
             "linked_date": self.linked_date.isoformat(),
             "owner": self.enka_owner.to_dict() if self.enka_owner else None,
@@ -547,8 +551,10 @@ class LinkingEntryTemplate:
     interaction: discord.Interaction
 
 class GameAccountTemplate(GameAccount):
-    def __init__(self, uid: str, game: str, user_id: int, owner: AccountOwner | None = None, hoyolab: HoyolabAccount | None = None) -> None:
+    def __init__(self, uid: str, username: str, game: str, user_id: int, owner: AccountOwner | None = None, hoyolab: HoyolabAccount | None = None) -> None:
         self.uid: str = uid
+        self.username: str = username
+        self.public: bool = False
         self.game: Game = Game(game)
         self.linked_date: datetime.datetime = datetime.datetime.now(pytz.UTC)
         self.enka_owner: AccountOwner | None = owner

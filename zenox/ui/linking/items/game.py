@@ -17,6 +17,7 @@ class UIDInput(Modal):
                 placeholder=LocaleStr(key="linking_uid_input.placeholder"),
                 custom_id="uid_input",
                 required=True,
+                is_digit=True,
                 min_length=9,
                 max_length=10,
                 style=discord.TextStyle.short,
@@ -61,17 +62,3 @@ class GameSelector(Select["LinkingUI"]):
         uid = modal.uid_input.value
         
         await self.view.uid_linking(uid, Game(selected), interaction)
-
-        # link_code = random.randint(1000, 9999)
-        # link_code = 18461
-        # entry = LinkingEntryTemplate(
-        #     method=self.view.method,
-        #     uid=[uid],
-        #     game=self.view.game,
-        #     user_id=self.view.author.id,
-        #     started=discord.utils.utcnow(),
-        #     code=link_code,
-        #     interaction=interaction
-        # )
-        # await self.view.start_linking(entry)
-

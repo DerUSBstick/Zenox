@@ -16,7 +16,7 @@ class Link(commands.Cog):
         description=locale_str("Link your accounts to the bot", key="link_command_description")
     )
     @app_commands.user_install()
-    @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
+    @app_commands.allowed_contexts(guilds=False, dms=True, private_channels=False)
     async def link_command(self, interaction: discord.Interaction) -> Any:
         await interaction.response.defer(ephemeral=True, thinking=True)
 
@@ -40,6 +40,5 @@ class Link(commands.Cog):
         await view.start(interaction)
         view.message = await interaction.original_response()
     
-
 async def setup(client: Zenox) -> None:
     await client.add_cog(Link(client))
