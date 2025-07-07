@@ -50,7 +50,7 @@ class Dev(commands.GroupCog, group_name="dev"):
     )
     @app_commands.check(is_owner)
     async def stream_analytics(self, interaction: discord.Interaction[Zenox], game: Game, version: str):
-        await interaction.response.defer(thinking=True, ephemeral=True)
+        await interaction.response.send_message(f"Calculating Stream Analytics for `{game}` version `{version}`. This may take a while...", ephemeral=True)
         res = ANALYTICSDB.reminders.find_one({
             "game": game.value,
             "version": version,
@@ -96,13 +96,6 @@ class Dev(commands.GroupCog, group_name="dev"):
                 stats[event_status] += 1
             except:
                 stats["error"] += 1
-        embed = Embed(
-            locale=discord.Locale.american_english,
-            color=0x005fff,
-            title="Stream Analytics",
-            description=f"**Game:** `{game}`\n**Version:** `{version}`\n**Interested Count:** `{stats['interested_count']}`\n"
-        )
-        await interaction.followup.send(embed=embed)
         # Also store in DB
         ANALYTICSDB.reminders.insert_one({
             "type": "event_analytics",
