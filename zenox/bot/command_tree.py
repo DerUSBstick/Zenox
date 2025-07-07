@@ -8,7 +8,7 @@ class CommandTree(app_commands.CommandTree):
     async def on_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
         error = error.original if isinstance(error, app_commands.errors.CommandInvokeError) else error
 
-        if isinstance(error, app_commands.CheckFailure): # Test once without this return to see if capture_exception is working
+        if isinstance(error, app_commands.CheckFailure):
             return
         
         embed, recognized = get_error_embed(error, discord.Locale.american_english)

@@ -1,6 +1,7 @@
 import discord
 
 from zenox.static.embeds import ErrorEmbed
+from zenox.static.exceptions import ZenoxException
 from zenox.l10n import LocaleStr
 
 def get_error_embed(
@@ -9,6 +10,13 @@ def get_error_embed(
 ) -> tuple[discord.Embed, bool]:
     known = True
     embed = None
+
+    if isinstance(e, ExceptionGroup):
+        e = e.exceptions[0]
+    
+    if isinstance(e, ZenoxException):
+        embed = ErrorEmbed(locale=locale, title=e.title, description=e.message)
+        
 
     if embed is None:
         known = False

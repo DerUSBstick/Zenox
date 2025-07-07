@@ -33,6 +33,7 @@ class Zenox(commands.AutoShardedBot):
         self.db = DB
         self.log_webhook_url = os.getenv(f"LOGS_WEBHOOK_{env.upper()}")
         self.process = psutil.Process()
+        self.session: ClientSession = None
 
         super().__init__(
             command_prefix=commands.when_mentioned,
@@ -46,6 +47,7 @@ class Zenox(commands.AutoShardedBot):
         )
 
     async def setup_hook(self) -> None:
+        self.session = ClientSession()
         # Set Translator
         await self.tree.set_translator(AppCommandTranslator())
 
@@ -58,6 +60,11 @@ class Zenox(commands.AutoShardedBot):
                 print(f"Failed to load cog {cog_name!r}")
                 self.capture_exception(e)
         return await super().setup_hook()
+
+    async def close(self) -> None:
+        if self.session:
+            await self.session.close()
+        return await super().close()
     
     def capture_exception(self, e: Exception) -> None:
         if isinstance(e, discord.NotFound) and e.code == 10062:
