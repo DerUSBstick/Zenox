@@ -80,29 +80,6 @@ class LinkingCacheManager:
         """Remove an entry from the linking cache by the Object"""
         self._linkingCache.remove(obj)
     
-
-    # Rework
-    def check_uid(self, uid: str, game: Game, code: int) -> tuple[bool, str | None]:
-        """Verify a UID by checking it's signature for the code."""
-        url = self.REQUEST_URL[game].format(uid=uid)
-        try:
-            response = requests.get(url, timeout=5)
-            response_json = response.json()
-            if response.status_code != 200:
-                return False, f"enka_response.{response.status_code}"
-            
-            # Get the signature from the response
-            signature = response_json
-            for key in self.SIGNATURE[game]:
-                signature = signature[key]
-                
-            if str(code) in signature:
-                return True, None
-
-            return False, None
-        except:
-            return False, "check_uid_unknown_error"
-    
     @tasks.loop(seconds=10)
     async def finalize_entries(self) -> None:
         """Finalize entries in the linking cache."""
@@ -158,9 +135,6 @@ class LinkingCacheManager:
                     )
                 except discord.NotFound:
                     pass
-
-                            
-            
 
     @tasks.loop(seconds=15)
     async def check_entries(self) -> None:
