@@ -44,15 +44,17 @@ class LinkingUI(View):
         )
     
     async def hoyolab_linking(self, hoyolab_id: str, interaction: discord.Interaction[Zenox]) -> None:
-        """Perfoms some Checks and starts the linking process for Hoyolab."""
+        # """Perfoms some Checks and starts the linking process for Hoyolab."""
         try:
-            headers = {
-                "x-rpc-language": "en-us",
-                "x-rpc-lang": "en-us",
-            }
-            async with aiohttp.ClientSession(cookies=parse_cookie(os.getenv("HOYOLAB_COOKIES")), headers=headers) as session:
+                headers = {
+                    "x-rpc-language": "en-us",
+                    "x-rpc-lang": "en-us",
+                }
+                session: aiohttp.ClientSession = interaction.client.session
                 response = await session.get(
-                    f"https://bbs-api-os.hoyolab.com/game_record/card/wapi/getGameRecordCard?uid={hoyolab_id}"
+                    f"https://bbs-api-os.hoyolab.com/game_record/card/wapi/getGameRecordCard?uid={hoyolab_id}",
+                    cookies=parse_cookie(os.getenv("HOYOLAB_COOKIES")),
+                    headers=headers
                 )
                 data = await response.json()
                 if data["retcode"] == 10001: # not logged in

@@ -7,7 +7,6 @@ from aiohttp import ClientSession
 from loguru import logger
 import psutil
 from pathlib import Path
-from aiohttp import ClientSession
 
 from.command_tree import CommandTree
 from ..db.mongodb import DB

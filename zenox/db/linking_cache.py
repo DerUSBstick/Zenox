@@ -112,9 +112,9 @@ class LinkingCacheManager:
             entry = await self.queue.get()
             if entry.method == "Hoyolab":
                 for uid, game in entry.data:
-                    async with aiohttp.ClientSession() as session:
-                        url = self.REQUEST_URL[game].format(uid=uid)
-                        try:
+                    session: aiohttp.ClientSession = entry.interaction.client.session
+                    url = self.REQUEST_URL[game].format(uid=uid)
+                    try:
                             enka = None
                             response = await session.get(url, timeout=5)
                             response_json = await response.json()
@@ -136,8 +136,16 @@ class LinkingCacheManager:
                             )
                             user = UserConfig(userID=entry.user_id)
                             user.addAccount(account)
-                        except Exception as e:
-                            print(f"Error finalizing entry for {uid} in {game}: {e}")
+                    except Exception as e:
+                        entry.interaction.client.capture_exception(e)
+                        embed = get_error_embed(e=e, locale=entry.interaction.locale)
+                        try:
+                            await entry.interaction.followup.edit_message(
+                                message_id=entry.interaction.message.id,
+                                embed=embed,
+                                view=None
+                            )
+                        except discord.NotFound:
                             pass
                 embed = DefaultEmbed(
                     locale=entry.interaction.locale,
@@ -205,81 +213,83 @@ class LinkingCacheManager:
                         "x-rpc-timezone": "Europe/Berlin",
                         "x-rpc-weekday": "7"
                     }
-                    async with aiohttp.ClientSession(cookies=parse_cookie(os.getenv("HOYOLAB_COOKIES")), headers=headers) as session:
+                    session: aiohttp.ClientSession = entry.interaction.client.session
+                    response = await session.post(
+                        f"https://bbs-api-os.hoyolab.com/community/painter/wapi/user/full",
+                        timeout=5,
+                        json={"scene": 1, "uid": entry.hoyolab_id},
+                        cookies=parse_cookie(os.getenv("HOYOLAB_COOKIES")),
+                        headers=headers
+                    )
+                    data = await response.json()
+                    if data["retcode"] == 10001:
+                        await generate_hoyolab_token()
+                        session.cookie_jar.update_cookies(parse_cookie(os.getenv("HOYOLAB_COOKIES")))
                         response = await session.post(
                             f"https://bbs-api-os.hoyolab.com/community/painter/wapi/user/full",
                             timeout=5,
-                            json={"scene": 1, "uid": entry.hoyolab_id}
+                            json={"uid": entry.hoyolab_id}
                         )
                         data = await response.json()
-                        if data["retcode"] == 10001:
-                            await generate_hoyolab_token()
-                            session.cookie_jar.update_cookies(parse_cookie(os.getenv("HOYOLAB_COOKIES")))
-                            response = await session.post(
-                                f"https://bbs-api-os.hoyolab.com/community/painter/wapi/user/full",
-                                timeout=5,
-                                json={"uid": entry.hoyolab_id}
-                            )
-                            data = await response.json()
-                        if response.status != 200 or data["retcode"] != 0:
-                            raise HoyolabAPIError
-                        if str(entry.code) in data["data"]["user_info"]["introduce"]:
-                            embed = DefaultEmbed(
-                                locale=entry.interaction.locale,
-                                title=LocaleStr(key="hoyolab_linking_embed_title.success"),
-                                description=LocaleStr(key="hoyolab_linking_embed_description.success")
-                            )
-                            await entry.interaction.followup.edit_message(
-                                message_id=entry.interaction.message.id,
-                                embed=embed,
-                                view=None
-                            )
-                            await self.queue.put(entry)
-                            self.remove_entry(entry)
+                    if response.status != 200 or data["retcode"] != 0:
+                        raise HoyolabAPIError
+                    if str(entry.code) in data["data"]["user_info"]["introduce"]:
+                        embed = DefaultEmbed(
+                            locale=entry.interaction.locale,
+                            title=LocaleStr(key="hoyolab_linking_embed_title.success"),
+                            description=LocaleStr(key="hoyolab_linking_embed_description.success")
+                        )
+                        await entry.interaction.followup.edit_message(
+                            message_id=entry.interaction.message.id,
+                            embed=embed,
+                            view=None
+                        )
+                        await self.queue.put(entry)
+                        self.remove_entry(entry)
                 elif entry.method == "UID":
                     uid, game = entry.data[0]
 
                     url = self.REQUEST_URL[game].format(uid=uid)
-                    async with aiohttp.ClientSession() as session:
-                        response = await session.get(url, timeout=5)
-                        response_json = await response.json()
-                        if response.status != 200:
-                            raise EnkaAPIError(status_code=response.status)
-                        
-                        nickname = response_json
-                        for key in self.NICKNAME[game]:
-                            nickname = nickname[key]
-                        signature = response_json
-                        for key in self.SIGNATURE[game]:
-                            signature = signature[key]
-                        if str(entry.code) in signature:
-                            embed = DefaultEmbed(
-                                locale=entry.interaction.locale,
-                                title=LocaleStr(key="uid_linking_embed_title.success"),
-                                description=LocaleStr(key="uid_linking_embed_description.success")
-                            )
-                            await entry.interaction.followup.edit_message(
-                                message_id=entry.interaction.message.id,
-                                embed=embed,
-                                view=None
-                            )
+                    session: aiohttp.ClientSession = entry.interaction.client.session
+                    response = await session.get(url, timeout=5)
+                    response_json = await response.json()
+                    if response.status != 200:
+                        raise EnkaAPIError(status_code=response.status)
+                    
+                    nickname = response_json
+                    for key in self.NICKNAME[game]:
+                        nickname = nickname[key]
+                    signature = response_json
+                    for key in self.SIGNATURE[game]:
+                        signature = signature[key]
+                    if str(entry.code) in signature:
+                        embed = DefaultEmbed(
+                            locale=entry.interaction.locale,
+                            title=LocaleStr(key="uid_linking_embed_title.success"),
+                            description=LocaleStr(key="uid_linking_embed_description.success")
+                        )
+                        await entry.interaction.followup.edit_message(
+                            message_id=entry.interaction.message.id,
+                            embed=embed,
+                            view=None
+                        )
                             
-                            # Don't need queue here
-                            enka = None
-                            hlb = HoyolabAccount(hoyolab_id=entry.hoyolab_id)
-                            if "owner" in response_json and response_json["owner"]:
-                                enka = AccountOwner(userhash=response_json["owner"]["hash"], username=response_json["owner"]["username"])
-                            account = GameAccountTemplate(
-                                uid=uid,
-                                username=nickname,
-                                game=game.value,
-                                user_id=entry.user_id,
-                                owner=enka,
-                                hoyolab=hlb
-                            )
-                            user = UserConfig(userID=entry.user_id)
-                            user.addAccount(account)
-                            self.remove_entry(entry)
+                        # Don't need queue here
+                        enka = None
+                        hlb = HoyolabAccount(hoyolab_id=entry.hoyolab_id)
+                        if "owner" in response_json and response_json["owner"]:
+                            enka = AccountOwner(userhash=response_json["owner"]["hash"], username=response_json["owner"]["username"])
+                        account = GameAccountTemplate(
+                            uid=uid,
+                            username=nickname,
+                            game=game.value,
+                            user_id=entry.user_id,
+                            owner=enka,
+                            hoyolab=hlb
+                        )
+                        user = UserConfig(userID=entry.user_id)
+                        user.addAccount(account)
+                        self.remove_entry(entry)
             except Exception as e:
                 embed, recognized = get_error_embed(e, entry.interaction.locale)
                 if not recognized:
