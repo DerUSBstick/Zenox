@@ -49,7 +49,6 @@ class GameSelector(Select["LinkingUI"]):
 
     async def callback(self, interaction: discord.Interaction) -> Any:
         selected = self.values[0]
-        self.view.game = Game(selected)
 
 
         modal = UIDInput()
@@ -61,16 +60,18 @@ class GameSelector(Select["LinkingUI"]):
         
         uid = modal.uid_input.value
         
+        await self.view.uid_linking(uid, Game(selected), interaction)
+
         # link_code = random.randint(1000, 9999)
-        link_code = 18461
-        entry = LinkingEntryTemplate(
-            method=self.view.method,
-            uid=[uid],
-            game=self.view.game,
-            user_id=self.view.author.id,
-            started=discord.utils.utcnow(),
-            code=link_code,
-            interaction=interaction
-        )
-        await self.view.start_linking(entry)
+        # link_code = 18461
+        # entry = LinkingEntryTemplate(
+        #     method=self.view.method,
+        #     uid=[uid],
+        #     game=self.view.game,
+        #     user_id=self.view.author.id,
+        #     started=discord.utils.utcnow(),
+        #     code=link_code,
+        #     interaction=interaction
+        # )
+        # await self.view.start_linking(entry)
 

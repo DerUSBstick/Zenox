@@ -1,10 +1,9 @@
-import  discord
+import discord
 from discord import app_commands
 from discord.app_commands import locale_str
 from discord.ext import commands
 from typing import Any
 from ..bot.bot import Zenox
-from ..static.utils import ephemeral
 from zenox.ui.linking.view import LinkingUI
 from zenox.db.linking_cache import linking_cache
 
@@ -17,9 +16,9 @@ class Link(commands.Cog):
         description=locale_str("Link your accounts to the bot", key="link_command_description")
     )
     @app_commands.user_install()
-    @app_commands.allowed_contexts(guilds=False, dms=True, private_channels=True)
+    @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
     async def link_command(self, interaction: discord.Interaction) -> Any:
-        await interaction.response.defer(ephemeral=ephemeral(interaction), thinking=True)
+        await interaction.response.defer(ephemeral=True, thinking=True)
 
         if linking_cache.is_user_linked(interaction.user.id):
             await interaction.followup.send(

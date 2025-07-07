@@ -13,7 +13,7 @@ from zenox.db.linking_cache import linking_cache
 from ..components import View
 from ...static.embeds import DefaultEmbed
 from .items.method import MethodSelector
-from zenox.db.structures import LinkingEntryTemplate
+from zenox.db.structures import LinkingEntryTemplate, UserConfig
 
 
 class LinkingUI(View):
@@ -24,9 +24,6 @@ class LinkingUI(View):
             locale: Locale
     ):
         super().__init__(author=author, locale=locale)
-        self.methods: list[str] = ["UID", "Hoyolab"]
-        self.method: Literal["UID", "Hoyolab"]
-        self.game: Game
     
     def _add_items(self) -> None:
         self.add_item(MethodSelector())
@@ -136,6 +133,18 @@ class LinkingUI(View):
                         view=None
                     )
                     return
+                elif len(UserConfig(interaction.user.id).accounts) + len(accounts) > 10:
+                    embed = DefaultEmbed(
+                        locale=self.locale,
+                        title=LocaleStr(key="hoyolab_linking_embed_title.error"),
+                        description=LocaleStr(key="hoyolab_linking_embed_description.max_accounts_reached")
+                    )
+                    await interaction.followup.edit_message(
+                        message_id=interaction.message.id,
+                        embed=embed,
+                        view=None
+                    )
+                    return
                 entry = LinkingEntryTemplate(
                     method="Hoyolab",
                     hoyolab_id=hoyolab_id,
@@ -157,7 +166,7 @@ class LinkingUI(View):
                     inline=False
                 )
                 embed.add_field(
-                    name=LocaleStr(key="hoyolab_linking_embed_field.code"),
+                    name=LocaleStr(key="unique_code"),
                     value=f"```\n{entry.code}```",
                     inline=False
                 )
@@ -171,7 +180,7 @@ class LinkingUI(View):
                     inline=False
                 )
                 embed.add_field(
-                    name=LocaleStr(key="hoyolab_linking_embed_field.expires"),
+                    name=LocaleStr(key="expires_in"),
                     value=f"<t:{int(entry.started.timestamp()) + 60 * 15}:R>",
                     inline=False
                 )
@@ -194,55 +203,88 @@ class LinkingUI(View):
         except Exception as e:
             interaction.client.capture_exception(e)
 
-        
-
-    async def start_linking(self, entry: LinkingEntryTemplate) -> None:
-        """Start the linking process for the given entry."""
-        embed = DefaultEmbed(
-            locale=self.locale,
-            title=LocaleStr(key="linking_embed_title.started"),
-            description=LocaleStr(key="linking_embed_description.started")
-        )
-        
-        embed.add_field(
-            name=LocaleStr(key="linking_embed_field.code"),
-            value=f"```\n{entry.code}```",
-            inline=False
-        )
-        
-        if entry.method == "UID":
-            # IF the method is UID, the list has only one UID
+    async def uid_linking(self, uid: str, game: Game, interaction: discord.Interaction[Zenox]) -> None:
+        """Starts the linking process for UID."""
+        try:
+            is_linked = linking_cache.uid_is_already_linked(uid=uid, game=game, user_id=interaction.user.id)
+            if is_linked == 1:
+                embed = DefaultEmbed(
+                    locale=self.locale,
+                    title=LocaleStr(key="uid_linking_embed_title.error"),
+                    description=LocaleStr(key="uid_linking_embed_description.linked_someone_else")
+                )
+                await interaction.followup.edit_message(
+                    message_id=interaction.message.id,
+                    embed=embed,
+                    view=None
+                )
+                return
+            elif is_linked == 2:
+                embed = DefaultEmbed(
+                    locale=self.locale,
+                    title=LocaleStr(key="uid_linking_embed_title.error"),
+                    description=LocaleStr(key="uid_linking_embed_description.already_linked")
+                )
+                await interaction.followup.edit_message(
+                    message_id=interaction.message.id,
+                    embed=embed,
+                    view=None
+                )
+                return
+            if linking_cache.is_uid_linking([(uid, game)]):
+                embed = DefaultEmbed(
+                    locale=self.locale,
+                    title=LocaleStr(key="uid_linking_embed_title.error"),
+                    description=LocaleStr(key="uid_linking_embed_description.being_linked")
+                )
+                await interaction.followup.edit_message(
+                    message_id=interaction.message.id,
+                    embed=embed,
+                    view=None
+                )
+                return
+            entry = LinkingEntryTemplate(
+                method="UID",
+                hoyolab_id=None,
+                data=[(uid, game)],
+                user_id=interaction.user.id,
+                started=discord.utils.utcnow(),
+                code=18461,  # Placeholder code
+                interaction=interaction
+            )
+            embed = DefaultEmbed(
+                locale=self.locale,
+                title=LocaleStr(key="uid_linking_embed_title.started"),
+                description=LocaleStr(key="uid_linking_embed_description.started")
+            )
             embed.add_field(
-                name=LocaleStr(key="linking_embed_field.uid"),
-                value=GAME_TO_EMOJI[entry.game] + f" {entry.uid[0]}",
+                name=LocaleStr(key="uid_linking_embed_field.uid"),
+                value=f"{GAME_TO_EMOJI[game]} {uid}",
                 inline=False
             )
-        
-        embed.add_field(
-            # Expires in
-            name=LocaleStr(key="linking_embed_field.expires"),
-            # Value using discord t:TIME:R format
-            value=f"<t:{int(entry.started.timestamp()) + 60 * 15}:R>",
-            inline=False
-        )
-
-        # How to complete
-        if entry.method == "UID":
             embed.add_field(
-                name=LocaleStr(key="linking_embed_field.how_to_complete"),
-                value=LocaleStr(key=f"linking_embed_description.how_to_complete"),
+                name=LocaleStr(key="unique_code"),
+                value=f"```\n{entry.code}```",
                 inline=False
             )
-            embed.set_image(
-                url=LINKING_IMAGE_GUIDE[entry.game]
+            embed.add_field(
+                name=LocaleStr(key="expires_in"),
+                value=f"<t:{int(entry.started.timestamp()) + 60 * 15}:R>",
+                inline=False
             )
-        embed.set_footer(
-            text=LocaleStr(key="linking_embed_footer")
-        )
-        linking_cache.add_entry(entry)
-        await entry.interaction.followup.edit_message(
-            message_id=entry.interaction.message.id,
-            embed=embed,
-            view=None
-        )
-        self.message = None
+            embed.add_field(
+                name=LocaleStr(key="uid_linking_embed_field.how_to_complete"),
+                value=LocaleStr(key="uid_linking_embed_description.how_to_complete"),
+                inline=False
+            )
+            embed.set_image(url=LINKING_IMAGE_GUIDE[game])
+            embed.set_footer(text=LocaleStr(key="uid_linking_embed_footer"))
+            linking_cache.add_entry(entry)
+            await interaction.followup.edit_message(
+                message_id=interaction.message.id,
+                embed=embed,
+                view=None
+            )
+            self.message = None
+        except Exception as e:
+            interaction.client.capture_exception(e)

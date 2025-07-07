@@ -59,10 +59,21 @@ class AccountOwner:
     def __init__(self, userhash: str, username: str) -> None:
         self.userhash = userhash
         self.username: str = username
+    
+    def to_dict(self) -> dict[str, str]:
+        return {
+            "userhash": self.userhash,
+            "username": self.username
+        }
 
 class HoyolabAccount:
     def __init__(self, hoyolab_id) -> None:
         self.hoyolab_id: str = hoyolab_id
+    
+    def to_dict(self) -> dict[str, str]:
+        return {
+            "hoyolab_id": self.hoyolab_id
+        }
 
 class GameAccount:
     def __init__(self, uid: str, game: str) -> None:
@@ -75,6 +86,16 @@ class GameAccount:
         self.enka_owner: AccountOwner | None = AccountOwner(**gld["owner"]) if gld["owner"] else None
         self.hoyolab_owner: HoyolabAccount | None = HoyolabAccount(**gld["hoyolab"]) if gld["hoyolab"] else None
         self.user_id: int = gld["user_id"]
+    
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "uid": self.uid,
+            "game": self.game.value,
+            "linked_date": self.linked_date.isoformat(),
+            "owner": self.enka_owner.to_dict() if self.enka_owner else None,
+            "hoyolab": self.hoyolab_owner.to_dict() if self.hoyolab_owner else None,
+            "user_id": self.user_id
+        }
 
 class UserSettings:
     def __init__(self, settings: dict[str, str | bool]) -> None:
@@ -123,7 +144,8 @@ class UserConfig:
                     "language": "en-US",
                     "dark_mode": True,
                     "dyk": True
-                }
+                },
+                "accounts": []
             }
         )
     def _update_val(self, key: str, value: any, operator: str = "$set") -> None:
@@ -144,13 +166,15 @@ class UserConfig:
         if not isinstance(account, GameAccount):
             raise TypeError("account must be an instance of GameAccount")
         self.accounts.append(account)
-        DB.users.update_one({"id": self.id}, {"$push": {"accounts": account.__dict__}})
+        DB.accounts.insert_one(account.to_dict())
+        DB.users.update_one({"id": self.id}, {"$push": {"accounts": {"uid": account.uid, "game": account.game.value}}})
 
     def removeAccount(self, account: GameAccount) -> None:
         """Remove a game account from the user config and .accounts ."""
         if not isinstance(account, GameAccount):
             raise TypeError("account must be an instance of GameAccount")
         self.accounts.remove(account)
+        DB.accounts.delete_one({"uid": account.uid, "game": account.game.value})
         DB.users.update_one({"id": self.id}, {"$pull": {"accounts": {"uid": account.uid, "game": account.game.value}}})
     
 
@@ -524,7 +548,6 @@ class LinkingEntryTemplate:
 
 class GameAccountTemplate(GameAccount):
     def __init__(self, uid: str, game: str, user_id: int, owner: AccountOwner | None = None, hoyolab: HoyolabAccount | None = None) -> None:
-        super().__init__(uid, game)
         self.uid: str = uid
         self.game: Game = Game(game)
         self.linked_date: datetime.datetime = datetime.datetime.now(pytz.UTC)

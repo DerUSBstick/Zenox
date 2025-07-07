@@ -8,19 +8,19 @@ import asyncio
 import aiohttp
 import os
 from discord.ext import tasks
-from zenox.db.structures import LinkingEntryTemplate, UserConfig, GameAccountTemplate, DB
+from zenox.db.structures import LinkingEntryTemplate, UserConfig, GameAccountTemplate, DB, AccountOwner, HoyolabAccount
 from zenox.l10n import LocaleStr
 from zenox.static.embeds import DefaultEmbed
 from zenox.static.enums import Game
 from zenox.static.utils import generate_hoyolab_token, parse_cookie
 from zenox.bot.error_handler import get_error_embed
-from zenox.static.exceptions import HoyolabAPIError
+from zenox.static.exceptions import HoyolabAPIError, EnkaAPIError
 
 class LinkingCacheManager:
     REQUEST_URL = {
-        Game.GENSHIN: "https://enka.network/api/uid/{uid}",
-        Game.STARRAIL: "https://enka.network/api/hsr/uid/{uid}",
-        Game.ZZZ: "https://enka.network/api/zzz/uid/{uid}",
+        Game.GENSHIN: "https://enka.network/api/uid/{uid}?info",
+        Game.STARRAIL: "https://enka.network/api/hsr/uid/{uid}?info",
+        Game.ZZZ: "https://enka.network/api/zzz/uid/{uid}?info",
     }
     SIGNATURE = {
         Game.GENSHIN: ["playerInfo", "signature"],
@@ -45,7 +45,7 @@ class LinkingCacheManager:
 
     def uid_is_already_linked(self, uid: str, game: Game, user_id: int) -> int:
         """0 = Not linked; 1 = Linked to someone else; 2 = Linked to user"""
-        doc = DB.accounts.find_one({"uid": uid, "game": game.value, "user_id": user_id})
+        doc = DB.accounts.find_one({"uid": uid, "game": game.value})
         if not doc:
             return 0
         if doc["user_id"] != user_id:
@@ -107,7 +107,44 @@ class LinkingCacheManager:
             entry = await self.queue.get()
             if entry.method == "Hoyolab":
                 for uid, game in entry.data:
-                    print(uid, game)
+                    async with aiohttp.ClientSession() as session:
+                        url = self.REQUEST_URL[game].format(uid=uid)
+                        try:
+                            enka = None
+                            response = await session.get(url, timeout=5)
+                            response_json = await response.json()
+                            if response.status != 200:
+                                raise EnkaAPIError(status_code=response.status)
+                            if "owner" in response_json and response_json["owner"]:
+                                enka = AccountOwner(userhash=response_json["owner"]["hash"], username=response_json["owner"]["username"])
+                            hlb = HoyolabAccount(hoyolab_id=entry.hoyolab_id)
+                            account = GameAccountTemplate(
+                                uid=uid,
+                                game=game.value,
+                                user_id=entry.user_id,
+                                owner=enka,
+                                hoyolab=hlb
+                            )
+                            user = UserConfig(userID=entry.user_id)
+                            user.addAccount(account)
+                        except Exception as e:
+                            print(f"Error finalizing entry for {uid} in {game}: {e}")
+                            pass
+                embed = DefaultEmbed(
+                    locale=entry.interaction.locale,
+                    title=LocaleStr(key="hoyolab_linking_embed_title.finished"),
+                    description=LocaleStr(key="hoyolab_linking_embed_description.finished")
+                )
+                try:
+                    await entry.interaction.followup.edit_message(
+                        message_id=entry.interaction.message.id,
+                        embed=embed,
+                        view=None
+                    )
+                except discord.NotFound:
+                    pass
+
+                            
             
 
     @tasks.loop(seconds=15)
@@ -116,7 +153,7 @@ class LinkingCacheManager:
         print("Checking entries in the linking cache...")
         for entry in self._linkingCache:
             try:
-                if entry.started < discord.utils.utcnow() - datetime.timedelta(minutes=2):
+                if entry.started < discord.utils.utcnow() - datetime.timedelta(minutes=15):
                     # Remove the entry if it is older than 15 minutes
                     embed = DefaultEmbed(
                         locale=entry.interaction.locale,
@@ -190,61 +227,46 @@ class LinkingCacheManager:
                             )
                             await self.queue.put(entry)
                             self.remove_entry(entry)
-                            
-
                 elif entry.method == "UID":
-                    # Rework
-                    # Unreachable UID check, because UID is not a method atm
-                    url = self.REQUEST_URL[entry.data[0][1]].format(uid=entry.data[0][0])
-                    try:
-                        response = requests.get(url, timeout=5)
-                        response_json = response.json()
-                        if response.status_code != 200:
-                            embed = DefaultEmbed(
-                                locale=entry.interaction.locale,
-                                title=LocaleStr(key="linking_embed_title.error"),
-                                description=LocaleStr(key="linking_embed_description.error", error=f"enka_response.{response.status_code}")
-                            )
-                            await entry.interaction.followup.edit_message(
-                                message_id=entry.interaction.message.id,
-                                embed=embed,
-                                view=None
-                            )
-                            self.remove_entry(entry)
-                            continue
+                    uid, game = entry.data[0]
 
+                    url = self.REQUEST_URL[game].format(uid=uid)
+                    async with aiohttp.ClientSession() as session:
+                        response = await session.get(url, timeout=5)
+                        response_json = await response.json()
+                        if response.status != 200:
+                            raise EnkaAPIError(status_code=response.status)
+                        
                         signature = response_json
-                        for key in self.SIGNATURE[entry.data[0][1]]:
+                        for key in self.SIGNATURE[game]:
                             signature = signature[key]
-                        print(f"Signature for UID {entry.data[0][0]}: {signature}")
                         if str(entry.code) in signature:
                             embed = DefaultEmbed(
                                 locale=entry.interaction.locale,
-                                title=LocaleStr(key="linking_embed_title.success"),
-                                description=LocaleStr(key="linking_embed_description.success")
+                                title=LocaleStr(key="uid_linking_embed_title.success"),
+                                description=LocaleStr(key="uid_linking_embed_description.success")
                             )
                             await entry.interaction.followup.edit_message(
                                 message_id=entry.interaction.message.id,
                                 embed=embed,
                                 view=None
                             )
+                            
+                            # Don't need queue here
+                            enka = None
+                            hlb = HoyolabAccount(hoyolab_id=entry.hoyolab_id)
+                            if "owner" in response_json and response_json["owner"]:
+                                enka = AccountOwner(userhash=response_json["owner"]["hash"], username=response_json["owner"]["username"])
+                            account = GameAccountTemplate(
+                                uid=uid,
+                                game=game.value,
+                                user_id=entry.user_id,
+                                owner=enka,
+                                hoyolab=hlb
+                            )
+                            user = UserConfig(userID=entry.user_id)
+                            user.addAccount(account)
                             self.remove_entry(entry)
-                            continue
-                    except Exception as e:
-                        print(f"Error checking UID {entry.data[0][0]}: {e}")
-                        embed = DefaultEmbed(
-                            locale=entry.interaction.locale,
-                            title=LocaleStr(key="linking_embed_title.error"),
-                            description=LocaleStr(key="check_uid_unknown_error")
-                        )
-                        await entry.interaction.followup.edit_message(
-                            message_id=entry.interaction.message.id,
-                            embed=embed,
-                            view=None
-                        )
-                        self.remove_entry(entry)
-                        continue
-                print(f"Checking entry: {entry}")
             except Exception as e:
                 embed, recognized = get_error_embed(e, entry.interaction.locale)
                 if not recognized:
