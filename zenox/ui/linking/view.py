@@ -252,7 +252,7 @@ class LinkingUI(View):
                 data=[(uid, game)],
                 user_id=interaction.user.id,
                 started=discord.utils.utcnow(),
-                code=18461, # random.randint(10000, 99999),
+                code=random.randint(10000, 99999),
                 interaction=interaction
             )
             embed = DefaultEmbed(
