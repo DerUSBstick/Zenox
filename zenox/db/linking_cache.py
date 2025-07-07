@@ -83,13 +83,11 @@ class LinkingCacheManager:
 
     # Rework
     def check_uid(self, uid: str, game: Game, code: int) -> tuple[bool, str | None]:
-        print(f"Checking UID: {uid} for game: {game}")
         """Verify a UID by checking it's signature for the code."""
         url = self.REQUEST_URL[game].format(uid=uid)
         try:
             response = requests.get(url, timeout=5)
             response_json = response.json()
-            print(response.json(), response.status_code)
             if response.status_code != 200:
                 return False, f"enka_response.{response.status_code}"
             
@@ -167,7 +165,6 @@ class LinkingCacheManager:
     @tasks.loop(seconds=15)
     async def check_entries(self) -> None:
         """Check every entry in the cache for various conditions."""
-        print("Checking entries in the linking cache...")
         for entry in self._linkingCache:
             try:
                 if entry.started < discord.utils.utcnow() - datetime.timedelta(minutes=15):
