@@ -3,6 +3,9 @@ from discord import app_commands
 from discord.app_commands import locale_str
 from discord.ext import commands
 from typing import Any
+from zenox.db.mongodb import DB
+from zenox.l10n import LocaleStr
+from zenox.static.embeds import DefaultEmbed
 from ..bot.bot import Zenox
 from zenox.ui.linking.view import LinkingUI
 from zenox.db.linking_cache import linking_cache
@@ -18,6 +21,14 @@ class Link(commands.Cog):
     @app_commands.user_install()
     @app_commands.allowed_contexts(guilds=False, dms=True, private_channels=False)
     async def link_command(self, interaction: discord.Interaction) -> Any:
+        doc = DB.users.find_one({"id": interaction.user.id})
+        if not doc:
+            embed = DefaultEmbed(
+                locale=interaction.locale,
+                title=LocaleStr(key="alpha_feature_not_whitelisted.title"),
+                description=LocaleStr(key="alpha_feature_not_whitelisted.description")
+            )
+            return await interaction.response.send_message(embed=embed, ephemeral=True)
         await interaction.response.defer(ephemeral=True, thinking=True)
 
         if linking_cache.is_user_linked(interaction.user.id):

@@ -3,6 +3,7 @@ from discord import app_commands
 from discord.app_commands import locale_str
 from discord.ext import commands
 from zenox.db.structures import UserConfig
+from zenox.db.mongodb import DB
 from zenox.l10n import LocaleStr
 from zenox.static.embeds import DefaultEmbed
 from typing import Any
@@ -20,6 +21,14 @@ class Accounts(commands.Cog):
     @app_commands.user_install()
     @app_commands.allowed_contexts(guilds=False, dms=True, private_channels=False)
     async def accounts_command(self, interaction: discord.Interaction) -> Any:
+        doc = DB.users.find_one({"id": interaction.user.id})
+        if not doc:
+            embed = DefaultEmbed(
+                locale=interaction.locale,
+                title=LocaleStr(key="alpha_feature_not_whitelisted.title"),
+                description=LocaleStr(key="alpha_feature_not_whitelisted.description")
+            )
+            return await interaction.response.send_message(embed=embed, ephemeral=True)
         user = UserConfig(interaction.user.id)
         if not user.accounts:
             embed = DefaultEmbed(

@@ -9,7 +9,7 @@ from discord.ext import commands
 import datetime, random, time
 from ..bot.bot import Zenox
 from ..db.mongodb import DB, ANALYTICSDB, HOYOVERSEDB
-from ..db.structures import EventReminder, GuildConfig, EventReminderConfig
+from ..db.structures import EventReminder, GuildConfig, EventReminderConfig, UserConfig
 from ..static.constants import ZENOX_LOCALES, HOYO_OFFICIAL_CHANNELS, _supportCache as _cache
 from ..static.enums import Game
 from ..static.embeds import Embed
@@ -27,6 +27,22 @@ class Dev(commands.GroupCog, group_name="dev"):
     # https://github.com/Rapptz/discord.py/discussions/9161
     def is_owner(i: discord.Interaction):
         return i.user.id == 585834029484343298
+    
+    @app_commands.command(
+        name=locale_str("create_user"),
+        description=locale_str("Create a User in the Database")
+    )
+    @app_commands.check(is_owner)
+    async def create_user(self, interaction: discord.Interaction[Zenox], userid: str):
+        userid = int(userid)
+        await interaction.response.defer(thinking=True, ephemeral=True)
+        if DB.users.find_one({"id": userid}):
+            return await interaction.followup.send(f"User `{userid}` already exists in the database", ephemeral=True)
+        
+        user = UserConfig(userid)
+
+        return await interaction.followup.send(f"User created successfully", ephemeral=True)
+
     # A Command that iterates over all created events (parameter game and version) and saves their interested counts for analytic purposes
     @app_commands.command(
         name=locale_str("stream_analytics"),
