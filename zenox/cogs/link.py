@@ -4,6 +4,7 @@ from discord.app_commands import locale_str
 from discord.ext import commands
 from typing import Any
 from zenox.db.mongodb import DB
+from zenox.db.structures import GuildConfig, UserConfig
 from zenox.l10n import LocaleStr
 from zenox.static.embeds import DefaultEmbed
 from ..bot.bot import Zenox
@@ -19,10 +20,10 @@ class Link(commands.Cog):
         description=locale_str("Link your accounts to the bot", key="link_command_description")
     )
     @app_commands.user_install()
-    @app_commands.allowed_contexts(guilds=False, dms=True, private_channels=False)
+    @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=False)
     async def link_command(self, interaction: discord.Interaction) -> Any:
         doc = DB.users.find_one({"id": interaction.user.id})
-        if not doc:
+        if (not doc and interaction.guild is not None) or ("PARTNER_GUILD" not in GuildConfig(interaction.guild.id).features):
             embed = DefaultEmbed(
                 locale=interaction.locale,
                 title=LocaleStr(key="alpha_feature_not_whitelisted.title"),
@@ -30,7 +31,7 @@ class Link(commands.Cog):
             )
             return await interaction.response.send_message(embed=embed, ephemeral=True)
         await interaction.response.defer(ephemeral=True, thinking=True)
-
+        UserConfig(interaction.user.id)  # Ensure user config is created
         if linking_cache.is_user_linked(interaction.user.id):
             await interaction.followup.send(
                 content=locale_str("You already have an active linking session. Please complete it first or wait for it to expire.", key="linking_already_active")
