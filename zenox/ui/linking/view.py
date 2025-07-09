@@ -50,6 +50,7 @@ class LinkingUI(View):
                     "x-rpc-language": "en-us",
                     "x-rpc-lang": "en-us",
                 }
+                # NOTE: Update to use the new GenshinClient class to have a central location for the cookies
                 session: aiohttp.ClientSession = interaction.client.session
                 response = await session.get(
                     f"https://bbs-api-os.hoyolab.com/game_record/card/wapi/getGameRecordCard?uid={hoyolab_id}",
@@ -58,6 +59,7 @@ class LinkingUI(View):
                 )
                 data = await response.json()
                 if data["retcode"] == 10001: # not logged in
+                    # NOTE: Update to use the new GenshinClient class to have a central location for the cookies
                     await generate_hoyolab_token()
                     session.cookie_jar.update_cookies(parse_cookie(os.getenv("HOYOLAB_COOKIES")))
                     response = await session.get(

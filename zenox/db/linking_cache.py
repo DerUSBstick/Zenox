@@ -184,6 +184,7 @@ class LinkingCacheManager:
                         "x-rpc-timezone": "Europe/Berlin",
                         "x-rpc-weekday": "7"
                     }
+                    # NOTE: Update to use the new GenshinClient class to have a central location for the cookies
                     session: aiohttp.ClientSession = entry.interaction.client.session
                     response = await session.post(
                         f"https://bbs-api-os.hoyolab.com/community/painter/wapi/user/full",
@@ -194,6 +195,7 @@ class LinkingCacheManager:
                     )
                     data = await response.json()
                     if data["retcode"] == 10001:
+                        # NOTE: Update to use the new GenshinClient class to have a central location for the cookies
                         await generate_hoyolab_token()
                         session.cookie_jar.update_cookies(parse_cookie(os.getenv("HOYOLAB_COOKIES")))
                         response = await session.post(

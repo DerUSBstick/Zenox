@@ -63,6 +63,7 @@ async def generate_hoyolab_token() -> None:
 
 async def redeem_code(code: str, game: Game) -> int:
     try:
+        # NOTE: Update to use the new GenshinClient class to have a central location for the cookies
         await genshin.Client(cookies=parse_cookie(os.getenv("HOYOLAB_COOKIES"))).redeem_code(
             code=code,
             game=ZX_GAME_TO_GPY_GAME[game],
@@ -70,6 +71,7 @@ async def redeem_code(code: str, game: Game) -> int:
         )
         return 1
     except genshin.errors.InvalidCookies as e:
+        # NOTE: Update to use the new GenshinClient class to have a central location for the cookies
         # Refresh cookie and try again
         await generate_hoyolab_token()
         await genshin.Client(cookies=parse_cookie(os.getenv("HOYOLAB_COOKIES"))).redeem_code(
