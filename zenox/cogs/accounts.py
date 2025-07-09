@@ -19,6 +19,7 @@ class Accounts(commands.Cog):
         description=locale_str("Manage your accounts linked to the bot", key="accounts_command_description")
     )
     @app_commands.user_install()
+    @app_commands.guild_install()
     @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=False)
     async def accounts_command(self, interaction: discord.Interaction) -> Any:
         doc = DB.users.find_one({"id": interaction.user.id})

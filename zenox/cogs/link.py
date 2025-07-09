@@ -20,6 +20,7 @@ class Link(commands.Cog):
         description=locale_str("Link your accounts to the bot", key="link_command_description")
     )
     @app_commands.user_install()
+    @app_commands.guild_install()
     @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=False)
     async def link_command(self, interaction: discord.Interaction) -> Any:
         doc = DB.users.find_one({"id": interaction.user.id})
