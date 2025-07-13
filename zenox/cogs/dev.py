@@ -32,6 +32,7 @@ class Dev(commands.GroupCog, group_name="dev"):
         name=locale_str("create_user"),
         description=locale_str("Create a User in the Database")
     )
+    @app_commands.guilds(discord.Object(id=1129777497454686330))
     @app_commands.check(is_owner)
     async def create_user(self, interaction: discord.Interaction[Zenox], userid: str):
         userid = int(userid)
@@ -48,6 +49,7 @@ class Dev(commands.GroupCog, group_name="dev"):
         name=locale_str("stream_analytics"),
         description=locale_str("Stream Analytics")
     )
+    @app_commands.guilds(discord.Object(id=1129777497454686330))
     @app_commands.check(is_owner)
     async def stream_analytics(self, interaction: discord.Interaction[Zenox], game: Game, version: str):
         await interaction.response.send_message(f"Calculating Stream Analytics for `{game}` version `{version}`. This may take a while...", ephemeral=True)
@@ -109,6 +111,7 @@ class Dev(commands.GroupCog, group_name="dev"):
         name=locale_str("shards"),
         description=locale_str("Display Shard Information")
     )
+    @app_commands.guilds(discord.Object(id=1129777497454686330))
     @app_commands.check(is_owner)
     async def shards(self, interaction: discord.Interaction):
         embed = Embed(
@@ -131,6 +134,7 @@ class Dev(commands.GroupCog, group_name="dev"):
         name=locale_str("request"),
         description=locale_str("Request Permission Check for Guild")
     )
+    @app_commands.guilds(discord.Object(id=1129777497454686330))
     @app_commands.check(is_owner)
     async def request(self, interaction: discord.Interaction, guildid: str, locale: Literal["en-US", "de"]):
         if guildid in _cache:
@@ -164,6 +168,7 @@ class Dev(commands.GroupCog, group_name="dev"):
             name=locale_str("guild_config"),
             description=locale_str("View RAW Guild Configuration")
     )
+    @app_commands.guilds(discord.Object(id=1129777497454686330))
     @app_commands.check(is_owner)
     async def view_config(self, interaction: discord.Interaction[Zenox], guild_id: str, ephemeral: bool = True):
         raw_config = DB.guilds.find_one({"id": int(guild_id)})
@@ -177,6 +182,7 @@ class Dev(commands.GroupCog, group_name="dev"):
         name=locale_str("schedule_stream"),
         description=locale_str("Schedule a Stream and update config")
     )
+    @app_commands.guilds(discord.Object(id=1129777497454686330))
     @app_commands.check(is_owner)
     async def schedule_stream(self, interaction: discord.Interaction[Zenox], game: Game, version: str, title: str, start: int, end: int, image: discord.Attachment):
         conf = interaction.client.config.auto_stream_codes_config[game]

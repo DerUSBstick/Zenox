@@ -19,17 +19,8 @@ class Accounts(commands.Cog):
         description=locale_str("Manage your accounts linked to the bot", key="accounts_command_description")
     )
     @app_commands.user_install()
-    @app_commands.guild_install()
     @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=False)
     async def accounts_command(self, interaction: discord.Interaction) -> Any:
-        doc = DB.users.find_one({"id": interaction.user.id})
-        if (not doc and interaction.guild is not None) or ("PARTNER_GUILD" not in GuildConfig(interaction.guild.id).features):
-            embed = DefaultEmbed(
-                locale=interaction.locale,
-                title=LocaleStr(key="alpha_feature_not_whitelisted.title"),
-                description=LocaleStr(key="alpha_feature_not_whitelisted.description")
-            )
-            return await interaction.response.send_message(embed=embed, ephemeral=True)
         user = UserConfig(interaction.user.id)
         if not user.accounts:
             embed = DefaultEmbed(

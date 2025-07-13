@@ -17,7 +17,7 @@ class UserSettings(commands.Cog):
         description=locale_str("Configure your user settings", key="settings_command_description")
     )
     @app_commands.user_install()
-    @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
+    @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=False)
     async def settings_command(self, interaction: discord.Interaction) -> Any:
         await interaction.response.defer(ephemeral=ephemeral(interaction))
 
