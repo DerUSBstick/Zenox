@@ -83,3 +83,33 @@ ZX_GAME_TO_GPY_GAME: dict[Game, genshin.Game] = {
 
 GPY_GAME_TO_ZX_GAME = {v: k for k, v in ZX_GAME_TO_GPY_GAME.items()}
 """genshin.py game enum to Zenox Game enum"""
+
+GAME_MI18N_FILES: dict[Game, tuple[str, str]] = {
+    Game.GENSHIN: ("https://fastcdn.hoyoverse.com/mi18n/bbs_oversea", "m11241040191111"),
+    Game.STARRAIL: (
+        "https://webstatic.hoyoverse.com/admin/mi18n/bbs_oversea",
+        "m20230509hy150knmyo",
+    ),
+    Game.ZZZ: ("https://fastcdn.hoyoverse.com/mi18n/nap_global", "m20240410hy38foxb7k")
+}
+FILENAME_TO_GAME: dict[str, Game] = {v[1]: k for k, v in GAME_MI18N_FILES.items()}
+
+LOCALE_TO_GPY_LANG = {
+    discord.Locale.american_english: "en-us",
+    discord.Locale.taiwan_chinese: "zh-tw",
+    discord.Locale.chinese: "zh-cn",
+    discord.Locale.german: "de-de",
+    discord.Locale.spain_spanish: "es-es",
+    discord.Locale.french: "fr-fr",
+    discord.Locale.indonesian: "id-id",
+    discord.Locale.italian: "it-it",
+    discord.Locale.japanese: "ja-jp",
+    discord.Locale.korean: "ko-kr",
+    discord.Locale.brazil_portuguese: "pt-pt",
+    discord.Locale.thai: "th-th",
+    discord.Locale.vietnamese: "vi-vn",
+    discord.Locale.turkish: "tr-tr",
+    discord.Locale.russian: "ru-ru",
+    discord.Locale.ukrainian: "ru-ru",
+}
+GPY_LANG_TO_LOCALE = {v: k for k, v in LOCALE_TO_GPY_LANG.items()}

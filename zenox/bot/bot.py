@@ -12,7 +12,7 @@ from.command_tree import CommandTree
 from ..db.mongodb import DB
 from..static.utils import get_repo_version, get_now
 from ..db.structures import Config
-from ..l10n import Translator, AppCommandTranslator
+from ..l10n import translator, AppCommandTranslator
 
 class Zenox(commands.AutoShardedBot):
     owner_id: int
@@ -50,6 +50,10 @@ class Zenox(commands.AutoShardedBot):
         self.session = ClientSession()
         # Set Translator
         await self.tree.set_translator(AppCommandTranslator())
+        # Update Assets
+        await self.update_assets()
+        # Load Translator
+        await translator.load()
 
         # Load Cogs
         for filepath in Path("zenox/cogs").glob("*.py"):
@@ -60,6 +64,9 @@ class Zenox(commands.AutoShardedBot):
                 print(f"Failed to load cog {cog_name!r}")
                 self.capture_exception(e)
         return await super().setup_hook()
+
+    async def update_assets(self) -> None:
+        await translator.fetch_mi18n_files()
 
     async def close(self) -> None:
         if self.session:

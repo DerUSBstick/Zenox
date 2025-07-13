@@ -2,8 +2,7 @@ import discord
 from discord import app_commands
 from discord.app_commands import locale_str
 from discord.ext import commands
-from zenox.db.structures import UserConfig, GuildConfig
-from zenox.db.mongodb import DB
+from zenox.db.structures import UserConfig
 from zenox.l10n import LocaleStr
 from zenox.static.embeds import DefaultEmbed
 from typing import Any
@@ -24,7 +23,7 @@ class Accounts(commands.Cog):
         user = UserConfig(interaction.user.id)
         if not user.accounts:
             embed = DefaultEmbed(
-                locale=interaction.locale,
+                locale=user.settings.language,
                 title=LocaleStr(key="accounts_embed_title.no_accounts"),
                 description=LocaleStr(key="accounts_embed_description.no_accounts")
             )
@@ -35,7 +34,7 @@ class Accounts(commands.Cog):
 
         view = AccountsView(
             author=interaction.user,
-            locale=interaction.locale
+            locale=user.settings.language
         )
         await view.start(interaction)
 

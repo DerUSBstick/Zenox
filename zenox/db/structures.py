@@ -1,3 +1,4 @@
+from __future__ import annotations
 import discord
 import datetime
 import json
@@ -14,8 +15,11 @@ from ..l10n import LocaleStr
 from ..static.embeds import Embed
 from ..static.enums import Game
 from ..ui.components import View, Button
-from typing import TypeVar, Generic, TypedDict, Any, Literal
+from typing import TypeVar, Generic, TypedDict, Any, Literal, TYPE_CHECKING
 from bson.codec_options import CodecOptions
+
+if TYPE_CHECKING:
+    from zenox.clients.gi import GenshinClient
 
 class AutoStreamCodesConfig:
     def __init__(self, cfg: dict[str, int | str]):
@@ -100,6 +104,19 @@ class GameAccount:
             "hoyolab": self.hoyolab_owner.to_dict() if self.hoyolab_owner else None,
             "user_id": self.user_id
         }
+    
+    @property
+    def client(self) -> GenshinClient:
+        from zenox.clients.gi import GenshinClient
+
+        return GenshinClient(self)
+    
+    @property
+    def blurred_uid(self, *, arterisk: str = "*") -> str:
+        """Blurs the middle 5 digits of the UID for privacy."""
+        uid = str(self.uid)
+        mindex = len(uid) // 2
+        return uid[: mindex - 1] + arterisk * 4 + uid[mindex + 4:]
 
 class UserSettings:
     def __init__(self, settings: dict[str, str | bool]) -> None:
@@ -180,6 +197,10 @@ class UserConfig:
         self.accounts.remove(account)
         DB.accounts.delete_one({"uid": account.uid, "game": account.game.value})
         DB.users.update_one({"id": self.id}, {"$pull": {"accounts": {"uid": account.uid, "game": account.game.value}}})
+
+    def get_accounts(self, games: tuple[Game]) -> list[GameAccount]:
+        """Get all accounts for the specified games."""
+        return [account for account in self.accounts if account.game in games]
     
 
 class CodesConfig:

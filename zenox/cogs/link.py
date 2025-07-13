@@ -23,21 +23,22 @@ class Link(commands.Cog):
     @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=False)
     async def link_command(self, interaction: discord.Interaction) -> Any:
         await interaction.response.defer(ephemeral=True, thinking=True)
+        user = UserConfig(interaction.user.id)
         if linking_cache.is_user_linked(interaction.user.id):
             await interaction.followup.send(
-                content=locale_str("You already have an active linking session. Please complete it first or wait for it to expire.", key="linking_already_active")
+                content=LocaleStr(key="linking_already_linked", locale=user.settings.language).translate()
             )
             return
 
         elif linking_cache.is_cache_full:
             await interaction.followup.send(
-                content=locale_str("The linking queue is currently full. Please try again later.", key="linking_queue_full")
+                content=LocaleStr(key="linking_cache_full", locale=user.settings.language).translate()
             )
             return
 
         view = LinkingUI(
             author=interaction.user,
-            locale=interaction.locale
+            locale=user.settings.language
         )
 
         await view.start(interaction)

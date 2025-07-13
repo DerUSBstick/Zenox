@@ -9,7 +9,8 @@ from dotenv import load_dotenv
 load_dotenv() # Load ENVs
 from zenox.db.structures import Config, GuildConfig
 from zenox.bot.bot import Zenox
-from zenox.l10n import Translator
+from zenox.l10n import Translator, LocaleStr
+from zenox.l10n import Game
 from zenox.static.utils import init_sentry, send_webhook
 
 env = os.environ["ENV"]
@@ -41,6 +42,9 @@ async def on_guild_remove(guild: discord.Guild):
 
 @client.event
 async def on_ready():
+    locale = LocaleStr(key="active_day", mi18n_game=Game.GENSHIN)
+    print(locale.translate(discord.Locale.american_english))
+    print(locale.translate(discord.Locale.french))
     print(f"Started in {env} Environment")
     await client.tree.sync()
     await client.tree.sync(guild=discord.Object(id=1129777497454686330))
