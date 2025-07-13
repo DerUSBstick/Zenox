@@ -36,6 +36,4 @@ class UserSettings(commands.Cog):
         view.message = await interaction.original_response()
 
 async def setup(client: Zenox) -> None:
-    return
-    # Do not add cog for now until there are features related to this
     await client.add_cog(UserSettings(client))
