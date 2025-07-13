@@ -4,15 +4,18 @@ from pathlib import Path
 import os
 import json, yaml
 import discord
+import genshin
+import aiofiles
 from discord import app_commands
 from typing import Self, Any
-from .static.constants import ZENOX_LOCALES, DatabaseKey, LOCALE_TO_TEXTMAP
+from .static.constants import ZENOX_LOCALES, DatabaseKey, LOCALE_TO_TEXTMAP, GAME_MI18N_FILES, FILENAME_TO_GAME, GPY_LANG_TO_LOCALE
 from .static.enums import Game
 
 from discord.enums import Locale
 
 SOURCE_LANG = "en-US"
 L10N_PATH = pathlib.Path("./zenox/l10n")
+MI18N_PATH = pathlib.Path("./zenox/bot/data/text_maps")
 SUPPORTED_LANG = [x.value for x in ZENOX_LOCALES]
 
 def gen_string_key(string: str) -> str:
@@ -26,6 +29,7 @@ class LocaleStr:
         custom_str: str | None = None,
         translate: bool = True,
         data_game: Game | None = None,
+        mi18n_game: Game | None = None,
         **kwargs
     ) -> None:
         self.key = key
@@ -33,6 +37,7 @@ class LocaleStr:
         self.extras: dict[str, Any] = kwargs
         self.translate_ = translate
         self.game = data_game
+        self.mi18n_game = mi18n_game
     
     def translate(self, locale: Locale) -> str:
         return translator.translate(self, locale)
@@ -43,8 +48,36 @@ class Translator:
         self._game_textmaps: dict[Game, dict[str, dict[str, str]]] = {
             game: {} for game in Game
         }
+        self._mi18n: dict[tuple[str, Game], dict[str, str]] = {}
+
+    async def load(self) -> None:
         self.load_l10n_files()
         self.load_text_maps()
+        self.load_mi18n_files()
+
+    async def fetch_mi18n_files(self) -> None:
+        client = genshin.Client()
+
+        for mi18n_file in GAME_MI18N_FILES.values():
+            url, filename = mi18n_file
+            for lang in genshin.constants.LANGS:
+                mi18n = await client.fetch_mi18n(url, filename, lang=lang)
+
+                async with aiofiles.open(
+                    f"zenox/bot/data/text_maps/mi18n_{filename}_{lang}.json",
+                    mode='w',
+                    encoding='utf-8'
+                ) as f:
+                    await f.write(json.dumps(mi18n, ensure_ascii=False, indent=4))
+
+    def load_mi18n_files(self) -> None:
+        for file_path in MI18N_PATH.glob("mi18n_*.json"):
+            if not file_path.exists():
+                continue
+
+            filename, lang = file_path.stem.split("_")[1:]
+            game = FILENAME_TO_GAME[filename]
+            self._mi18n[GPY_LANG_TO_LOCALE[lang].value.replace("-", "_"), game] = self.read_json(file_path.as_posix())
 
     def load_text_maps(self) -> None:
         for game in Game:
@@ -103,17 +136,22 @@ class Translator:
         
         extras = self._translate_extras(string.extras, locale)
         string_key = self._get_string_key(string)
-
-        if string.game is not None:
+        if string.mi18n_game is not None:
+            # var1 = self._mi18n
+            # var2 = self._mi18n.get((SOURCE_LANG, string.mi18n_game))
+            # var3 = self._mi18n.get((locale.value, string.mi18n_game)).get(string_key)
+            source_string = self._mi18n.get((SOURCE_LANG.replace("-", "_"), string.mi18n_game), {}).get(string_key)
+        elif string.game is not None:
             source_string = self._game_textmaps[string.game][discord.Locale(SOURCE_LANG)].get(string_key)
-
         else:
             source_string = self._localizations[SOURCE_LANG].get(string_key)
         
         if string.translate_ and source_string is None and string.custom_str is None:
             raise ValueError(f"String '{string_key!r}' not found in source language file")
         
-        if string.game is not None:
+        if string.mi18n_game is not None:
+            translation = self._mi18n.get((locale.value.replace("-", "_"), string.mi18n_game), {}).get(string_key)
+        elif string.game is not None:
             translation = self._game_textmaps[string.game][locale].get(string_key)
         else:
             translation = self._localizations.get(locale.value, {}).get(string_key)
