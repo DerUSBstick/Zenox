@@ -19,6 +19,7 @@ from ..ui.dev import confirmModal
 from ..l10n import LocaleStr
 
 @app_commands.guild_install()
+@app_commands.guilds(discord.Object(id=1129777497454686330))
 class Dev(commands.GroupCog, group_name="dev"):
     def __init__(self, client: Zenox):
         self.client = client
@@ -32,7 +33,6 @@ class Dev(commands.GroupCog, group_name="dev"):
         name=locale_str("create_user"),
         description=locale_str("Create a User in the Database")
     )
-    @app_commands.guilds(discord.Object(id=1129777497454686330))
     @app_commands.check(is_owner)
     async def create_user(self, interaction: discord.Interaction[Zenox], userid: str):
         userid = int(userid)

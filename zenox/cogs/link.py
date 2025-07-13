@@ -23,7 +23,6 @@ class Link(commands.Cog):
     @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=False)
     async def link_command(self, interaction: discord.Interaction) -> Any:
         await interaction.response.defer(ephemeral=True, thinking=True)
-        UserConfig(interaction.user.id)
         if linking_cache.is_user_linked(interaction.user.id):
             await interaction.followup.send(
                 content=locale_str("You already have an active linking session. Please complete it first or wait for it to expire.", key="linking_already_active")

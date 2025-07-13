@@ -43,5 +43,6 @@ async def on_guild_remove(guild: discord.Guild):
 async def on_ready():
     print(f"Started in {env} Environment")
     await client.tree.sync()
+    await client.tree.sync(guild=discord.Object(id=1129777497454686330))
 
 client.run(os.environ[f"BOT_{env.upper()}_TOKEN"], log_level=logging.INFO)

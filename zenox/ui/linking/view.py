@@ -24,6 +24,7 @@ class LinkingUI(View):
             author: User | Member,
             locale: Locale
     ):
+        self._user = UserConfig(author.id)
         super().__init__(author=author, locale=locale)
     
     def _add_items(self) -> None:
@@ -138,7 +139,7 @@ class LinkingUI(View):
                         view=None
                     )
                     return
-                elif len(UserConfig(interaction.user.id).accounts) + len(accounts) > 10:
+                elif len(self._user.accounts) + len(accounts) > 10:
                     embed = DefaultEmbed(
                         locale=self.locale,
                         title=LocaleStr(key="hoyolab_linking_embed_title.error"),
