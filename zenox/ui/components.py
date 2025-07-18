@@ -170,6 +170,51 @@ class Select(discord.ui.Select, Generic[V]):
         values = values or self.values
         for option in self.options:
             option.default = option.value in values
+        
+    async def set_loading_state(self, interaction: discord.Interaction) -> None:
+        self.original_options = self.options.copy()
+        self.original_disabled = self.disabled
+        self.original_placeholder = self.placeholder[:] if self.placeholder else None
+        self.original_max_values = self.max_values
+        self.original_min_values = self.min_values
+
+        self.view.disable_items()
+
+        self.options = [
+            SelectOption(
+                label=translator.translate(LocaleStr(key="loading_text"), self.view.locale),
+                value="loading",
+                default=True,
+                emoji=emojis.LOADING,
+            )
+        ]
+        self.disabled = True
+        self.max_values = 1
+        self.min_values = 1
+
+        await self.view.absolute_edit(interaction, view=self.view)
+
+    async def unset_loading_state(self, interaction: discord.Interaction, **kwargs: Any) -> None:
+        if (
+            not self.original_options
+            or self.original_disabled is None
+            or self.original_max_values is None
+            or self.original_min_values is None
+        ):
+            msg = "unset_loading_state called before set_loading_state"
+            raise RuntimeError(msg)
+
+        self.view.enable_items()
+
+        self.options = self.original_options
+        self.disabled = self.original_disabled
+        self.placeholder = self.original_placeholder
+        self.max_values = self.original_max_values
+        self.min_values = self.original_min_values
+
+        self.update_options_defaults()
+
+        await self.view.absolute_edit(interaction, view=self.view, **kwargs)
 
 class Button(discord.ui.Button, Generic[V]):
     def __init__(
@@ -199,6 +244,39 @@ class Button(discord.ui.Button, Generic[V]):
             self.label = translator.translate(
                 self.locale_str_label, locale
             )
+
+    async def set_loading_state(self, interaction: discord.Interaction, **kwargs: Any) -> None:
+        self.original_label = self.label[:] if self.label else None
+        self.original_emoji = str(self.emoji) if self.emoji else None
+        self.original_disabled = self.disabled
+
+        self.view.disable_items()
+
+        self.disabled = True
+        self.emoji = emojis.LOADING
+        self.label = translator.translate(LocaleStr(key="loading_text"), self.view.locale)
+
+        await self.view.absolute_edit(
+            interaction=interaction,
+            view=self.view,
+            **kwargs
+        )
+
+    async def unset_loading_state(self, interaction: discord.Interaction, **kwargs: Any) -> None:
+        if self.original_disabled is None:
+            raise RuntimeError("Button was not in loading state, cannot unset it.")
+        
+        self.view.enable_items()
+
+        self.disabled = self.original_disabled
+        self.emoji = self.original_emoji
+        self.label = self.original_label
+
+        await self.view.absolute_edit(
+            interaction=interaction,
+            view=self.view,
+            **kwargs
+        )
 
 
 # UPDATE: Support for Thumbnail and Embed Image
