@@ -4,7 +4,9 @@ from typing import TYPE_CHECKING, Any
 
 import discord
 from zenox.l10n import LocaleStr
+from zenox.static.utils import get_emoji
 from zenox.static.enums import Game
+from zenox.static.icons import get_game_icon
 from zenox.static.constants import GAME_TO_EMOJI
 from zenox.static.embeds import DefaultEmbed
 from zenox.ui.components import View, Select, SelectOption
@@ -15,19 +17,107 @@ if TYPE_CHECKING:
 
 class StatsView(View):
     def __init__(self, accounts: list[GameAccount], *, author: discord.User | discord.Member, locale: discord.Locale) -> None:
+        # Add Fallback paramter later, that uses Enka.Network e.g. when linked method was uid
         super().__init__(author=author, locale=locale)
         self.accounts = accounts
         self.account = accounts[0]
         self.add_item(AccountSwitcher(accounts, self.account))
     
-    def get_genshin_embed(self, genshin_user: genshin.models.PartialGenshinUserStats) -> DefaultEmbed:
-        ...
+    def _get_user_embed(
+        self, *, level: int, fields: dict[str, Any], avatar: str | None
+    ) -> DefaultEmbed:
+        embed = DefaultEmbed(
+            self.locale,
+            title=self.account.blurred_uid,
+            description=LocaleStr(key="N_level", mi18n_game=Game.GENSHIN, N=level or "?"),
+        )
+        for key, value in fields.items():
+            embed.add_field(name=LocaleStr(key=key, mi18n_game=self.account.game), value=get_emoji(key) + str(value))
 
-    async def start(self, interaction: discord.Interaction) -> None:
+        embed.set_thumbnail(url=avatar)
+        embed.set_author(icon_url=get_game_icon(self.account.game), name=self.account.game.value)
+        return embed
+
+    def get_genshin_embed(self, genshin_user: genshin.models.PartialGenshinUserStats) -> DefaultEmbed:
+        stats = genshin_user.stats
+        fields = {
+            "active_day": stats.days_active,
+            "achievement_complete_count": stats.achievements,
+            "card_avatar_number": stats.characters,
+            "card_spriral_abyss": stats.spiral_abyss,
+            "full_fetter_avatar_num": stats.max_friendship_characters,
+            "unlock_portal": stats.unlocked_waypoints,
+            "unlock_secret_area": stats.unlocked_domains,
+            "wind_god": stats.anemoculi,
+            "geoculus": stats.geoculi,
+            "electroculus": stats.electroculi,
+            "dendroculus": stats.dendroculi,
+            "hydro_god": stats.hydroculi,
+            "pyroculus_number": stats.pyroculi,
+            "magnificent_treasure_box_count": stats.luxurious_chests,
+            "rarity_treasure_box_count": stats.precious_chests,
+            "delicacy_treasure_box_count": stats.exquisite_chests,
+            "general_treasure_box_count": stats.common_chests,
+            "magic_chest_number": stats.remarkable_chests,
+        }
+        return self._get_user_embed(
+            level=genshin_user.info.level,
+            fields=fields,
+            avatar=genshin_user.info.in_game_avatar
+        )
+
+    def get_hsr_user_embed(self, user: genshin.models.StarRailUserStats) -> DefaultEmbed:
+        stats = user.stats
+        fields = {
+            "hsr_active_day": stats.active_days,
+            "hsr_get_account_count": stats.avatar_num,
+            "hsr_achievement_complete_count": stats.achievement_num,
+            "hsr_all_chest_count": stats.chest_num,
+            "hsr_dream_paster_num": stats.dreamscape_pass_sticker
+        }
+        return self._get_user_embed(
+            level=user.info.level, fields=fields, avatar=user.in_game_avatar
+        )
+
+    def get_zzz_user_embed(
+        self, user: genshin.models.ZZZUserStats, card: genshin.models.RecordCard | None
+    ) -> DefaultEmbed:
+        stats = user.stats
+        fields = {
+            "active_days": stats.active_days,
+            "avatar_num": stats.character_num,
+            "buddy_num": stats.bangboo_obtained,
+            "cur_period_zone_layer_count": stats.shiyu_defense_frontiers,
+            "achievement_count": stats.achievement_count,
+        }
+        if stats.hia_coin is not None:
+            fields["commemorative_coins_list"] = stats.hia_coin.num
+        return self._get_user_embed(
+            level=card.level if card is not None else 0, fields=fields, avatar=user.in_game_avatar
+        )
+
+    async def start(self, interaction: discord.Interaction, *, acc_switch: AccountSwitcher | None=None) -> None:
         client = self.account.client
         
         if self.account.game is Game.GENSHIN:
             user = await client.get_partial_genshin_user(self.account.uid)
+            embed = self.get_genshin_embed(user)
+        elif self.account.game is Game.STARRAIL:
+            user = await client.get_starrail_user(self.account.uid)
+            embed = self.get_hsr_user_embed(user)
+        elif self.account.game is Game.ZZZ:
+            user = await client.get_zzz_user(self.account.uid)
+            card = await client.get_record_card(self.account.hoyolab_owner.hoyolab_id, lang=self.locale.value)
+            embed = self.get_zzz_user_embed(user, card)
+        
+        if acc_switch:
+            await acc_switch.unset_loading_state(interaction, embed=embed)
+        else:
+            await interaction.followup.send(
+                embed=embed,
+                view=self
+            )
+        self.message = await interaction.original_response()
 
 
 class AccountSwitcher(Select["StatsView"]):
@@ -37,9 +127,20 @@ class AccountSwitcher(Select["StatsView"]):
             options=[
                 SelectOption(
                     label=account.blurred_uid,
-                    value=f"{account.uid}:{account.game.value}",
-                    emoji=GAME_TO_EMOJI[account.game],
-                    default=account == account
-                ) for account in accounts
+                    value=f"{acc.uid}:{acc.game.value}",
+                    emoji=GAME_TO_EMOJI[acc.game],
+                    default=acc == account
+                ) for acc in accounts
             ]
         )
+    
+    async def callback(self, interaction: discord.Interaction) -> None:
+        await self.set_loading_state(interaction)
+        uid, game = self.values[0].split(":", maxsplit=1)
+        # get matching account from self.accounts
+        account = next((acc for acc in self.view.accounts if str(acc.uid) == uid and acc.game.value == game), None)
+        if not account:
+            raise ValueError(f"Account not found for UID: {uid} and Game: {game}")
+        
+        self.view.account = account
+        await self.view.start(interaction, acc_switch=self)

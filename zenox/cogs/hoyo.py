@@ -13,7 +13,7 @@ class Hoyo(commands.Cog):
         name="stats", description=locale_str("View game account statistics", key="stats_command_description")
     )
     @app_commands.user_install()
-    @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=False)
+    @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
     async def stats_command(self, interaction: discord.Interaction) -> None:
         command = StatsCommand(user=interaction.user)
         await command.run(interaction)

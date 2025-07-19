@@ -115,8 +115,8 @@ class GameAccount:
     def blurred_uid(self, *, arterisk: str = "*") -> str:
         """Blurs the middle 5 digits of the UID for privacy."""
         uid = str(self.uid)
-        mindex = len(uid) // 2
-        return uid[: mindex - 1] + arterisk * 4 + uid[mindex + 4:]
+        middle_index = len(uid) // 2
+        return uid[: middle_index - 1] + arterisk * 3 + uid[middle_index + 2 :]
 
 class UserSettings:
     def __init__(self, settings: dict[str, str | bool]) -> None:

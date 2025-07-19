@@ -18,7 +18,7 @@ from zenox.db.structures import LinkingEntryTemplate, UserConfig
 
 
 class LinkingUI(View):
-    def __init(
+    def __init__(
             self,
             *,
             author: User | Member,
