@@ -1,7 +1,7 @@
 aiohttp==3.11.18
 discord.py==2.5.2
 enka==2.5.8
-genshin==1.7.7
+genshin==1.7.15
 GitPython==3.1.44
 loguru==0.7.3
 pandas==2.2.3
