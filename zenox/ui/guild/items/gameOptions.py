@@ -24,6 +24,18 @@ class ConfigChannelSelect(ChannelSelect["GuildSettingsUI"]):
         if self.values:
             selected: discord.app_commands.models.AppCommandChannel = self.values[0]
         
+            # Check channel permissions
+            channel = interaction.client.get_channel(selected.id) or await interaction.client.fetch_channel(selected.id)
+            me = channel.guild.me
+            if not all([channel.permissions_for(me).send_messages,
+                       channel.permissions_for(me).embed_links,
+                       channel.permissions_for(me).view_channel,
+                       channel.permissions_for(me).attach_files,
+                       channel.permissions_for(me).use_external_emojis]):
+                await interaction.followup.send(
+                    LocaleStr(key="channel_select.error", locale=self.view.locale).translate(self.view.locale),
+                    ephemeral=True
+                )
         self.view.save_setting(CodesConfig, "channel", selected.id if self.values else None)
         self.view.conditioned_ui("GameOptions")
         """On Mobile, we need to Update default value to display Input"""
