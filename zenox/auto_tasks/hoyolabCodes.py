@@ -34,7 +34,7 @@ class hoyolabCodes:
             attachments = [discord.File("./zenox-assets/assets/genshin-impact/thumbnails/" + GAME_THUMBNAILS[special_program.game], filename="thumbnail.png")]
 
             STATE = self._get_state(self, game, self._bot.config.auto_stream_codes_config[game].version)
-            CHANNEL = self._bot.get_channel(self._bot.config.auto_stream_codes_config[game].channel)
+            CHANNEL = self._bot.get_channel(self._bot.config.auto_stream_codes_config[game].channel) or await self._bot.fetch_channel(self._bot.config.auto_stream_codes_config[game].channel)
             MESSAGE = CHANNEL.get_partial_message(self._bot.config.auto_stream_codes_config[game].message)
             await MESSAGE.edit(content=f"State `{STATE}` `{self._STATES[STATE]}` Version `{self._bot.config.auto_stream_codes_config[game].version}` Next Update <t:{round(time.time()+180)}:R>", embed=embed, attachments=attachments, view=view)
 
