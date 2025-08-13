@@ -6,7 +6,7 @@ import asyncio
 import pandas as pd
 from ..static.exceptions import WikiCodesHeaderMismatchError, WikiCodesDataMismatchError
 from zenox.db.mongodb import ANALYTICSDB
-from ..static.constants import Game, WIKI_PAGES, ZENOX_LOCALES, HOYO_REDEEM_URLS, GAME_THUMBNAILS
+from ..static.constants import Game, WIKI_PAGES, ZENOX_LOCALES, HOYO_REDEEM_URLS, GAME_THUMBNAILS, ZX_GAME_TO_GPY_GAME
 from ..l10n import LocaleStr
 from ..static.embeds import Embed
 from ..static.utils import get_emoji, send_webhook, redeem_code
@@ -14,6 +14,7 @@ from ..static import emojis
 from ..db.structures import Code, CodeReward, GuildConfig, CodesConfig
 from ..bot.bot import Zenox
 from ..ui.components import View, Button
+from ..clients.gi import GenshinClient
 
 # Merge execute and check_publish into one function at a later point
 class wikiCodes:
@@ -21,6 +22,7 @@ class wikiCodes:
     _queued_codes: dict[Game, list[list[Code]]] = {}
     _limit = 4
     _stop: bool = False
+    _client: GenshinClient = GenshinClient(None)
 
     _blocked = ["HoYo FEST 2024", "Glad Tidings From Afar"]
     _blocked_lower = ["prime", "crucialgames", "steelseries", "alienware", "intel gaming access", "amd rewards", "giveaway)", "bundle", "twitch", "discord", "hoyofest", "hoyo fest"]
@@ -148,7 +150,11 @@ class wikiCodes:
                     break
                 try:
                     await asyncio.sleep(5) # Rate limit for redeeming codes
-                    await redeem_code(queued_codes[0].code, game)
+                    await self._client.redeem_code(
+                        code=code,
+                        game=ZX_GAME_TO_GPY_GAME[game],
+                        uid=None
+                    )
                     queued_codes[0]._update_val("redeemed", True)
                 except genshin.errors.GenshinException as e:
                     if e.retcode == -100:

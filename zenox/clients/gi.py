@@ -1,11 +1,13 @@
 import genshin
 import os
+import dotenv
+import re
 from zenox.db.structures import GameAccount
 from zenox.static.utils import parse_cookie
 from zenox.static.constants import ZX_GAME_TO_GPY_GAME
 
 class GenshinClient(genshin.Client):
-    def __init__(self, account: GameAccount) -> None:
+    def __init__(self, account: GameAccount | None) -> None:
         game = ZX_GAME_TO_GPY_GAME[account.game]
         cookies = parse_cookie(os.getenv("HOYOLAB_COOKIES"))
         cookies.pop("ltuid", None)
@@ -22,3 +24,15 @@ class GenshinClient(genshin.Client):
             debug=True
         )
         self._account = account
+    
+    async def refresh_cookie(self):
+        cookies = await self.login_with_password(
+            account=os.getenv("HOYOLAB_EMAIL"),
+            password=os.getenv("HOYOLAB_PASSWORD"),
+        )
+        match = re.search(r"cookie_token_v2='([^']+)'", cookies)
+        if not match:
+            raise ValueError("Failed to refresh cookie")
+        env_path = '.env'
+        os.environ["HOYOLAB_COOKIES"] = str(cookies)
+        dotenv.set_key(env_path, "HOYOLAB_COOKIES", str(cookies))
