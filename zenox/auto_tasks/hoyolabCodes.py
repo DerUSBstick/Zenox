@@ -27,17 +27,19 @@ class hoyolabCodes:
 
     async def update_message(self):
         for game in Game:
-            special_program = SpecialProgram(game, self._bot.config.auto_stream_codes_config[game].version)
-            
-            _, embed, _ = await special_program.buildMessage(self._bot, locale=discord.Locale("en-US"))
-            view = HoyolabCodesUI(author=None, data=special_program, locale=discord.Locale("en-US"))
-            attachments = [discord.File("./zenox-assets/assets/genshin-impact/thumbnails/" + GAME_THUMBNAILS[special_program.game], filename="thumbnail.png")]
+            try:
+                special_program = SpecialProgram(game, self._bot.config.auto_stream_codes_config[game].version)
+                
+                _, embed, _ = await special_program.buildMessage(self._bot, locale=discord.Locale("en-US"))
+                view = HoyolabCodesUI(author=None, data=special_program, locale=discord.Locale("en-US"))
+                attachments = [discord.File("./zenox-assets/assets/genshin-impact/thumbnails/" + GAME_THUMBNAILS[special_program.game], filename="thumbnail.png")]
 
-            STATE = self._get_state(self, game, self._bot.config.auto_stream_codes_config[game].version)
-            CHANNEL = self._bot.get_channel(self._bot.config.auto_stream_codes_config[game].channel)
-            MESSAGE = CHANNEL.get_partial_message(self._bot.config.auto_stream_codes_config[game].message)
-            await MESSAGE.edit(content=f"State `{STATE}` `{self._STATES[STATE]}` Version `{self._bot.config.auto_stream_codes_config[game].version}` Next Update <t:{round(time.time()+180)}:R>", embed=embed, attachments=attachments, view=view)
-
+                STATE = self._get_state(self, game, self._bot.config.auto_stream_codes_config[game].version)
+                CHANNEL = self._bot.get_channel(self._bot.config.auto_stream_codes_config[game].channel)
+                MESSAGE = CHANNEL.get_partial_message(self._bot.config.auto_stream_codes_config[game].message)
+                await MESSAGE.edit(content=f"State `{STATE}` `{self._STATES[STATE]}` Version `{self._bot.config.auto_stream_codes_config[game].version}` Next Update <t:{round(time.time()+180)}:R>", embed=embed, attachments=attachments, view=view)
+            except:
+                pass
 
     def _get_header(self, gameID: int):
         HEADERS = {
