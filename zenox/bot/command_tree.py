@@ -8,19 +8,19 @@ from discord import app_commands
 from .error_handler import get_error_embed
 
 if TYPE_CHECKING:
-    from .bot import Echo
+    from ..types import Interaction
 
 
 class CommandTree(app_commands.CommandTree):
     async def on_error(
         self,
-        interaction: discord.Interaction[Echo],
-        error: app_commands.AppCommandError,
+        interaction: Interaction,
+        e: app_commands.AppCommandError,
     ):
         error = (
-            error.original
-            if isinstance(error, app_commands.errors.CommandInvokeError)
-            else error
+            e.original
+            if isinstance(e, app_commands.errors.CommandInvokeError)
+            else e
         )
 
         if isinstance(error, app_commands.CheckFailure):

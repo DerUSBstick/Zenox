@@ -7,6 +7,7 @@ import sentry_sdk
 from discord.ext import commands
 from aiohttp import ClientSession
 from pathlib import Path
+from typing import Optional
 
 from .command_tree import CommandTree
 from ..l10n import AppCommandTranslator
@@ -22,7 +23,7 @@ class Zenox(commands.AutoShardedBot):
         self.version = get_repo_version()
         self.env = env
         self.process = psutil.Process()
-        self.session: ClientSession = None
+        self.session: Optional[ClientSession] = None
 
         super().__init__(
             command_prefix=commands.when_mentioned,
