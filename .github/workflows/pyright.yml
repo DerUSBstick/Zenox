@@ -1,0 +1,44 @@
+name: Type check
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - 'zenox-rewrite'
+    paths:
+      - 'main.py'
+      - 'zenox/**.py'
+      - 'pyproject.toml'
+      - 'uv.lock'
+      - '.github/workflows/pyright.yml'
+  pull_request:
+    branches:
+      - main
+      - 'zenox-rewrite'
+    paths:
+      - 'main.py'
+      - 'zenox/**.py'
+      - 'pyproject.toml'
+      - 'uv.lock'
+      - '.github/workflows/pyright.yml'
+
+jobs:
+  pyright:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Install Project
+        run: |
+          uv sync --frozen
+          uv pip uninstall uvloop
+          echo "$PWD/.venv/bin" >> $GITHUB_PATH
+
+      - name: Run Pyright
+        uses: jakebailey/pyright-action@v2
+        with:
+          working-directory: zenox/
+          extra-args: '--outputjson'
