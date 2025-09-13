@@ -47,12 +47,12 @@ class Translator:
             if not filepath.exists():
                 continue
             lang = filepath.stem
-            self._localizations[lang] = self.read_yaml(filepath.as_posix())
+            self._localizations[lang] = self.read_yaml(filepath)
             print(
                 f"{PrintColors.OKBLUE}Loaded localization for {lang}{PrintColors.ENDC}"
             )
 
-    def read_yaml(self, filepath: Path) -> None:
+    def read_yaml(self, filepath: Path) -> dict[str, str]:
         with open(filepath, "r", encoding="utf-8") as f:
             yaml_data = yaml.safe_load(f)
         localizations = {}
