@@ -33,6 +33,10 @@ class LocaleStr:
         self.extras: dict[str, Any] = kwargs
         self.translate_ = translate
 
+    @property
+    def identifier(self) -> str:
+        return self.custom_str or self.key or ""
+
     def translate(self, locale: Locale) -> str:
         return translator.translate(self, locale)
 
