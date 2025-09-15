@@ -16,10 +16,9 @@ if TYPE_CHECKING:
 
 V = TypeVar("V", bound="View", covariant=True)
 
+
 class View(discord.ui.View):
-    def __init__(
-        self, *, author: User, locale: discord.Locale
-    ) -> None:
+    def __init__(self, *, author: User, locale: discord.Locale) -> None:
         super().__init__(timeout=240)
         self.author = author
         self.locale = locale
@@ -77,7 +76,12 @@ class View(discord.ui.View):
                 else:
                     child.disabled = False
 
-    def add_item(self, item: "Button | Select | ChannelSelect | RoleSelect", *, translate: bool = True) -> Self:
+    def add_item(
+        self,
+        item: "Button | Select | ChannelSelect | RoleSelect",
+        *,
+        translate: bool = True,
+    ) -> Self:
         if translate:
             item.translate(self.locale)
         return super().add_item(item)
@@ -352,11 +356,11 @@ class Label(discord.ui.Label):
         self.locale_str_text = text
         self.locale_str_description = description
         self.component = component
-        
+
     def translate(self, locale: discord.Locale) -> None:
         """Translate the label's text and description using the provided locale."""
         self.text = translator.translate(self.locale_str_text, locale)
-        
+
         if self.locale_str_description:
             self.description = translator.translate(self.locale_str_description, locale)
 
@@ -392,7 +396,7 @@ class Select(discord.ui.Select, Generic[V]):
         options: list[SelectOption],
         disabled: bool = False,
         row: int | None = None,
-        required: bool = False
+        required: bool = False,
     ) -> None:
         if not options:
             options = [SelectOption(label="No options", value="0")]
@@ -401,10 +405,10 @@ class Select(discord.ui.Select, Generic[V]):
             custom_id=custom_id,
             min_values=min_values,
             max_values=max_values,
-            options=options, # pyright: ignore[reportArgumentType]
+            options=options,  # pyright: ignore[reportArgumentType]
             disabled=disabled,
             row=row,
-            required=required
+            required=required,
         )
         self.locale_str_placeholder = placeholder
 
@@ -418,14 +422,14 @@ class Select(discord.ui.Select, Generic[V]):
 
     @property
     def options(self) -> list[SelectOption]:
-        return self._underlying.options # pyright: ignore[reportReturnType]
+        return self._underlying.options  # pyright: ignore[reportReturnType]
 
     @options.setter
     def options(self, value: list[SelectOption]) -> None:
         if not value:
             value = [SelectOption(label="No options", value="0")]
             self.disabled = True
-        self._underlying.options = value # pyright: ignore[reportAttributeAccessIssue]
+        self._underlying.options = value  # pyright: ignore[reportAttributeAccessIssue]
 
     def translate(self, locale: discord.Locale) -> None:
         if self.locale_str_placeholder:
@@ -434,7 +438,7 @@ class Select(discord.ui.Select, Generic[V]):
             )[:100]
 
         for option in self.options:
-            if not isinstance(option, SelectOption): # pyright: ignore[reportUnnecessaryIsInstance]
+            if not isinstance(option, SelectOption):  # pyright: ignore[reportUnnecessaryIsInstance]
                 continue
 
             option.label = translator.translate(option.locale_str_label, locale)[:100]
@@ -487,7 +491,7 @@ class Select(discord.ui.Select, Generic[V]):
         self.view.enable_items()
 
         self.options = self.original_options
-        
+
         # Restore other properties
         self.disabled = self.original_disabled
         self.placeholder = self.original_placeholder
@@ -546,9 +550,7 @@ class Modal(discord.ui.Modal):
         )
         self.locale_str_title = title
 
-    async def on_error(
-        self, interaction: Interaction, error: Exception
-    ) -> None:
+    async def on_error(self, interaction: Interaction, error: Exception) -> None:
         locale = interaction.locale
         embed, recognized = get_error_embed(error, locale)
         if not recognized:
@@ -625,7 +627,11 @@ class Modal(discord.ui.Modal):
     def incomplete(self) -> bool:
         """Returns True if any required input component is empty/unselected. False otherwise."""
         return any(
-            (isinstance(item, TextInput) and item.required and not item.value) or
-            (isinstance(item, Select) and item.required and not hasattr(item, "values"))
+            (isinstance(item, TextInput) and item.required and not item.value)
+            or (
+                isinstance(item, Select)
+                and item.required
+                and not hasattr(item, "values")
+            )
             for item in self.children
         )

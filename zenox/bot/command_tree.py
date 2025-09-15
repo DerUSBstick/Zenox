@@ -18,9 +18,7 @@ class CommandTree(app_commands.CommandTree):
         e: app_commands.AppCommandError,
     ):
         error = (
-            e.original
-            if isinstance(e, app_commands.errors.CommandInvokeError)
-            else e
+            e.original if isinstance(e, app_commands.errors.CommandInvokeError) else e
         )
 
         if isinstance(error, app_commands.CheckFailure):
