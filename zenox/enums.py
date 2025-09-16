@@ -13,3 +13,10 @@ class PrintColors(StrEnum):
     ENDC = "\033[0m"
     BOLD = "\033[1m"
     UNDERLINE = "\033[4m"
+
+
+class Game(StrEnum):
+    GENSHIN = "Genshin Impact"
+    STARRAIL = "Honkai: Star Rail"
+    HONKAI = "Honkai Impact 3rd"
+    ZZZ = "Zenless Zone Zero"
