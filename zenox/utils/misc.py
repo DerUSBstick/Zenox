@@ -3,10 +3,11 @@ from __future__ import annotations
 import datetime
 import git
 import toml
+import io
 
 from zenox.constants import UTC_8
 
-__all__ = ("get_now", "get_repo_version", "shorten")
+__all__ = ("get_now", "get_repo_version", "shorten", "get_project_version", "path_to_bytesio")
 
 
 def get_now(tz: datetime.timezone | None = None) -> datetime.datetime:
@@ -31,3 +32,8 @@ def shorten(text: str, length: int) -> str:
 def get_project_version() -> str:
     data = toml.load("pyproject.toml")
     return f"v{data['project']['version']}"
+
+def path_to_bytesio(path) -> io.BytesIO:
+    with open(path, "rb") as f:
+        data = f.read()
+    return io.BytesIO(data)

@@ -1,3 +1,8 @@
+from __future__ import annotations
+
+from typing import Final
+from .enums import Game
+
 LOADING = "<a:LOADING:1291862194006396928>"
 BACK = "<:ARROW_LEFT:1294005708496572480>"
 
@@ -5,3 +10,20 @@ TOGGLE: dict[bool, str] = {
     False: "<:TOGGLE_OFF:1294014063403208834>",
     True: "<:TOGGLE_ON:1294014064854306907>",
 }
+
+GI_EMOJI = "<:GI_EMOJI:1418295996051488868>"
+HSR_EMOJI = "<:HSR_EMOJI:1418296004087779358>"
+HI3_EMOJI = "<:HI3_EMOJI:1418295999037837444>"
+ZZZ_EMOJI = "<:ZZZ_EMOJI:1418296006038261763>"
+HNA_EMOJI = "<:HNA_EMOJI:1418296001961136239>"
+
+GAME_ICON_EMOJIS: Final[dict[Game, str]] = {
+    Game.GENSHIN: GI_EMOJI,
+    Game.STARRAIL: HSR_EMOJI,
+    Game.HONKAI: HI3_EMOJI,
+    Game.ZZZ: ZZZ_EMOJI,
+    Game.HNA: HNA_EMOJI,
+}
+
+def get_game_emoji(game: Game) -> str:
+    return GAME_ICON_EMOJIS[game]

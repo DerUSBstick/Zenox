@@ -20,3 +20,4 @@ class Game(StrEnum):
     STARRAIL = "Honkai: Star Rail"
     HONKAI = "Honkai Impact 3rd"
     ZZZ = "Zenless Zone Zero"
+    HNA = "Honkai: Nexus Anima"
