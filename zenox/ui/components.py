@@ -16,6 +16,7 @@ from ..exceptions import InvalidInputError
 if TYPE_CHECKING:
     from ..types import Interaction, User
 
+
 class View(discord.ui.View):
     def __init__(self, *, author: User, locale: discord.Locale) -> None:
         super().__init__(timeout=240)
@@ -110,12 +111,13 @@ class View(discord.ui.View):
                 await interaction.response.edit_message(**kwargs)
             else:
                 await interaction.edit_original_response(**kwargs)
-    
+
     @staticmethod
     def get_embeds(message: discord.Message | None) -> list[discord.Embed] | None:
         if message:
             return message.embeds
         return None
+
 
 class TextInput(discord.ui.TextInput):
     def __init__(
@@ -147,7 +149,7 @@ class TextInput(discord.ui.TextInput):
         self.is_digit = is_digit
         self.max_value = max_value
         self.min_value = min_value
-    
+
     def translate(self, locale: discord.Locale) -> None:
         # if it's self.is_digit and not self.placeholder
         if self.is_digit and not self.locale_str_placeholder:
@@ -165,6 +167,7 @@ class TextInput(discord.ui.TextInput):
         if self.locale_str_default:
             self.default = translator.translate(self.locale_str_default, locale)[:4000]
 
+
 class TextDisplay(discord.ui.TextDisplay):
     def __init__(self, *, content: LocaleStr | str) -> None:
         super().__init__(content=content if isinstance(content, str) else "#NoTrans")
@@ -172,6 +175,7 @@ class TextDisplay(discord.ui.TextDisplay):
 
     def translate(self, locale: discord.Locale) -> None:
         self.content = translator.translate(self.locale_str_content, locale)[:4000]
+
 
 class RoleSelect[V: View](discord.ui.RoleSelect):
     def __init__(
@@ -247,6 +251,7 @@ class ChannelSelect[V: View](discord.ui.ChannelSelect):
             self.placeholder = translator.translate(
                 self.locale_str_placeholder, locale
             )[:150]
+
 
 class SelectOption(discord.SelectOption):
     def __init__(
@@ -383,6 +388,7 @@ class Select[V: View](discord.ui.Select):
 
         await self.view.absolute_edit(interaction, view=self.view, **kwargs)
 
+
 class BooleanSelect[V: View](Select):
     def __init__(self, **kwargs) -> None:
         options = [
@@ -391,6 +397,7 @@ class BooleanSelect[V: View](Select):
         ]
         super().__init__(options=options, **kwargs)
         self.view: V
+
 
 class Modal(discord.ui.Modal):
     def __init__(
@@ -443,7 +450,9 @@ class Modal(discord.ui.Modal):
                     value = int(component.value)
                 except ValueError as e:
                     raise InvalidInputError(
-                        LocaleStr(key="invalid_input.input_needs_to_be_int", input=item_text)
+                        LocaleStr(
+                            key="invalid_input.input_needs_to_be_int", input=item_text
+                        )
                     ) from e
 
                 if component.max_value is not None and value > component.max_value:
@@ -477,6 +486,7 @@ class Modal(discord.ui.Modal):
             for item in self.children
         )
 
+
 class Label[T](discord.ui.Label):
     def __init__(
         self,
@@ -498,13 +508,16 @@ class Label[T](discord.ui.Label):
 
     def translate(self, locale: discord.Locale) -> None:
         """Translate the label's text and description using the provided locale."""
-        self.text = translator.translate(self.locale_str_text, locale)
+        self.text = translator.translate(self.locale_str_text, locale)[:45]
 
         if self.locale_str_description:
-            self.description = translator.translate(self.locale_str_description, locale)
-    
+            self.description = translator.translate(
+                self.locale_str_description, locale
+            )[:100]
+
         if isinstance(self.component, (Select, TextInput, ChannelSelect, RoleSelect)):
             self.component.translate(locale)
+
 
 class Button[V: View](discord.ui.Button):
     def __init__(
@@ -582,6 +595,7 @@ class GoBackButton[V: View](Button[V]):
 
         await interaction.response.edit_message(**kwargs)
 
+
 class ToggleButton[V: View](Button):
     def __init__(
         self,
@@ -635,14 +649,14 @@ class ToggleButton[V: View](Button):
         )
         self.emoji = emojis.TOGGLE[self.current_toggle]
 
-    def translate(self) -> None:
+    def translate(self, locale: discord.Locale) -> None:
         self.label = translator.translate(
             LocaleStr(
                 custom_str="{toggle_label}: {state}",
                 toggle_label=self.toggle_label,
-                status=self._get_status(),
+                state=self._get_status(),
             ),
-            self.view.locale,
+            locale,
         )
 
     async def callback(
