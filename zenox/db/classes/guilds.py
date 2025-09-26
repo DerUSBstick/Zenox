@@ -2,10 +2,12 @@ from __future__ import annotations
 
 import discord
 from dataclasses import dataclass
-from typing import ClassVar, Dict
+from typing import Any, ClassVar, Dict
 
 from ..mongodb import DB
 from ...enums import Game
+
+__all__ = ("Guild", "CodesModule", "ReminderModule")
 
 
 @dataclass
@@ -30,9 +32,9 @@ class Guild:
         if data is None:
             await cls.add_empty(guild_id)
             data = await DB.guilds.find_one({"id": guild_id})
-        
+
         assert data is not None
-        
+
         instance = Guild(
             id=data["id"],
             features=data["features"],
@@ -40,8 +42,7 @@ class Guild:
             language=discord.Locale(data["language"]),
             member_count=data["member_count"],
             codes={
-                Game(game): CodesModule(**data["codes"][game])
-                for game in data["codes"]
+                Game(game): CodesModule(**data["codes"][game]) for game in data["codes"]
             },
             reminders={
                 Game(game): ReminderModule(**data["reminders"][game])
@@ -52,6 +53,11 @@ class Guild:
         cls.cache[guild_id] = instance
         return instance
 
+    @classmethod
+    async def delete(cls):
+        if cls.id in cls.cache:
+            del cls.cache[cls.id]
+        await DB.guilds.delete_one({"id": cls.id})
 
     @classmethod
     async def add_empty(cls, guild_id: int):
@@ -78,6 +84,47 @@ class Guild:
                 },
             }
         )
+
+    async def _update_val(self, key: str, value: Any, operator: str = "$set") -> None:
+        await DB.guilds.update_one({"id": self.id}, {operator: {key: value}})
+
+        # Update the cache for direct class attributes (non-nested fields)
+        if "." not in key:
+            setattr(self, key, value)
+
+    async def _update_flags(self, flag: str, add: bool) -> None:
+        if flag not in self.flags and add:
+            self.flags.append(flag)
+            await DB.guilds.update_one({"id": self.id}, {"$addToSet": {"flags": flag}})
+        elif flag in self.flags and not add:
+            self.flags.remove(flag)
+            await DB.guilds.update_one({"id": self.id}, {"$pull": {"flags": flag}})
+
+    async def _update_language(self, locale: discord.Locale) -> None:
+        await DB.guilds.update_one(
+            {"id": self.id}, {"$set": {"language": locale.value}}
+        )
+        self.language = locale
+
+    async def _update_module_setting(
+        self,
+        module_name: str,
+        game: Game,
+        setting: str,
+        value: Any,
+        operator: str = "$set",
+    ) -> None:
+        """Update a specific setting for a module"""
+        key = f"{module_name}.{game.value}.{setting}"
+        # Update in Database
+        await self._update_val(key, value, operator)
+
+        # Update in Cache
+        module = getattr(self, module_name)
+        setattr(module[game], setting, value)
+
+    def has_flag(self, flag: str) -> bool:
+        return flag in self.flags
 
 
 @dataclass
