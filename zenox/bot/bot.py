@@ -4,6 +4,7 @@ import git
 import psutil
 import discord
 import sentry_sdk
+import os
 from discord.ext import commands
 from aiohttp import ClientSession
 from pathlib import Path
@@ -24,6 +25,7 @@ class Zenox(commands.AutoShardedBot):
         self.env = env
         self.process = psutil.Process()
         self.session: Optional[ClientSession] = None
+        self.webhook_url: str | None = os.getenv("DISCORD_WEBHOOK")
 
         super().__init__(
             command_prefix=commands.when_mentioned,
