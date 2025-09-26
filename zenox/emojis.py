@@ -25,5 +25,6 @@ GAME_ICON_EMOJIS: Final[dict[Game, str]] = {
     Game.HNA: HNA_EMOJI,
 }
 
+
 def get_game_emoji(game: Game) -> str:
     return GAME_ICON_EMOJIS[game]

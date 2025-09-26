@@ -91,7 +91,6 @@ class Translator:
 
         extras = self._translate_extras(string.extras, locale)
         string_key = self._get_string_key(string)
-
         source_string = self._localizations[SOURCE_LANG].get(string_key)
 
         if string.translate_ and source_string is None and string.custom_str is None:

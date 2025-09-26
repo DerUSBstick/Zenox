@@ -10,5 +10,5 @@ L10N_PATH = pathlib.Path("./zenox/l10n")
 
 ZENOX_LOCALES: dict[discord.Locale, dict[str, str]] = {
     discord.Locale.american_english: {"name": "English", "emoji": "🇺🇸"},
-    discord.Locale.german: {"name": "Deutsch", "emoji": "🇩🇪"}
+    discord.Locale.german: {"name": "Deutsch", "emoji": "🇩🇪"},
 }
