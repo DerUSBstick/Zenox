@@ -52,7 +52,7 @@ class CheckDatabase:
             except Exception as e:
                 cls._results["error"] += 1
                 client.capture_exception(e)
-        
+
         if client.webhook_url:
             webhook = discord.Webhook.from_url(client.webhook_url, client=client)
             embed = DefaultEmbed(
