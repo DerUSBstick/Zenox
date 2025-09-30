@@ -1,24 +1,50 @@
-interaction_failed.title: "Interaction Failed"
-interaction_failed.description: "You are not allowed to use this interaction."
-on_button_label: "ON"
-off_button_label: "OFF"
-loading_text: "Loading..."
-invalid_input.input_needs_to_be_bool: "Input `{input}` needs to be either `0` (for false) or `1` (for true)"
-invalid_input.input_needs_to_be_int: "Input `{input}` needs to be an integer"
-invalid_input.input_out_of_range.max_value: "Input `{input}` needs to be less than or equal to {max_value}"
-invalid_input.input_out_of_range.min_value: "Input `{input}` needs to be greater than or equal to {min_value}"
-invalid_input_error_title: "Invalid Input"
-config_command.description: "Configure guild settings"
-error_title: "Error"
-guilds.select_game: "Select a game to configure"
-guilds.select_module: "Select a module to configure"
-guilds.settings.codes_module_label: "Codes Module"
-guilds.settings.codes_module_description: "Manage Settings about receiving codes in your Server"
-guilds.settings.reminders_module_label: "Reminders Module"
-guilds.settings.reminders_module_description: "Manage Settings about reminders in your Server"
-guilds.codes_module.setup.label: "Pick a channel"
-guilds.codes_module.setup.description: "This is the channel where codes will be sent"
-guilds.codes_module.setup.mention_everyone.label: "Mention @everyone?"
-guilds.codes_module.setup.mention_everyone.description: "If enabled, @everyone will be mentioned when a new code is sent. Want to mention a role instead? Then leave this field empty and pick the role in the next field."
-yes: "Yes"
-no: "No"
+choice_no: 'No'
+choice_yes: 'Yes'
+config_command.description: Configure guild settings
+error_title: Error
+guilds.codes_module.setup.channel.description: This is the channel where codes will be sent
+guilds.codes_module.setup.channel.label: Channel
+guilds.codes_module.setup.channel.placeholder: Select a channel
+guilds.codes_module.setup.mention_everyone.description: Ping @everyone with new codes. For role mentions, disable this and select a role below instead.
+guilds.codes_module.setup.mention_everyone.label: Mention @everyone?
+guilds.codes_module.setup.mention_role.description: If you want to mention a specific role when a new code is sent, pick it here.
+guilds.codes_module.setup.mention_role.label: Mention Role
+guilds.codes_module_description: Manage Settings about receiving codes in your Server
+guilds.codes_module_label: Codes Module
+guilds.reminders_module_description: Manage Settings about reminders in your Server
+guilds.reminders_module_label: Reminders Module
+guilds.select_game: Select a game to configure
+guilds.select_module: Select a module to configure
+guilds.setup_modal_title: Setup Codes Module
+interaction_failed.description: You are not allowed to use this interaction.
+interaction_failed.title: Interaction Failed
+invalid_input.input_needs_to_be_int: Input `{input}` needs to be an integer
+invalid_input.input_out_of_range.max_value: Input `{input}` needs to be less than or equal to {max_value}
+invalid_input.input_out_of_range.min_value: Input `{input}` needs to be greater than or equal to {min_value}
+invalid_input.title: Invalid Input
+loading_text: Loading...
+off_button_label: 'OFF'
+on_button_label: 'ON'
+guilds.codes_module.setup.mention_role.label: Mention Role
+guilds.codes_module.setup.mention_role.description: If you want to mention a specific role when a new code is sent, pick it here.
+guilds.codes_module.setup.mention_role.placeholder: Select a role
+guilds.codes_module.setup.ping_premium_only.label: Ping only for premium currency?
+guilds.codes_module.setup.ping_premium_only.description: Only ping for premium currency codes (Primogems, Stellar Jades). Leave empty to ping for all codes.
+guilds.codes_module.edit.channel.placeholder: Select a channel
+guilds.codes_module.edit.mention_role.placeholder: Select a role
+guilds.codes_module.edit.mention_everyone.label: Mention @everyone
+guilds.codes_module.edit.ping_premium_only.label: Ping Valuable Currency Only
+guilds.codes_module.help.title: Codes Module Help
+guilds.codes_module.help.description: Get notifications for in-game redemption codes. Choose where codes appear, who gets pinged, and whether to notify only for valuable currency codes like Primogems. Keep your server updated with what matters most.
+guilds.codes_module.help.channel.title: Code Notification Channel
+guilds.codes_module.help.channel.description: This is the channel where new codes will be posted. You can set this to any text channel in your server where you want members to see the codes.
+guilds.codes_module.help.mention_everyone.title: Mention @everyone
+guilds.codes_module.help.mention_everyone.description: If enabled, @everyone will be mentioned whenever a new code is posted.
+guilds.codes_module.help.mention_role.title: Mention Role
+guilds.codes_module.help.mention_role.description: If a specific role is selected, that role will be mentioned whenever a new code is posted.
+guilds.codes_module.help.ping_premium_only.title: Ping Valuable Currency Only
+guilds.codes_module.help.ping_premium_only.description: If enabled, members will only be notified about codes that provide valuable in-game currency, such as Primogems or Stellar Jades.
+guilds.reminders_module.help.title: Reminders Module Help
+guilds.reminders_module.help.stream_reminder.title: Stream Reminder
+guilds.reminders_module.help.stream_reminder.description: Get notified about upcoming special programs.
+guilds.reminders_module.edit.stream_reminder.label: Stream Reminder
