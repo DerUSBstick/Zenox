@@ -104,7 +104,6 @@ class PrometheusCog(commands.Cog):
                 if "-" in locale
                 else cast(str, locale).upper()
             ).set(count)
-        print(GUILD_LOCALE_GAUGE.collect())
 
 async def setup(client: Zenox) -> None:
     await client.add_cog(PrometheusCog(client))
