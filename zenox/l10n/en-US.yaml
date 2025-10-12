@@ -1,18 +1,46 @@
+about_command: "About the Bot"
+about_command.desc: "This bot is designed to help you keep track of the latest codes for your favorite games, and provide easy access to them through Discord."
+about_command.guild_count: "Guild Count"
+about_command.ram_usage: "RAM Usage"
+about_command.uptime: "Uptime"
 choice_no: 'No'
 choice_yes: 'Yes'
 config_command.description: Configure guild settings
 error_title: Error
+guilds.codes_module_description: Manage Settings about receiving codes in your Server
+guilds.codes_module_label: Codes Module
+guilds.codes_module.edit.channel.placeholder: Select a channel
+guilds.codes_module.edit.mention_everyone.label: Mention @everyone
+guilds.codes_module.edit.mention_role.placeholder: Select a role
+guilds.codes_module.edit.ping_premium_only.label: Ping Valuable Currency Only
+guilds.codes_module.help.channel.description: This is the channel where new codes will be posted. You can set this to any text channel in your server where you want members to see the codes.
+guilds.codes_module.help.channel.title: Code Notification Channel
+guilds.codes_module.help.description: Get notifications for in-game redemption codes. Choose where codes appear, who gets pinged, and whether to notify only for valuable currency codes like Primogems. Keep your server updated with what matters most.
+guilds.codes_module.help.mention_everyone.description: If enabled, @everyone will be mentioned whenever a new code is posted.
+guilds.codes_module.help.mention_everyone.title: Mention @everyone
+guilds.codes_module.help.mention_role.description: If a specific role is selected, that role will be mentioned whenever a new code is posted.
+guilds.codes_module.help.mention_role.title: Mention Role
+guilds.codes_module.help.ping_premium_only.description: If enabled, members will only be notified about codes that provide valuable in-game currency, such as Primogems or Stellar Jades.
+guilds.codes_module.help.ping_premium_only.title: Ping Valuable Currency Only
+guilds.codes_module.help.title: Codes Module Help
 guilds.codes_module.setup.channel.description: This is the channel where codes will be sent
 guilds.codes_module.setup.channel.label: Channel
 guilds.codes_module.setup.channel.placeholder: Select a channel
 guilds.codes_module.setup.mention_everyone.description: Ping @everyone with new codes. For role mentions, disable this and select a role below instead.
 guilds.codes_module.setup.mention_everyone.label: Mention @everyone?
 guilds.codes_module.setup.mention_role.description: If you want to mention a specific role when a new code is sent, pick it here.
+guilds.codes_module.setup.mention_role.description: If you want to mention a specific role when a new code is sent, pick it here.
 guilds.codes_module.setup.mention_role.label: Mention Role
-guilds.codes_module_description: Manage Settings about receiving codes in your Server
-guilds.codes_module_label: Codes Module
+guilds.codes_module.setup.mention_role.label: Mention Role
+guilds.codes_module.setup.mention_role.placeholder: Select a role
+guilds.codes_module.setup.ping_premium_only.description: Only ping for premium currency codes (Primogems, Stellar Jades). Leave empty to ping for all codes.
+guilds.codes_module.setup.ping_premium_only.label: Ping only for premium currency?
 guilds.reminders_module_description: Manage Settings about reminders in your Server
 guilds.reminders_module_label: Reminders Module
+guilds.reminders_module.edit.stream_reminder.label: Stream Reminder
+guilds.reminders_module.help.stream_reminder.description: Get notified about upcoming special programs.
+guilds.reminders_module.help.stream_reminder.title: Stream Reminder
+guilds.reminders_module.help.title: Reminders Module Help
 guilds.select_game: Select a game to configure
 guilds.select_module: Select a module to configure
 guilds.setup_modal_title: Setup Codes Module
@@ -25,26 +53,3 @@ invalid_input.title: Invalid Input
 loading_text: Loading...
 off_button_label: 'OFF'
 on_button_label: 'ON'
-guilds.codes_module.setup.mention_role.label: Mention Role
-guilds.codes_module.setup.mention_role.description: If you want to mention a specific role when a new code is sent, pick it here.
-guilds.codes_module.setup.mention_role.placeholder: Select a role
-guilds.codes_module.setup.ping_premium_only.label: Ping only for premium currency?
-guilds.codes_module.setup.ping_premium_only.description: Only ping for premium currency codes (Primogems, Stellar Jades). Leave empty to ping for all codes.
-guilds.codes_module.edit.channel.placeholder: Select a channel
-guilds.codes_module.edit.mention_role.placeholder: Select a role
-guilds.codes_module.edit.mention_everyone.label: Mention @everyone
-guilds.codes_module.edit.ping_premium_only.label: Ping Valuable Currency Only
-guilds.codes_module.help.title: Codes Module Help
-guilds.codes_module.help.description: Get notifications for in-game redemption codes. Choose where codes appear, who gets pinged, and whether to notify only for valuable currency codes like Primogems. Keep your server updated with what matters most.
-guilds.codes_module.help.channel.title: Code Notification Channel
-guilds.codes_module.help.channel.description: This is the channel where new codes will be posted. You can set this to any text channel in your server where you want members to see the codes.
-guilds.codes_module.help.mention_everyone.title: Mention @everyone
-guilds.codes_module.help.mention_everyone.description: If enabled, @everyone will be mentioned whenever a new code is posted.
-guilds.codes_module.help.mention_role.title: Mention Role
-guilds.codes_module.help.mention_role.description: If a specific role is selected, that role will be mentioned whenever a new code is posted.
-guilds.codes_module.help.ping_premium_only.title: Ping Valuable Currency Only
-guilds.codes_module.help.ping_premium_only.description: If enabled, members will only be notified about codes that provide valuable in-game currency, such as Primogems or Stellar Jades.
-guilds.reminders_module.help.title: Reminders Module Help
-guilds.reminders_module.help.stream_reminder.title: Stream Reminder
-guilds.reminders_module.help.stream_reminder.description: Get notified about upcoming special programs.
-guilds.reminders_module.edit.stream_reminder.label: Stream Reminder

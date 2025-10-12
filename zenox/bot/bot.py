@@ -19,6 +19,7 @@ from ..enums import PrintColors
 class Zenox(commands.AutoShardedBot):
     def __init__(self, *, env: str) -> None:
         self.owner_id = 585834029484343298
+        self.guild_id = 1129777497454686330
         self.uptime = get_now()
         self.repo = git.Repo()
         self.version = get_repo_version()
