@@ -5,15 +5,17 @@ import psutil
 import discord
 import sentry_sdk
 import os
+import concurrent.futures
 from discord.ext import commands
 from aiohttp import ClientSession
 from pathlib import Path
 from typing import Optional
 
 from .command_tree import CommandTree
-from ..l10n import AppCommandTranslator
-from ..utils import get_now, get_repo_version
-from ..enums import PrintColors
+from zenox.l10n import AppCommandTranslator
+from zenox.utils import get_now, get_repo_version
+from zenox.enums import PrintColors
+from zenox.constants import POOL_MAX_WORKERS
 
 
 class Zenox(commands.AutoShardedBot):
@@ -42,6 +44,15 @@ class Zenox(commands.AutoShardedBot):
             ),
             activity=discord.CustomActivity(f"{self.version} | Zenox"),
         )
+
+        if self.env == "dev":
+            self.executor = concurrent.futures.ThreadPoolExecutor(
+                max_workers=POOL_MAX_WORKERS
+            )
+        else:
+            self.executor = concurrent.futures.ProcessPoolExecutor(
+                max_workers=POOL_MAX_WORKERS
+            )
 
     async def setup_hook(self) -> None:
         self.session = ClientSession()
