@@ -24,7 +24,13 @@ class Database:
 
     @DBProperty
     def guilds(self) -> AsyncCollection:
+        """Collection for guild configurations."""
         return self._db["guilds"]
+
+    @DBProperty
+    def videos(self) -> AsyncCollection:
+        """Collection for YouTube videos metadata."""
+        return self._db["videos"]
 
 
 DB = Database()
