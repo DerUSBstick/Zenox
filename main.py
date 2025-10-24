@@ -1,18 +1,18 @@
 import os
 import logging
-from dotenv import load_dotenv
+import argparse
+from zenox.config import CONFIG
 from zenox.bot import Zenox
 from zenox.utils import init_sentry
 from zenox.enums import PrintColors
 
-load_dotenv()
-
-env = os.environ["ENV"]
-is_dev = env == "dev"
 
 init_sentry()
 
-client = Zenox(env=env)
+parser = argparse.ArgumentParser(description="Zenox Discord Bot")
+parser.add_argument("--schedule", action="store_true", default=not CONFIG.is_dev)
+
+client = Zenox(config=CONFIG)
 
 
 @client.event
@@ -21,4 +21,4 @@ async def on_ready():
     await client.tree.sync()
 
 
-client.run(os.environ["BOT_TOKEN"], log_level=logging.INFO)
+client.run(CONFIG.discord_token, log_level=logging.INFO)

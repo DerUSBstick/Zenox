@@ -16,19 +16,20 @@ from zenox.l10n import AppCommandTranslator
 from zenox.utils import get_now, get_repo_version
 from zenox.enums import PrintColors
 from zenox.constants import POOL_MAX_WORKERS
+from zenox.config import Config
 
 
 class Zenox(commands.AutoShardedBot):
-    def __init__(self, *, env: str) -> None:
+    def __init__(self, *, config: Config) -> None:
         self.owner_id = 585834029484343298
         self.guild_id = 1129777497454686330
         self.uptime = get_now()
         self.repo = git.Repo()
         self.version = get_repo_version()
-        self.env = env
+        self.env = config.env
         self.process = psutil.Process()
         self.session: Optional[ClientSession] = None
-        self.webhook_url: str | None = os.getenv("DISCORD_WEBHOOK")
+        self.config = config
 
         super().__init__(
             command_prefix=commands.when_mentioned,
@@ -45,7 +46,7 @@ class Zenox(commands.AutoShardedBot):
             activity=discord.CustomActivity(f"{self.version} | Zenox"),
         )
 
-        if self.env == "dev":
+        if config.env == "dev":
             self.executor = concurrent.futures.ThreadPoolExecutor(
                 max_workers=POOL_MAX_WORKERS
             )
