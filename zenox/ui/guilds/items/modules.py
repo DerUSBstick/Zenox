@@ -12,6 +12,11 @@ from .codes import (
     CodesHelpButton,
 )
 from .reminders import StreamReminderToggle
+from .yt_notify import (
+    YTChannelSelector,
+    YTRoleSelector,
+    YTMentionEveryoneToggle,
+)
 
 if TYPE_CHECKING:
     from ....types import Interaction
@@ -41,6 +46,11 @@ class ModuleSelector(Select["GuildSettingsUI"]):
                 description=LocaleStr(key="guilds.reminders_module_description"),
                 value="reminders",
             ),
+            SelectOption(
+                label=LocaleStr(key="guilds.yt_notify_module_label"),
+                description=LocaleStr(key="guilds.yt_notify_module_description"),
+                value="yt_notify",
+            )
         ]
 
     async def callback(self, i: Interaction):
@@ -54,8 +64,8 @@ class ModuleSelector(Select["GuildSettingsUI"]):
         self.view.clear_items()
 
         if self.values[0] == "codes":
-            self.view.add_item(ChannelSelector())
-            self.view.add_item(RoleSelector())
+            self.view.add_item(ChannelSelector(channel=self.view.guild.codes[self.view.game].channel))
+            self.view.add_item(RoleSelector(role=self.view.guild.codes[self.view.game].mention_role))
             self.view.add_item(
                 MentionEveryoneToggle(
                     current_toggle=self.view.guild.codes[
@@ -79,6 +89,18 @@ class ModuleSelector(Select["GuildSettingsUI"]):
                     current_toggle=self.view.guild.reminders[
                         self.view.game
                     ].stream_reminder
+                )
+            )
+            self.view.add_item(go_back_button)
+        
+        elif self.values[0] == "yt_notify":
+            self.view.add_item(YTChannelSelector(channel=self.view.guild.youtube_notifications[self.view.game].channel))
+            self.view.add_item(YTRoleSelector(role=self.view.guild.youtube_notifications[self.view.game].mention_role))
+            self.view.add_item(
+                YTMentionEveryoneToggle(
+                    current_toggle=self.view.guild.youtube_notifications[
+                        self.view.game
+                    ].mention_everyone
                 )
             )
             self.view.add_item(go_back_button)

@@ -20,6 +20,7 @@ class Guild:
     # Modules
     codes: dict[Game, CodesModule]
     reminders: dict[Game, ReminderModule]
+    youtube_notifications: dict[Game, YTNotificationsModule]
 
     cache: ClassVar[Dict[int, Guild]] = {}
 
@@ -47,6 +48,10 @@ class Guild:
             reminders={
                 Game(game): ReminderModule(**data["reminders"][game])
                 for game in data["reminders"]
+            },
+            youtube_notifications={
+                Game(game): YTNotificationsModule(**data["youtube_notifications"][game])
+                for game in data["youtube_notifications"]
             },
         )
 
@@ -80,6 +85,15 @@ class Guild:
                 },
                 "reminders": {
                     game.value: {"setup": False, "stream_reminder": False}
+                    for game in Game
+                },
+                "youtube_notifications": {
+                    game.value: {
+                        "setup": False,
+                        "channel": None,
+                        "mention_everyone": False,
+                        "mention_role": None,
+                    }
                     for game in Game
                 },
             }
@@ -140,3 +154,10 @@ class CodesModule:
 class ReminderModule:
     setup: bool
     stream_reminder: bool
+
+@dataclass
+class YTNotificationsModule:
+    setup: bool
+    channel: int | None
+    mention_everyone: bool
+    mention_role: int | None

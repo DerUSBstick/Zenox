@@ -13,8 +13,9 @@ if TYPE_CHECKING:  #
 
 
 class ChannelSelector(ChannelSelect["GuildSettingsUI"]):
-    def __init__(self):
+    def __init__(self, channel: int | None):
         super().__init__(
+            default_values=[discord.SelectDefaultValue(id=channel, type=discord.SelectDefaultValueType.channel)] if channel else [],
             channel_type=[discord.ChannelType.text, discord.ChannelType.news],
             placeholder=LocaleStr(key="guilds.codes_module.edit.channel.placeholder"),
             min_values=1,
@@ -34,8 +35,9 @@ class ChannelSelector(ChannelSelect["GuildSettingsUI"]):
 
 
 class RoleSelector(RoleSelect["GuildSettingsUI"]):
-    def __init__(self):
+    def __init__(self, role: int | None):
         super().__init__(
+            default_values=[discord.SelectDefaultValue(id=role, type=discord.SelectDefaultValueType.role)] if role else [],
             placeholder=LocaleStr(
                 key="guilds.codes_module.edit.mention_role.placeholder"
             ),

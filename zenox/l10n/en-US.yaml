@@ -41,6 +41,11 @@ guilds.reminders_module.edit.stream_reminder.label: Stream Reminder
 guilds.reminders_module.help.stream_reminder.description: Get notified about upcoming special programs.
 guilds.reminders_module.help.stream_reminder.title: Stream Reminder
 guilds.reminders_module.help.title: Reminders Module Help
+guilds.yt_notify_module_label: YouTube Notifications Module
+guilds.yt_notify_module_description: Manage Settings about YouTube notifications in your Server
+guilds.yt_notify_module.edit.channel.placeholder: Select a channel
+guilds.yt_notify_module.edit.mention_everyone.label: Mention @everyone
+guilds.yt_notify_module.edit.mention_role.placeholder: Select a role
 guilds.select_game: Select a game to configure
 guilds.select_module: Select a module to configure
 guilds.setup_modal_title: Setup Codes Module
