@@ -2,12 +2,16 @@ from __future__ import annotations
 
 import time
 import discord
+import asyncio
 from typing import TYPE_CHECKING, ClassVar
 
 from zenox.embeds import DefaultEmbed
 from zenox.db.mongodb import DB
 from zenox.db.classes import Guild
 from zenox.enums import Game
+from zenox.constants import GAME_YOUTUBE_CHANNEL_ID
+from zenox.clients.ytb import YTBClient, VideoDetails
+from zenox.l10n import LocaleStr, translator
 
 if TYPE_CHECKING:
     from ..bot import Zenox
@@ -24,8 +28,79 @@ if TYPE_CHECKING:
 """
 
 class YTBMonitor:
+    _client: ClassVar[Zenox]
+    _lock: ClassVar[asyncio.Lock] = asyncio.Lock()
     
     @classmethod
     async def execute(cls, client: Zenox) -> None:
-        for game in Game:
-            print(game)
+        if cls._lock.locked():
+            print("YTBMonitor is already running, skipping this execution.")
+            return
+        
+        async with cls._lock:
+            cls._client = client
+            ytbclient = YTBClient(client)
+            for game in Game:
+                if game.value != "Genshin Impact":
+                    continue
+                print(game)
+                feed = await ytbclient.get_recent_channel_videos_rss(
+                    GAME_YOUTUBE_CHANNEL_ID[game]
+                )
+                for entry in feed["entries"]:
+                    # if entry["yt_videoid"] not in ["Sx7xZp96nZM", "j8i2c-ZMFJY"]:
+                    #     continue
+                    db_res = await DB.videos.find_one({"video_id": entry["yt_videoid"], "game": game.value})
+                    if db_res is not None:
+                        continue  # Video already processed
+                    print(entry["yt_videoid"], entry['title'])
+                    videos = await ytbclient.get_video_details(entry["yt_videoid"])
+                    if videos is None:
+                        continue # Video not found
+                    elif videos[0]["snippet"]["liveBroadcastContent"] == "upcoming" and videos[0].get("liveStreamingDetails") is not None:
+                        """Upcoming Livestream"""
+                        await cls.schedule_stream(videos[0])
+                    elif videos[0]["snippet"]["liveBroadcastContent"] == "none" and videos[0].get("liveStreamingDetails") is not None:
+                        """Past Livestream, ignore"""
+                        continue
+                    elif videos[0]["snippet"]["liveBroadcastContent"] == "none" and videos[0].get("liveStreamingDetails") is None:
+                        """Normal Video"""
+                        await cls.notify_video(videos[0], game)
+                    else:
+                        print("Unknown Video type")
+                    break
+                    # print(video)
+                    # print(video["liveStreamingDetails"])
+    
+    @classmethod
+    async def schedule_stream(cls, video_data: VideoDetails) -> None:
+        print("Scheduling stream:", video_data["id"])
+        """Schedules a livestream for all guilds and internally in the database."""
+        pass
+
+    @classmethod
+    async def notify_video(cls, video_data: VideoDetails, game: Game) -> None:
+        """Notifies all guilds about a new video."""
+        print("Notifying guilds about new video:", video_data["id"])
+
+        notifies = DB.guilds.find({f"youtube_notifications.{game.value}.channel": {"$ne": None}}, {"_id": 0, "id": 1})
+        async for guild_data in notifies:
+            guild = await Guild.new(guild_data["id"])
+
+            channel_id = guild.youtube_notifications[game].channel
+            if channel_id is None:
+                continue
+
+            channel = cls._client.get_channel(channel_id) or await cls._client.fetch_channel(channel_id)
+
+            msg = translator.translate(
+                LocaleStr(key="ytb_notification.content", channel=video_data["snippet"]["channelTitle"], url=f"https://www.youtube.com/watch?v={video_data['id']}"),
+                locale=guild.language,
+            )
+            print(channel)
+            await channel.send(msg) # pyright: ignore[reportAttributeAccessIssue]
+
+            print(guild.id)
+
+        pass
+    

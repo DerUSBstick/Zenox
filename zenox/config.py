@@ -14,6 +14,7 @@ class Config(BaseSettings):
 
     # API Keys
     youtube_api_key: str
+    seeleland_api_url: str
 
     # Misc
     env: EnvType = "dev"

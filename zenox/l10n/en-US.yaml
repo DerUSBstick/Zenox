@@ -3,8 +3,8 @@ about_command.desc: "This bot is designed to help you keep track of the latest c
 about_command.guild_count: "Guild Count"
 about_command.ram_usage: "RAM Usage"
 about_command.uptime: "Uptime"
-choice_no: 'No'
-choice_yes: 'Yes'
+choice_no: "No"
+choice_yes: "Yes"
 config_command.description: Configure guild settings
 error_title: Error
 guilds.codes_module_description: Manage Settings about receiving codes in your Server
@@ -29,9 +29,6 @@ guilds.codes_module.setup.channel.placeholder: Select a channel
 guilds.codes_module.setup.mention_everyone.description: Ping @everyone with new codes. For role mentions, disable this and select a role below instead.
 guilds.codes_module.setup.mention_everyone.label: Mention @everyone?
 guilds.codes_module.setup.mention_role.description: If you want to mention a specific role when a new code is sent, pick it here.
-guilds.codes_module.setup.mention_role.description: If you want to mention a specific role when a new code is sent, pick it here.
-guilds.codes_module.setup.mention_role.label: Mention Role
-guilds.codes_module.setup.mention_role.label: Mention Role
 guilds.codes_module.setup.mention_role.placeholder: Select a role
 guilds.codes_module.setup.ping_premium_only.description: Only ping for premium currency codes (Primogems, Stellar Jades). Leave empty to ping for all codes.
 guilds.codes_module.setup.ping_premium_only.label: Ping only for premium currency?
@@ -56,5 +53,6 @@ invalid_input.input_out_of_range.max_value: Input `{input}` needs to be less tha
 invalid_input.input_out_of_range.min_value: Input `{input}` needs to be greater than or equal to {min_value}
 invalid_input.title: Invalid Input
 loading_text: Loading...
-off_button_label: 'OFF'
-on_button_label: 'ON'
+off_button_label: "OFF"
+on_button_label: "ON"
+ytb_notification.content: "{channel} just uploaded a new video\n{url}"
