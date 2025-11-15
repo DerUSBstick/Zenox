@@ -53,8 +53,8 @@ class CheckDatabase:
                 cls._results["error"] += 1
                 client.capture_exception(e)
 
-        if client.webhook_url:
-            webhook = discord.Webhook.from_url(client.webhook_url, client=client)
+        if client.config.webhook_url:
+            webhook = discord.Webhook.from_url(client.config.webhook_url, client=client)
             embed = DefaultEmbed(
                 locale=discord.Locale.american_english,
                 title="Database Check Completed",

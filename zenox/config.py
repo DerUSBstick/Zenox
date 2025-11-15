@@ -1,13 +1,14 @@
 from __future__ import annotations
 from dotenv import load_dotenv
 from typing import Any, Literal
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 type EnvType = Literal["dev", "test", "prod"]
 
 class Config(BaseSettings):
     # Discord
-    discord_token: str
+    discord_token: str = Field(validation_alias="bot_token")
 
     # Sentry DSN
     sentry_dsn: str
@@ -19,6 +20,7 @@ class Config(BaseSettings):
     # Misc
     env: EnvType = "dev"
     db_url: str
+    webhook_url: str = Field(validation_alias="discord_webhook")
 
     # Command-line arguments
     schedule: bool = False
