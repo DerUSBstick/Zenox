@@ -3,11 +3,12 @@ from __future__ import annotations
 import time
 import discord
 import asyncio
+import datetime
 from typing import TYPE_CHECKING, ClassVar
 
 from zenox.embeds import DefaultEmbed
 from zenox.db.mongodb import DB
-from zenox.db.classes import Guild
+from zenox.db.classes import Guild, Video
 from zenox.enums import Game
 from zenox.constants import GAME_YOUTUBE_CHANNEL_ID
 from zenox.clients.ytb import YTBClient, VideoDetails
@@ -28,6 +29,7 @@ if TYPE_CHECKING:
 """
 
 class YTBMonitor:
+    _after_date: datetime.datetime = datetime.datetime(2025, 11, 14, 4, 0, 20) # Avoid backfill of old videos
     _client: ClassVar[Zenox]
     _lock: ClassVar[asyncio.Lock] = asyncio.Lock()
     
@@ -41,9 +43,6 @@ class YTBMonitor:
             cls._client = client
             ytbclient = YTBClient(client)
             for game in Game:
-                if game.value != "Genshin Impact":
-                    continue
-                print(game)
                 feed = await ytbclient.get_recent_channel_videos_rss(
                     GAME_YOUTUBE_CHANNEL_ID[game]
                 )
@@ -57,6 +56,8 @@ class YTBMonitor:
                     videos = await ytbclient.get_video_details(entry["yt_videoid"])
                     if videos is None:
                         continue # Video not found
+                    elif videos[0]["snippet"]["publishedAt"] < cls._after_date.isoformat() + "Z":
+                        continue  # Video is older than after_date
                     elif videos[0]["snippet"]["liveBroadcastContent"] == "upcoming" and videos[0].get("liveStreamingDetails") is not None:
                         """Upcoming Livestream"""
                         await cls.schedule_stream(videos[0])
@@ -68,7 +69,9 @@ class YTBMonitor:
                         await cls.notify_video(videos[0], game)
                     else:
                         print("Unknown Video type")
-                    break
+                    
+                    await asyncio.sleep(3)
+                    # break
                     # print(video)
                     # print(video["liveStreamingDetails"])
     
@@ -85,6 +88,7 @@ class YTBMonitor:
 
         notifies = DB.guilds.find({f"youtube_notifications.{game.value}.channel": {"$ne": None}}, {"_id": 0, "id": 1})
         async for guild_data in notifies:
+            role = None
             guild = await Guild.new(guild_data["id"])
 
             channel_id = guild.youtube_notifications[game].channel
@@ -92,15 +96,34 @@ class YTBMonitor:
                 continue
 
             channel = cls._client.get_channel(channel_id) or await cls._client.fetch_channel(channel_id)
+            
+            role_id = guild.youtube_notifications[game].mention_role
+            if role_id is not None:
+                guild_obj = cls._client.get_guild(guild.id) or await cls._client.fetch_guild(guild.id)
+                role = guild_obj.get_role(role_id)
+            
+            if not role:
+                # Update DB to remove invalid role
+                await guild._update_module_setting(
+                    "youtube_notifications",
+                    game,
+                    "mention_role",
+                    None
+                )
 
             msg = translator.translate(
-                LocaleStr(key="ytb_notification.content", channel=video_data["snippet"]["channelTitle"], url=f"https://www.youtube.com/watch?v={video_data['id']}"),
+                LocaleStr(key="ytb_notification.content", channel=video_data["snippet"]["channelTitle"], url=f"https://www.youtu.be/{video_data['id']}"),
                 locale=guild.language,
             )
-            print(channel)
-            await channel.send(msg) # pyright: ignore[reportAttributeAccessIssue]
+            send_msg = f"{role.mention + ' ' if role else ''}{'@everyone' + ' ' if guild.youtube_notifications[game].mention_everyone else ''}{msg}"
+            await channel.send(send_msg) # pyright: ignore[reportAttributeAccessIssue]
 
             print(guild.id)
 
-        pass
+        # Finally, add video to database
+        await Video.new(
+            video_id=video_data["id"],
+            game=game,
+            title=video_data["snippet"]["title"],
+        )
     

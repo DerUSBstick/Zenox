@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-import os
 import googleapiclient.discovery
-from typing import TYPE_CHECKING, TypedDict, List, Any, cast, Required, Dict
+from typing import TYPE_CHECKING, TypedDict, List, cast, Required, Dict
 from feedparser import parse
 
 if TYPE_CHECKING:
@@ -14,6 +13,7 @@ API_VERSION: str = "v3"
 class RSSEntry(TypedDict, total=False):
     """Only need video ID here"""
     yt_videoid: Required[str]
+    title: Required[str] # Temporarily needed for logging
 
 class RSSFeed(TypedDict, total=False):
     entries: Required[List[RSSEntry]]
@@ -27,10 +27,10 @@ class VideoDetails(TypedDict, total=False):
     liveStreamingDetails: VideoLiveStreamingDetails
 
 class VideoSnippet(TypedDict, total=False):
-    publishedAt: str
+    publishedAt: Required[str]
     channelId: str
-    title: str
-    description: str
+    title: Required[str]
+    description: Required[str]
     thumbnails: VideoThumbnails
     channelTitle: Required[str]
     categoryId: str
@@ -74,29 +74,6 @@ class YTBClient:
 
         feed = await self.client.loop.run_in_executor(self.client.executor, lambda: parse(xml))
         return cast(RSSFeed, feed)
-
-    # async def get_recent_channel_videos(self, channel_id: str, max_results: int = 5):
-    #     request = self.youtube.search().list(
-    #         part="snippet",
-    #         channelId=channel_id,
-    #         maxResults=max_results,
-    #         order="date",
-    #         type="video"
-    #     )
-    #     # Need to apply liveBroadcastContent filter later
-    #     response = await self.client.loop.run_in_executor(self.client.executor, request.execute)
-    #     return response.get("items", [])
-
-    # async def get_upcoming_streams(self, channel_id: str, max_results: int = 1):
-    #     request = self.youtube.search().list(
-    #         part="snippet",
-    #         channelId=channel_id,
-    #         maxResults=max_results,
-    #         eventType="upcoming",
-    #         type="video"
-    #     )
-    #     response = await self.client.loop.run_in_executor(self.client.executor, request.execute)
-    #     return response.get("items", [])
 
     async def get_video_details(self, video_id: str) -> List[VideoDetails] | None:
         request = self.youtube.videos().list(
