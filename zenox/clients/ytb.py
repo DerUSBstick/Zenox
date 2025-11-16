@@ -72,7 +72,7 @@ class YTBClient:
         async with self.client.session.get(rss_feed_url) as response:
             xml = await response.text()
 
-        feed = await self.client.loop.run_in_executor(self.client.executor, lambda: parse(xml))
+        feed = parse(xml)
         return cast(RSSFeed, feed)
 
     async def get_video_details(self, video_id: str) -> List[VideoDetails] | None:
