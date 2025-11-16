@@ -20,7 +20,7 @@ class DBProperty(Generic[T]):
 
 class Database:
     def __init__(self):
-        self._db = CLUSTER["zenox"]
+        self._db = CLUSTER.get_default_database()
 
     @DBProperty
     def guilds(self) -> AsyncCollection:
