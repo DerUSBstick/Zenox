@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from ..bot import Zenox
 
 class PrometheusCog(commands.Cog):
-    port: int = 8000
+    port: int = 9180
     initial: bool = False
 
     def __init__(self, client: Zenox):
