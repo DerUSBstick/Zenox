@@ -112,7 +112,7 @@ class YTBMonitor:
                 )
 
             msg = translator.translate(
-                LocaleStr(key="ytb_notification.content", channel=video_data["snippet"]["channelTitle"], url=f"https://www.youtu.be/{video_data['id']}"),
+                LocaleStr(key="ytb_notification.content", channel=video_data["snippet"]["channelTitle"], url=f"https://youtu.be/{video_data['id']}"),
                 locale=guild.language,
             )
             send_msg = f"{role.mention + ' ' if role else ''}{'@everyone' + ' ' if guild.youtube_notifications[game].mention_everyone else ''}{msg}"
