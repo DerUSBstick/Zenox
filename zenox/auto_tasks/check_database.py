@@ -14,7 +14,6 @@ if TYPE_CHECKING:
 
 class CheckDatabase:
     _guilds: ClassVar[set[int]] = set()
-    _db_guilds: ClassVar[set[int]] = set()
     _start: ClassVar[int] = 0
     _results: ClassVar[dict[str, int]] = {
         "skipped": 0,
@@ -25,7 +24,19 @@ class CheckDatabase:
     }
 
     @classmethod
+    async def reset(cls) -> None:
+        cls._guilds.clear()
+        cls._results = {
+            "skipped": 0,
+            "restored": 0,
+            "pending": 0,
+            "deleted": 0,
+            "error": 0,
+        }
+
+    @classmethod
     async def execute(cls, client: Zenox) -> None:
+        await cls.reset()
         cls._start = int(time.time())
 
         for guild in client.guilds:

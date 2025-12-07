@@ -40,5 +40,10 @@ class Schedule(commands.Cog):
     async def ytb_monitor(self):
         await YTBMonitor.execute(self.client)
 
+    @check_database.before_loop
+    @ytb_monitor.before_loop
+    async def before_loops(self) -> None:
+        await self.client.wait_until_ready()
+
 async def setup(client: Zenox) -> None:
     await client.add_cog(Schedule(client))
