@@ -18,6 +18,9 @@ from .yt_notify import (
     YTMentionEveryoneToggle,
 )
 
+from zenox.enums import Game
+from zenox.constants import CODES_CONFIG_NOT_SUPPORTED, REMINDERS_CONFIG_NOT_SUPPORTED, YOUTUBE_NOTIFICATIONS_CONFIG_NOT_SUPPORTED
+
 if TYPE_CHECKING:
     from ....types import Interaction
     from ..view import GuildSettingsUI  # noqa: F401
@@ -25,8 +28,8 @@ if TYPE_CHECKING:
 
 class ModuleSelector(Select["GuildSettingsUI"]):
     # Replace the Buttons with a selector, where each SelectOption is a module
-    def __init__(self):
-        options = self._get_options()
+    def __init__(self, game: Game):
+        options = self._get_options(game)
         super().__init__(
             options=options,
             placeholder=LocaleStr(key="guilds.select_module"),
@@ -34,24 +37,31 @@ class ModuleSelector(Select["GuildSettingsUI"]):
             max_values=1,
         )
 
-    def _get_options(self) -> list[SelectOption]:
-        return [
-            SelectOption(
-                label=LocaleStr(key="guilds.codes_module_label"),
-                description=LocaleStr(key="guilds.codes_module_description"),
-                value="codes",
-            ),
-            SelectOption(
-                label=LocaleStr(key="guilds.reminders_module_label"),
-                description=LocaleStr(key="guilds.reminders_module_description"),
-                value="reminders",
-            ),
-            SelectOption(
-                label=LocaleStr(key="guilds.yt_notify_module_label"),
-                description=LocaleStr(key="guilds.yt_notify_module_description"),
-                value="yt_notify",
-            )
-        ]
+    def _get_options(self, game: Game) -> list[SelectOption]:
+        options = []
+        
+        if game not in CODES_CONFIG_NOT_SUPPORTED:
+            options.append(SelectOption(
+            label=LocaleStr(key="guilds.codes_module_label"),
+            description=LocaleStr(key="guilds.codes_module_description"),
+            value="codes",
+            ))
+        
+        if game not in REMINDERS_CONFIG_NOT_SUPPORTED:
+            options.append(SelectOption(
+            label=LocaleStr(key="guilds.reminders_module_label"),
+            description=LocaleStr(key="guilds.reminders_module_description"),
+            value="reminders",
+            ))
+        
+        if game not in YOUTUBE_NOTIFICATIONS_CONFIG_NOT_SUPPORTED:
+            options.append(SelectOption(
+            label=LocaleStr(key="guilds.yt_notify_module_label"),
+            description=LocaleStr(key="guilds.yt_notify_module_description"),
+            value="yt_notify",
+            ))
+        
+        return options
 
     async def callback(self, i: Interaction):
         assert self.view.game is not None

@@ -126,5 +126,5 @@ class GameSelector(Select["GuildSettingsUI"]):
         self.view.clear_items()
         self.view.add_item(go_back_button)
 
-        self.view.add_item(ModuleSelector())
+        self.view.add_item(ModuleSelector(game))
         await i.response.edit_message(view=self.view)

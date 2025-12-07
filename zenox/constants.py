@@ -25,3 +25,13 @@ GAME_YOUTUBE_CHANNEL_ID: dict[Game, str] = {
     Game.ZZZ: "UC2SpC8rL9LaeQriE4YNdyzA",
     Game.HNA: "UCkkHvF8VV0YxTnDA-5dhIHg",
 }
+
+CODES_CONFIG_NOT_SUPPORTED: list[Game] = [
+    Game.HNA,
+]
+REMINDERS_CONFIG_NOT_SUPPORTED: list[Game] = [
+    Game.HNA,
+]
+YOUTUBE_NOTIFICATIONS_CONFIG_NOT_SUPPORTED: list[Game] = [
+
+]
