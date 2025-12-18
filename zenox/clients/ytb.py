@@ -10,10 +10,14 @@ if TYPE_CHECKING:
 API_SERVICE_NAME: str = "youtube"
 API_VERSION: str = "v3"
 
+class RSSEntryLinks(TypedDict, total=False):
+    href: Required[str]
+
 class RSSEntry(TypedDict, total=False):
     """Only need video ID here"""
     yt_videoid: Required[str]
     title: Required[str] # Temporarily needed for logging
+    links: Required[List[RSSEntryLinks]]
 
 class RSSFeed(TypedDict, total=False):
     entries: Required[List[RSSEntry]]

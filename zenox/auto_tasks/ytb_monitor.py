@@ -49,6 +49,9 @@ class YTBMonitor:
                 for entry in feed["entries"]:
                     # if entry["yt_videoid"] not in ["Sx7xZp96nZM", "j8i2c-ZMFJY"]:
                     #     continue
+                    if any("shorts" in link["href"] for link in entry["links"]):
+                        print("Skipping Shorts video:", entry["yt_videoid"])
+                        continue
                     db_res = await DB.videos.find_one({"video_id": entry["yt_videoid"], "game": game.value})
                     if db_res is not None:
                         continue  # Video already processed
