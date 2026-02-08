@@ -1,14 +1,12 @@
 from __future__ import annotations
 
-import time
-import discord
 import asyncio
 import datetime
 from typing import TYPE_CHECKING, ClassVar
 
-from zenox.embeds import DefaultEmbed
 from zenox.db.mongodb import DB
 from zenox.db.classes import Guild, Video
+from zenox.ui.components import URLButtonView
 from zenox.enums import Game
 from zenox.constants import GAME_YOUTUBE_CHANNEL_ID
 from zenox.clients.ytb import YTBClient, VideoDetails
@@ -50,12 +48,12 @@ class YTBMonitor:
                     # if entry["yt_videoid"] not in ["Sx7xZp96nZM", "j8i2c-ZMFJY"]:
                     #     continue
                     if any("shorts" in link["href"] for link in entry["links"]):
-                        print("Skipping Shorts video:", entry["yt_videoid"])
+                        # print("Skipping Shorts video:", entry["yt_videoid"])
                         continue
                     db_res = await DB.videos.find_one({"video_id": entry["yt_videoid"], "game": game.value})
                     if db_res is not None:
                         continue  # Video already processed
-                    print(entry["yt_videoid"], entry['title'])
+                    # print(entry["yt_videoid"], entry['title'])
                     videos = await ytbclient.get_video_details(entry["yt_videoid"])
                     if videos is None:
                         continue # Video not found
@@ -91,37 +89,42 @@ class YTBMonitor:
 
         notifies = DB.guilds.find({f"youtube_notifications.{game.value}.channel": {"$ne": None}}, {"_id": 0, "id": 1})
         async for guild_data in notifies:
-            role = None
-            guild = await Guild.new(guild_data["id"])
+            try:
+                role = None
+                guild = await Guild.new(guild_data["id"])
 
-            channel_id = guild.youtube_notifications[game].channel
-            if channel_id is None:
-                continue
+                channel_id = guild.youtube_notifications[game].channel
+                if channel_id is None:
+                    continue
 
-            channel = cls._client.get_channel(channel_id) or await cls._client.fetch_channel(channel_id)
-            
-            role_id = guild.youtube_notifications[game].mention_role
-            if role_id is not None:
-                guild_obj = cls._client.get_guild(guild.id) or await cls._client.fetch_guild(guild.id)
-                role = guild_obj.get_role(role_id)
-            
-            if not role:
-                # Update DB to remove invalid role
-                await guild._update_module_setting(
-                    "youtube_notifications",
-                    game,
-                    "mention_role",
-                    None
+                channel = cls._client.get_channel(channel_id) or await cls._client.fetch_channel(channel_id)
+                
+                role_id = guild.youtube_notifications[game].mention_role
+                if role_id is not None:
+                    guild_obj = cls._client.get_guild(guild.id) or await cls._client.fetch_guild(guild.id)
+                    role = guild_obj.get_role(role_id)
+                
+                if not role:
+                    # Update DB to remove invalid role
+                    await guild._update_module_setting(
+                        "youtube_notifications",
+                        game,
+                        "mention_role",
+                        None
+                    )
+                
+                view = URLButtonView(guild.language, url=f"https://youtu.be/{video_data['id']}", label=LocaleStr(key="ytb_notification.watch_button.label"))
+
+                msg = translator.translate(
+                    LocaleStr(key="ytb_notification.content", channel=video_data["snippet"]["channelTitle"], url=f"https://youtu.be/{video_data['id']}"),
+                    locale=guild.language,
                 )
+                send_msg = f"{role.mention + ' ' if role else ''}{'@everyone' + ' ' if guild.youtube_notifications[game].mention_everyone else ''}{msg}"
+                await channel.send(send_msg, view=view) # pyright: ignore[reportAttributeAccessIssue]
 
-            msg = translator.translate(
-                LocaleStr(key="ytb_notification.content", channel=video_data["snippet"]["channelTitle"], url=f"https://youtu.be/{video_data['id']}"),
-                locale=guild.language,
-            )
-            send_msg = f"{role.mention + ' ' if role else ''}{'@everyone' + ' ' if guild.youtube_notifications[game].mention_everyone else ''}{msg}"
-            await channel.send(send_msg) # pyright: ignore[reportAttributeAccessIssue]
-
-            print(guild.id)
+                print(guild.id)
+            except Exception as e:
+                cls._client.capture_exception(e)
 
         # Finally, add video to database
         await Video.new(

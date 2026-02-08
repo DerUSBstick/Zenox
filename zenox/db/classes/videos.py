@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-import discord
 import datetime
 from dataclasses import dataclass
-from typing import Any, ClassVar, Dict
 
 from ..mongodb import DB
 from ...enums import Game
