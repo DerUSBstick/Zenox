@@ -31,6 +31,16 @@ class Database:
     def videos(self) -> AsyncCollection:
         """Collection for YouTube videos metadata."""
         return self._db["videos"]
+    
+    @DBProperty
+    def codes(self) -> AsyncCollection:
+        """Collection for redemption codes."""
+        return self._db["codes"]
+    
+    @DBProperty
+    def cache(self) -> AsyncCollection:
+        """Collection for caching data."""
+        return self._db["cache"]
 
 
 DB = Database()
