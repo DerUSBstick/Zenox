@@ -29,6 +29,12 @@ GAME_ICON_EMOJIS: Final[dict[Game, str]] = {
     Game.HNA: HNA_EMOJI,
 }
 
+GAME_VALUABLE_EMOJIS: Final[dict[Game, str]] = {
+    Game.GENSHIN: "<:PRIMOGEM:1470521788248359033>",
+    Game.STARRAIL: "<:STELLARJADE:1470521855256297552>",
+    Game.ZZZ: "<:POLYCHROME:1470521991424508157>",
+}
+
 
 def get_game_emoji(game: Game) -> str:
     return GAME_ICON_EMOJIS[game]

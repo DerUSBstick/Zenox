@@ -55,4 +55,8 @@ invalid_input.title: Invalid Input
 loading_text: Loading...
 off_button_label: "OFF"
 on_button_label: "ON"
-ytb_notification.content: "{channel} just uploaded a new video\n{url}"
+ytb_notification.content: "**{channel}** just uploaded a new video\n{url}"
+ytb_notification.watch_button.label: "Watch Video"
+codes_notification.content: "New codes for **{game_name}**"
+codes_notification.embed.title: Redeemable Codes
+codes_notification.direct_link: Direct Link

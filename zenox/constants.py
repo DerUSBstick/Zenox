@@ -5,7 +5,9 @@ import datetime
 import pathlib
 import os
 
-from zenox.enums import Game
+from typing import Final
+
+from zenox.enums import Game, CodeSource
 
 UTC_8 = datetime.timezone(datetime.timedelta(hours=8))
 SOURCE_LANG = "en-US"
@@ -27,6 +29,7 @@ GAME_YOUTUBE_CHANNEL_ID: dict[Game, str] = {
 }
 
 CODES_CONFIG_NOT_SUPPORTED: list[Game] = [
+    Game.HONKAI,
     Game.HNA,
 ]
 REMINDERS_CONFIG_NOT_SUPPORTED: list[Game] = [
@@ -35,3 +38,28 @@ REMINDERS_CONFIG_NOT_SUPPORTED: list[Game] = [
 YOUTUBE_NOTIFICATIONS_CONFIG_NOT_SUPPORTED: list[Game] = [
 
 ]
+
+CODE_URLS: Final[dict[Game, str]] = {
+    Game.GENSHIN: "https://hoyo-codes.seria.moe/codes?game=genshin",
+    Game.STARRAIL: "https://hoyo-codes.seria.moe/codes?game=hkrpg",
+    Game.ZZZ: "https://hoyo-codes.seria.moe/codes?game=nap"
+}
+
+HOYO_REDEEM_URLS: Final[dict[Game, str]] = {
+    Game.GENSHIN: "https://genshin.hoyoverse.com/en/gift?code=",
+    Game.STARRAIL: "https://hsr.hoyoverse.com/gift?code=",
+    Game.ZZZ: "https://zenless.hoyoverse.com/redemption?code="
+}
+
+GAME_THUMBNAILS: dict[Game, str] = {
+    Game.GENSHIN: "https://cdn.alekeagle.me/AwlF2mHD4J.webp", # Icon_Paimon_Menu.png
+    Game.STARRAIL: "https://cdn.alekeagle.me/xyoBWPttHJ.webp", # Icon_Pom_Menu.png
+    Game.ZZZ: "https://cdn.alekeagle.me/GBEmbiK4HG.webp" # Icon_Bangboo_Menu.png
+}
+"""Static Icons for redemption codes embed"""
+
+GAME_VALUABLES: dict[Game, str] = {
+    Game.GENSHIN: "Primogem",
+    Game.STARRAIL: "Stellar Jade",
+    Game.ZZZ: "Polychrome"
+}
