@@ -60,7 +60,7 @@ class YTBMonitor:
                     elif videos[0]["snippet"]["publishedAt"] < cls._after_date.isoformat() + "Z":
                         continue  # Video is older than after_date
                     elif videos[0]["snippet"]["liveBroadcastContent"] == "upcoming" and videos[0].get("liveStreamingDetails") is not None:
-                        """Upcoming Livestream"""
+                        """Upcoming Livestream, might be replaced by Twitch Monitor"""
                         await cls.schedule_stream(videos[0])
                     elif videos[0]["snippet"]["liveBroadcastContent"] == "none" and videos[0].get("liveStreamingDetails") is not None:
                         """Past Livestream, ignore"""
@@ -69,12 +69,9 @@ class YTBMonitor:
                         """Normal Video"""
                         await cls.notify_video(videos[0], game)
                     else:
-                        print("Unknown Video type")
+                        print("Unknown Video type", videos[0])
                     
                     await asyncio.sleep(3)
-                    # break
-                    # print(video)
-                    # print(video["liveStreamingDetails"])
     
     @classmethod
     async def schedule_stream(cls, video_data: VideoDetails) -> None:
