@@ -79,7 +79,6 @@ class Guild:
                         "channel": None,
                         "mention_everyone": False,
                         "mention_role": None,
-                        "ping_premium_only": True,
                     }
                     for game in Game
                 },
@@ -147,7 +146,6 @@ class CodesModule:
     channel: int | None
     mention_everyone: bool
     mention_role: int | None
-    ping_premium_only: bool
 
 
 @dataclass

@@ -79,30 +79,6 @@ class MentionEveryoneToggle(ToggleButton["GuildSettingsUI"]):
         )
         await self.view.update_ui(i)
 
-
-class PremiumOnlyToggle(ToggleButton["GuildSettingsUI"]):
-    def __init__(self, current_toggle: bool):
-        super().__init__(
-            current_toggle=current_toggle,
-            toggle_label=LocaleStr(
-                key="guilds.codes_module.edit.ping_premium_only.label"
-            ),
-        )
-
-    async def callback(self, i: Interaction):
-        assert self.view.game is not None
-
-        await super().callback(i)
-
-        await self.view.guild._update_module_setting(
-            module_name="codes",
-            game=self.view.game,
-            setting="ping_premium_only",
-            value=self.current_toggle,
-        )
-        await self.view.update_ui(i)
-
-
 class CodesHelpButton(Button["GuildSettingsUI"]):
     def __init__(self):
         super().__init__(emoji="❓", style=discord.ButtonStyle.secondary)
@@ -128,13 +104,6 @@ class CodesHelpButton(Button["GuildSettingsUI"]):
         embed.add_field(
             name=LocaleStr(key="guilds.codes_module.help.mention_role.title"),
             value=LocaleStr(key="guilds.codes_module.help.mention_role.description"),
-            inline=False,
-        )
-        embed.add_field(
-            name=LocaleStr(key="guilds.codes_module.help.ping_premium_only.title"),
-            value=LocaleStr(
-                key="guilds.codes_module.help.ping_premium_only.description"
-            ),
             inline=False,
         )
 

@@ -110,14 +110,13 @@ class CheckCodes:
         print("Notifying guilds about new codes for", game.name, "Codes:", codes)
         notifies = DB.guilds.find({f"codes.{game.value}.channel": {"$ne": None}}, {"_id": 0, "id": 1})
         translations, embeds, view = cls._pre_translate(codes, game)
-        has_valuable = any(GAME_VALUABLES[game].lower() in code["rewards"].lower() for code in codes)
         async for guild_data in notifies:
             try:
                 role = None
                 guild = await Guild.new(guild_data["id"])
 
-                mention_role: bool = guild.codes[game].mention_role is not None and (has_valuable or not guild.codes[game].ping_premium_only)
-                mention_everyone: bool = guild.codes[game].mention_everyone and (has_valuable or not guild.codes[game].ping_premium_only)
+                mention_role: bool = guild.codes[game].mention_role is not None
+                mention_everyone: bool = guild.codes[game].mention_everyone
 
 
                 channel_id = guild.codes[game].channel

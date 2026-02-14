@@ -8,7 +8,6 @@ from .codes import (
     ChannelSelector,
     RoleSelector,
     MentionEveryoneToggle,
-    PremiumOnlyToggle,
     CodesHelpButton,
 )
 from .reminders import StreamReminderToggle
@@ -81,13 +80,6 @@ class ModuleSelector(Select["GuildSettingsUI"]):
                     current_toggle=self.view.guild.codes[
                         self.view.game
                     ].mention_everyone
-                )
-            )
-            self.view.add_item(
-                PremiumOnlyToggle(
-                    current_toggle=self.view.guild.codes[
-                        self.view.game
-                    ].ping_premium_only
                 )
             )
             self.view.add_item(CodesHelpButton())
