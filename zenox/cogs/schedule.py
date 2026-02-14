@@ -41,7 +41,7 @@ class Schedule(commands.Cog):
     @tasks.loop(minutes=3)
     async def ytb_monitor(self):
         await YTBMonitor.execute(self.client)
-
+    
     @check_codes.before_loop
     @check_database.before_loop
     @ytb_monitor.before_loop

@@ -4,7 +4,6 @@ import git
 import psutil
 import discord
 import sentry_sdk
-import os
 import concurrent.futures
 from discord.ext import commands
 from aiohttp import ClientSession
