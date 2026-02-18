@@ -16,6 +16,7 @@ from zenox.utils import get_now, get_repo_version
 from zenox.enums import PrintColors
 from zenox.constants import POOL_MAX_WORKERS
 from zenox.config import Config
+from zenox.db.classes import ModuleConfig
 
 
 class Zenox(commands.AutoShardedBot):
@@ -29,6 +30,8 @@ class Zenox(commands.AutoShardedBot):
         self.process = psutil.Process()
         self.session: Optional[ClientSession] = None
         self.config = config
+        # Add Module Configurations from db/classes/config.py
+        self.db_config: Optional[ModuleConfig] = None
 
         super().__init__(
             command_prefix=commands.when_mentioned,
@@ -56,6 +59,9 @@ class Zenox(commands.AutoShardedBot):
 
     async def setup_hook(self) -> None:
         self.session = ClientSession()
+
+        # Load global configuration from database
+        self.db_config = await ModuleConfig.new()
 
         # Set translator
         await self.tree.set_translator(AppCommandTranslator())

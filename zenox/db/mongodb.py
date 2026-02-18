@@ -38,6 +38,16 @@ class Database:
         return self._db["codes"]
     
     @DBProperty
+    def special_programs(self) -> AsyncCollection:
+        """Collection for special programs."""
+        return self._db["special_programs"]
+    
+    @DBProperty
+    def config(self) -> AsyncCollection:
+        """Collection for global configuration."""
+        return self._db["config"]
+    
+    @DBProperty
     def cache(self) -> AsyncCollection:
         """Collection for caching data."""
         return self._db["cache"]

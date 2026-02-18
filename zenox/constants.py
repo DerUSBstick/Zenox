@@ -7,7 +7,7 @@ import os
 
 from typing import Final
 
-from zenox.enums import Game, CodeSource
+from zenox.enums import Game
 
 UTC_8 = datetime.timezone(datetime.timedelta(hours=8))
 SOURCE_LANG = "en-US"
@@ -49,6 +49,12 @@ HOYO_REDEEM_URLS: Final[dict[Game, str]] = {
     Game.GENSHIN: "https://genshin.hoyoverse.com/en/gift?code=",
     Game.STARRAIL: "https://hsr.hoyoverse.com/gift?code=",
     Game.ZZZ: "https://zenless.hoyoverse.com/redemption?code="
+}
+
+HOYO_OFFICIAL_CHANNELS: dict[Game, dict[str, str]] = {
+    Game.GENSHIN: {"YouTube": "https://www.youtube.com/@GenshinImpact", "Twitch": "https://www.twitch.tv/genshinimpactofficial"},
+    Game.STARRAIL: {"YouTube": "https://www.youtube.com/@HonkaiStarRail", "Twitch": "https://www.twitch.tv/honkaistarrail"},
+    Game.ZZZ: {"YouTube": "https://www.youtube.com/@ZZZ_Official", "Twitch": "https://www.twitch.tv/zenlesszonezero"}
 }
 
 GAME_THUMBNAILS: dict[Game, str] = {

@@ -60,3 +60,5 @@ ytb_notification.watch_button.label: "Watch Video"
 codes_notification.content: "New codes for **{game_name}**"
 codes_notification.embed.title: Redeemable Codes
 codes_notification.direct_link: Direct Link
+stream_reminders_name: 'Version {version} "{title}" Special Program'
+stream_reminders_description: "**Watch via any of their official channels:**\n{youtube}[YouTube]({youtube_url})\n{twitch}[Twitch]({twitch_url})"
