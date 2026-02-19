@@ -459,7 +459,7 @@ class Modal(discord.ui.Modal):
         for item in self.children:
             component = item.component if isinstance(item, Label) else item
 
-            if isinstance(component, TextInput):
+            if isinstance(component, TextInput) and component.is_digit:
                 item_text = item.text if isinstance(item, Label) else component.label
 
                 try:
