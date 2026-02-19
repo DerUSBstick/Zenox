@@ -23,7 +23,7 @@ if TYPE_CHECKING:
     from ..types import Interaction
 
 class ConfirmScheduleModal(Modal):
-    confirm = Label(text="Enter anything to confirm scheduling this stream. This action cannot be undone.", component=TextInput(placeholder="Type anything to confirm", required=False))
+    confirm = Label(text="Enter anything to confirm. Cannot undo.", component=TextInput(placeholder="Type anything to confirm", required=False))
 
 @app_commands.guild_install()
 class Dev(commands.GroupCog, group_name="dev"):
@@ -65,7 +65,7 @@ class Dev(commands.GroupCog, group_name="dev"):
         if special_program.stream_reminder_published:
             return await i.response.send_message(f"Stream for {game.value} {version} is already scheduled and reminder has been published.", ephemeral=True)
         
-        modal = ConfirmScheduleModal(title=f"Confirm Scheduling Stream for {game.value} {version}")
+        modal = ConfirmScheduleModal(title="Confirm Scheduling Stream")
         await i.response.send_modal(modal)
         state = await modal.wait()
         if state:
