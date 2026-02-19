@@ -8,12 +8,12 @@ import io
 
 from typing import TYPE_CHECKING
 
-from zenox.embeds import Embed
 from zenox.constants import UTC_8
 from discord.utils import MISSING
 
 if TYPE_CHECKING:
     from zenox.bot import Zenox
+    from zenox.embeds import Embed
 
 __all__ = (
     "get_now",
