@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import time
 import aiohttp
 from typing import TYPE_CHECKING, ClassVar, TypedDict
 import discord
@@ -49,10 +50,15 @@ class CheckCodes:
         
         if client.session is None:
             return
+        
+        assert client.db_config is not None, "Bot configuration is not loaded yet."
 
         async with cls._lock:
             cls._client = client
             for game in CODE_URLS.keys():
+                if 0 < client.db_config.stream_codes_config[game].stream_time - int(time.time()) < 3600 and client.db_config.stream_codes_config[game].state != 5:
+                    print(f"Stream for {game.value} is starting in less than 60 minutes and codes are not published yet, skipping code check for this game.")
+                    continue
                 try:
                     codes = await cls._get_codes(client.session, game)
                     published_codes: list[dict[str, str]] = []
