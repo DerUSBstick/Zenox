@@ -45,6 +45,16 @@ CODE_URLS: Final[dict[Game, str]] = {
     Game.ZZZ: "https://hoyo-codes.seria.moe/codes?game=nap"
 }
 
+HOYOLAB_STREAM_CODES_ENDPOINT: str = "https://bbs-api-os.hoyolab.com/community/painter/wapi/circle/channel/guide/material?game_id={game_id}"
+
+GAME_TO_ID: dict[Game, int] = {
+    Game.GENSHIN: 2,
+    Game.STARRAIL: 6,
+    Game.ZZZ: 8,
+    Game.HONKAI: 1,
+    Game.HNA: 9
+}
+
 HOYO_REDEEM_URLS: Final[dict[Game, str]] = {
     Game.GENSHIN: "https://genshin.hoyoverse.com/en/gift?code=",
     Game.STARRAIL: "https://hsr.hoyoverse.com/gift?code=",
@@ -58,9 +68,9 @@ HOYO_OFFICIAL_CHANNELS: dict[Game, dict[str, str]] = {
 }
 
 GAME_THUMBNAILS: dict[Game, str] = {
-    Game.GENSHIN: "https://cdn.alekeagle.me/AwlF2mHD4J.webp", # Icon_Paimon_Menu.png
-    Game.STARRAIL: "https://cdn.alekeagle.me/xyoBWPttHJ.webp", # Icon_Pom_Menu.png
-    Game.ZZZ: "https://cdn.alekeagle.me/GBEmbiK4HG.webp" # Icon_Bangboo_Menu.png
+    Game.GENSHIN: "https://zipline.internal.zenox.dev/u/LUOkjT.webp", # Icon_Paimon_Menu.png
+    Game.STARRAIL: "https://zipline.internal.zenox.dev/u/mIMkCT.webp", # Icon_Pom_Menu.png
+    Game.ZZZ: "https://zipline.internal.zenox.dev/u/3qf3th.webp" # Icon_Bangboo_Menu.png
 }
 """Static Icons for redemption codes embed"""
 

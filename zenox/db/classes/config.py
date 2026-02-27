@@ -75,5 +75,5 @@ class StreamCodesConfig:
     channel: int
     message: int
     stream_time: int
-    version: int
+    version: str
     state: int
