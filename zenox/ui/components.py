@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
 class View(discord.ui.View):
     def __init__(self, *, author: User, locale: discord.Locale) -> None:
-        super().__init__(timeout=240)
+        super().__init__(timeout=300)
         self.author = author
         self.locale = locale
         self.message: discord.Message | None = None
