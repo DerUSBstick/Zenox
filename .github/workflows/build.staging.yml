@@ -8,7 +8,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: DerUSBstick/zenox
+  IMAGE_NAME: derusbstick/zenox
 
 jobs:
   build-and-push:
@@ -25,5 +25,5 @@ jobs:
 
       - name: Build and push
         run: |
-          docker build -f docker/Dockerfile -t ghcr.io/DerUSBstick/zenox:staging .
-          docker push ghcr.io/DerUSBstick/zenox:staging
+          docker build -f docker/Dockerfile -t ghcr.io/derusbstick/zenox:staging .
+          docker push ghcr.io/derusbstick/zenox:staging
