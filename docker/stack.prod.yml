@@ -3,7 +3,7 @@
 
 services:
   zenox-bot:
-    image: ghcr.io/DerUSBstick/zenox:prod
+    image: ghcr.io/derusbstick/zenox:prod
     environment:
       - ENV=prod
     secrets:

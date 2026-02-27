@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   zenox-bot-staging:
-    image: ghcr.io/DerUSBstick/zenox:staging
+    image: ghcr.io/derusbstick/zenox:staging
     environment:
       - ENV=test
     secrets:
