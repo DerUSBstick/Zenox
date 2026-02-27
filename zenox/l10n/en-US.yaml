@@ -62,3 +62,5 @@ codes_notification.embed.title: Redeemable Codes
 codes_notification.direct_link: Direct Link
 stream_reminders_name: 'Version {version} "{title}" Special Program'
 stream_reminders_description: "**Watch via any of their official channels:**\n{youtube}[YouTube]({youtube_url})\n{twitch}[Twitch]({twitch_url})"
+stream_codes_message.embed.title: "{version} Stream Codes"
+stream_codes_message.embed.description: "{emj1} **Redeemable by clicking on the Buttons below!**\n\n{emj2} **Note:** Codes Expire soon, so be sure to redeem them as soon as possible!\n"

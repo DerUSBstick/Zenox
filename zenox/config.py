@@ -9,6 +9,7 @@ type EnvType = Literal["dev", "test", "prod"]
 class Config(BaseSettings):
     # Discord
     discord_token: str = Field(validation_alias="bot_token")
+    discord_dev_guild_id: int
 
     # Sentry DSN
     sentry_dsn: str

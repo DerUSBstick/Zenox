@@ -20,6 +20,7 @@ class SpecialProgram:
     stream_end_time: int
     stream_title: str
     stream_early_image: bytes
+    stream_late_image: bytes | None = None
     stream_reminder_published: bool = False
 
     # use factory to avoid mutable default
@@ -46,6 +47,7 @@ class SpecialProgram:
             stream_end_time=data["stream_end_time"],
             stream_title=data["stream_title"],
             stream_early_image=data["stream_early_image"],
+            stream_late_image=data.get("stream_late_image"),
             stream_reminder_published=data["stream_reminder_published"],
             codes=[await RedemptionCode.new(code_data["code"], Game(code_data["game"])) for code_data in data.get("codes", [])],
             codes_published=data.get("codes_published", False),
@@ -63,6 +65,7 @@ class SpecialProgram:
             "stream_end_time": stream_end_time,
             "stream_title": stream_title,
             "stream_early_image": stream_early_image,
+            "stream_late_image": None,
             "stream_reminder_published": False,
             "codes": [],
             "codes_published": False,
