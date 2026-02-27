@@ -1,10 +1,17 @@
 from __future__ import annotations
+from pathlib import Path
 from dotenv import load_dotenv
 from typing import Any, Literal
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 type EnvType = Literal["dev", "test", "prod"]
+
+# In Docker Swarm, secrets are mounted at /run/secrets.
+# When that directory exists we read secrets from files there;
+# in local development we fall back to the .env file.
+_SECRETS_DIR = Path("/run/secrets")
+_USE_SECRETS = _SECRETS_DIR.is_dir()
 
 class Config(BaseSettings):
     # Discord
@@ -18,6 +25,10 @@ class Config(BaseSettings):
     youtube_api_key: str
     seeleland_api_url: str
 
+    # Twitch API Credentials
+    twitch_client_id: str
+    twitch_client_secret: str
+
     # Misc
     env: EnvType = "dev"
     db_url: str
@@ -27,7 +38,11 @@ class Config(BaseSettings):
     schedule: bool = False
 
     model_config = SettingsConfigDict(
-        env_file=".env", env_file_encoding="utf-8", cli_parse_args=True, cli_implicit_flags=True
+        env_file=None if _USE_SECRETS else ".env",
+        env_file_encoding="utf-8",
+        secrets_dir=str(_SECRETS_DIR) if _USE_SECRETS else None,
+        cli_parse_args=True,
+        cli_implicit_flags=True,
     )
 
     @property
@@ -40,7 +55,9 @@ class Config(BaseSettings):
     def is_dev(self) -> bool:
         return self.env == "dev"
 
-load_dotenv()
+# Only load .env manually in local development (not needed in Docker)
+if not _USE_SECRETS:
+    load_dotenv()
 
 CONFIG = Config() # pyright: ignore[reportCallIssue]
 print(f"CLI args: {CONFIG.cli_args}")

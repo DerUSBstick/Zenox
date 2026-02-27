@@ -1,0 +1,30 @@
+name: Build & Push Production
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: DerUSBstick/zenox
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log into registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build and push
+        run: |
+          docker build -f docker/Dockerfile.prod -t ghcr.io/DerUSBstick/zenox:prod -t ghcr.io/DerUSBstick/zenox:latest .
+          docker push ghcr.io/DerUSBstick/zenox:prod
+          docker push ghcr.io/DerUSBstick/zenox:latest
