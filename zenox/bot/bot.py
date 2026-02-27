@@ -1,39 +1,37 @@
+from __future__ import annotations
+
+import git
+import psutil
 import discord
 import sentry_sdk
-import os
-import git
+import concurrent.futures
 from discord.ext import commands
 from aiohttp import ClientSession
-from loguru import logger
-import psutil
 from pathlib import Path
+from typing import Optional
 
-from.command_tree import CommandTree
-from ..db.mongodb import DB
-from..static.utils import get_repo_version, get_now
-from ..db.structures import Config
-from ..l10n import Translator, AppCommandTranslator
+from .command_tree import CommandTree
+from zenox.l10n import AppCommandTranslator
+from zenox.utils import get_now, get_repo_version
+from zenox.enums import PrintColors
+from zenox.constants import POOL_MAX_WORKERS
+from zenox.config import Config
+from zenox.db.classes import ModuleConfig
+
 
 class Zenox(commands.AutoShardedBot):
-    owner_id: int
-
-    def __init__(
-        self,
-        *,
-        env: str,
-        config: Config
-    ) -> None:
+    def __init__(self, *, config: Config) -> None:
         self.owner_id = 585834029484343298
         self.guild_id = 1129777497454686330
         self.uptime = get_now()
         self.repo = git.Repo()
-        self.version = get_repo_version() or "dev"
-        self.env = env
-        self.config = config
-        self.db = DB
-        self.log_webhook_url = os.getenv(f"LOGS_WEBHOOK_{env.upper()}")
+        self.version = get_repo_version()
+        self.env = config.env
         self.process = psutil.Process()
-        self.session: ClientSession = None
+        self.session: Optional[ClientSession] = None
+        self.config = config
+        # Add Module Configurations from db/classes/config.py
+        self.db_config: Optional[ModuleConfig] = None
 
         super().__init__(
             command_prefix=commands.when_mentioned,
@@ -41,14 +39,31 @@ class Zenox(commands.AutoShardedBot):
             case_insensitive=True,
             help_command=None,
             tree_cls=CommandTree,
-            allowed_contexts=discord.app_commands.AppCommandContext(guild=True, dm_channel=True, private_channel=False),
-            allowed_installs=discord.app_commands.AppInstallationType(guild=True, user=False),
-            activity=discord.CustomActivity(f"{self.version} | ZZZ Full Support")
+            allowed_contexts=discord.app_commands.AppCommandContext(
+                guild=True, dm_channel=False, private_channel=False
+            ),
+            allowed_installs=discord.app_commands.AppInstallationType(
+                guild=True, user=False
+            ),
+            activity=discord.CustomActivity(f"{self.version} | Zenox"),
         )
+
+        if config.env == "dev":
+            self.executor = concurrent.futures.ThreadPoolExecutor(
+                max_workers=POOL_MAX_WORKERS
+            )
+        else:
+            self.executor = concurrent.futures.ProcessPoolExecutor(
+                max_workers=POOL_MAX_WORKERS
+            )
 
     async def setup_hook(self) -> None:
         self.session = ClientSession()
-        # Set Translator
+
+        # Load global configuration from database
+        self.db_config = await ModuleConfig.new()
+
+        # Set translator
         await self.tree.set_translator(AppCommandTranslator())
 
         # Load Cogs
@@ -56,8 +71,11 @@ class Zenox(commands.AutoShardedBot):
             cog_name = Path(filepath).stem
             try:
                 await self.load_extension(f"zenox.cogs.{cog_name}")
+                print(f"{PrintColors.OKGREEN}Loaded cog {cog_name!r}{PrintColors.ENDC}")
             except Exception as e:
-                print(f"Failed to load cog {cog_name!r}")
+                print(
+                    f"{PrintColors.FAIL}Failed to load cog {cog_name!r}{PrintColors.ENDC}"
+                )
                 self.capture_exception(e)
         return await super().setup_hook()
 
@@ -65,12 +83,12 @@ class Zenox(commands.AutoShardedBot):
         if self.session:
             await self.session.close()
         return await super().close()
-    
-    def capture_exception(self, e: Exception) -> None:
-        if isinstance(e, discord.NotFound) and e.code == 10062:
+
+    def capture_exception(self, error: Exception) -> None:
+        if isinstance(error, discord.NotFound) and error.code == 10062:
             return
-        sentry_sdk.capture_exception(e)
-    
+        sentry_sdk.capture_exception(error)
+
     @property
     def ram_usage(self) -> float:
         return self.process.memory_info().rss / 1024**2

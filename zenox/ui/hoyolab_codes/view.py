@@ -1,61 +1,47 @@
+from __future__ import annotations
+
 import discord
-from ..components import View, Button, Modal, TextInput, GoBackButton
-from discord import User, Member
-from discord import Locale
-from zenox.db.structures import SpecialProgram, GuildConfig, Game, DB, CodesConfig
-from zenox.l10n import Translator, LocaleStr
-from zenox.static import emojis
-from zenox.bot.bot import Zenox
-from zenox.static.utils import path_to_bytesio
-from .items.primaryOptions import updateImage, publishButton, publishGuildButton, publishDevGuildButton
-from .items.confirmPublish import confirmButton
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
+
+from .items.buttons import UpdateImage, PublishDevGuild, PublishGuild, PublishGlobal
+from .items.confirm import ConfirmButton
+from ..components import View, GoBackButton
+from ...db.classes import SpecialProgram
+
+if TYPE_CHECKING:
+    from ...types import Interaction, User
 
 class HoyolabCodesUI(View):
-    def __init__(
-            self,
-            *,
-            author: User | Member,
-            locale: Locale,
-            data: SpecialProgram
-    ):
+    def __init__(self, *, author: User, locale: discord.Locale, data: SpecialProgram):
         super().__init__(author=author, locale=locale)
-
-        self.add_item(updateImage())
-        self.add_item(publishButton(disabled=data.published or not data.found))
-        self.add_item(publishGuildButton())
-        self.add_item(publishDevGuildButton())
         
-        self.data: SpecialProgram = data
+        self.data = data
         self.action: Literal["Global", "Guild", "Dev"] | None = None
         self.guild_id: int | None = None
-    
-    async def rebuild_ui(self, interaction: discord.Interaction, menu: str, *, row: int = 4, back_button: bool = True):
-        # BUG: Channelselect dissappearing when going back
-        go_back_button = GoBackButton(self.children, self.get_embeds(interaction.message), None, row=row)
+
+        allow_publish = (self.data.codes_count != 0 and self.data.codes_count == len(self.data.codes) and not self.data.codes_published)
+        print(self.data.codes_count != 0, self.data.codes_count == len(self.data.codes), not self.data.codes_published)
+        self.add_item(UpdateImage())
+        self.add_item(PublishDevGuild())
+        self.add_item(PublishGuild())
+        self.add_item(PublishGlobal(disabled=not allow_publish))
+
+    async def _confirm_button(self, i: Interaction):
+        go_back_button = GoBackButton(self.children)
         self.clear_items()
 
-        match menu:
-            case 'main':
-                self.add_item(updateImage())
-                self.add_item(publishButton(disabled=self.data.published or not self.data.found))
-                self.add_item(publishGuildButton())
-                self.add_item(publishDevGuildButton())
+        self.add_item(ConfirmButton())
+        self.add_item(go_back_button)
 
-                self.action = None
-                self.guild_id = None
-            case 'publish':
-                self.add_item(confirmButton())
-        
-        if back_button:
-            self.add_item(go_back_button)
-        if not interaction.response.is_done():
-            await interaction.response.edit_message(view=self)
+        if not i.response.is_done():
+            await i.response.edit_message(view=self)
         else:
-            await interaction.followup.edit_message(message_id=interaction.message.id, view=self)
-    async def update_embed(self, interaction: discord.Interaction):
-        _, embed, _ = await self.data.buildMessage(interaction.client, self.locale)
-        await self.absolute_edit(interaction, embed=embed)
-    
-    async def update_ui(self, interaction: discord.Interaction):
-        await self.absolute_edit(interaction, view=self)
+            if i.message:
+                await i.followup.edit_message(message_id=i.message.id, view=self)
+
+    async def update_message(self, i: Interaction, *, embed_only: bool = False) -> None:
+        from zenox.auto_tasks.check_codes import CheckCodes
+        assert i.client.db_config is not None
+        stream_config = i.client.db_config.stream_codes_config[self.data.game]
+        await CheckCodes._update_message(stream_config.channel, stream_config.message, self.data, client=i.client, embed_only=embed_only)
+

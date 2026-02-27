@@ -1,0 +1,76 @@
+version: "3.8"
+
+services:
+  zenox-bot-staging:
+    image: ghcr.io/derusbstick/zenox:staging
+    environment:
+      - ENV=test
+    secrets:
+      - source: zenox_staging_bot_token
+        target: bot_token
+      - source: zenox_staging_discord_dev_guild_id
+        target: discord_dev_guild_id
+      - source: zenox_staging_sentry_dsn
+        target: sentry_dsn
+      - source: zenox_staging_youtube_api_key
+        target: youtube_api_key
+      - source: zenox_staging_seeleland_api_url
+        target: seeleland_api_url
+      - source: zenox_staging_twitch_client_id
+        target: twitch_client_id
+      - source: zenox_staging_twitch_client_secret
+        target: twitch_client_secret
+      - source: zenox_staging_db_url
+        target: db_url
+      - source: zenox_staging_discord_webhook
+        target: discord_webhook
+    networks:
+      - zenox_staging_net
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+
+  zenox-mongo-staging:
+    image: mongo:8
+    volumes:
+      - zenox_mongo_staging_data:/data/db
+    networks:
+      - zenox_staging_net
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+networks:
+  zenox_staging_net:
+    driver: overlay
+
+volumes:
+  zenox_mongo_staging_data:
+
+secrets:
+  zenox_staging_bot_token:
+    external: true
+  zenox_staging_discord_dev_guild_id:
+    external: true
+  zenox_staging_sentry_dsn:
+    external: true
+  zenox_staging_youtube_api_key:
+    external: true
+  zenox_staging_seeleland_api_url:
+    external: true
+  zenox_staging_twitch_client_id:
+    external: true
+  zenox_staging_twitch_client_secret:
+    external: true
+  zenox_staging_db_url:
+    external: true
+  zenox_staging_discord_webhook:
+    external: true

@@ -1,15 +1,17 @@
+from __future__ import annotations
+
 import discord
 from discord import app_commands
 from discord.app_commands import locale_str
-import pytz
 import itertools
 import psutil
-from datetime import datetime
 from discord.ext import commands, tasks
-
-from ..bot.bot import Zenox
-from ..static.embeds import DefaultEmbed
+from typing import TYPE_CHECKING
+from ..embeds import DefaultEmbed
 from ..l10n import LocaleStr
+
+if TYPE_CHECKING:
+    from ..bot import Zenox
 
 class Others(commands.Cog):
     def __init__(self, client: Zenox):

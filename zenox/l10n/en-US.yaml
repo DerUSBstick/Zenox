@@ -1,141 +1,66 @@
-wikicodes.content: "New Codes found"
-wikicodes_embed.title: "Redeemable Codes"
-wikicodes_embed.footer: "Powered by {game} Wiki"
-rewards: "Rewards"
-direct_link: "Direct Link"
-role_not_found_error: "\n-# Configured role couldn't be found. Please set it again using /config"
-error_title: "An Error Occured"
-error_footer: "Help can be found in our Discord server"
-config_command_description: "Update guild configuration"
-request_embed.title: "Support Access Request"
-request_embed.description: "Waiting for Approval\n\nCode:\n```{code}```\nExpires {expire}"
-settings_command_description: "Configure your user settings"
-invalid_input_error_title: "Invalid Input"
-loading_text: "Loading..."
-interaction_failed_title: "Interaction failed"
-interaction_failed_description: "This view is not initiated by you, therefore you cannot use it."
-invalid_input.input_needs_to_be_int: "Input `{input}` needs to be an integer"
-invalid_input.input_out_of_rage.max_value: "Input `{input}` needs to be less than or equal to {max_value}"
-invalud_input.input_out_of_range.min_value: "Input `{input}` needs to be greater than or equal to {min_value}"
-invalid_input.input_needs_to_be_bool: "Input `{input}` needs to be either `0` (for false) or `1` (for true)"
-channel_select.placeholder: "Select a channel"
-role_select.placeholder: "Select a role"
-everyone_ping.label: "Everyone Ping"
-stream_redemption_codes.label: "Stream Redemption Codes"
-stream_reminders.label: "Stream Reminders"
-all_redemption_codes.label: "All Redemption Codes"
-dark_mode_button.label: "Dark Mode"
-on_button_label: "ON"
-off_button_label: "OFF"
-game_select.placeholder: "Select a Game"
-embed_preview.label: "Preview Embed"
-support_number_modal.title: "Support Approval Request"
-support_number_modal.number_input.label: "Enter 4-digit Code to proceed"
-support_number_modal.note_input.label: "Please Read"
-support_number_modal.note_input.default: "After Approving, the user who created the ticket is authorised to request configuration updates, resending messages containing codes and more. Proceed with caution!"
-support_approve.button.label: "Approve Support Request"
-support_approve.already_done: "It looks like this request has already been handled by someone"
-support_approve.invalid_number: "Invalid Number submitted"
-support_approve.success: "Request approved successfully"
-support_approve.error: "An error occured while approving the request"
-error_not_permitted_to_run: "You are not permitted to run this command"
-ping_preferences_button.label: "Ping Preferences"
-code_preferences_button.label: "Code Preferences"
-special_program_embed.title: "{version} Special Program"
-special_program_embed.description: "{emj1} **Redeemable by clicking on the Buttons below!**\n\n{emj2} **Note:** Codes Expire soon, so be sure to redeem them as soon as possible!\n"
-no_codes_found: "No Codes found"
-stream_reminders_event.name: 'Version {version} "{title}" Special Program'
-stream_reminders_event.description: "**Watch via any of their official channels:**\n{youtube}[YouTube]({youtube_url})\n{twitch}[Twitch]({twitch_url})"
-partner_menu.button.label: "Partner Options"
-partner_options.invite_input.label: "Invite Link"
-partner_options.description_input.label: "Description"
-partner_options.description_input.placeholder: "Enter a description"
-partner_options.invite_button.label: "Set Invite Link"
-partner_options.invite_modal.title: "Set Partner Invite Link"
-partner_options.description_button.label: "Set Description"
-partner_options.description_modal.title: "Set Partner Description"
-support_button.label: "Support"
-commands.send_codes.description: "Sends a message for redemption codes with links and buttons"
-commands.send_codes.game: "The game of the codes to send"
-manual_codes_embed.start.title: "Enter Codes"
-manual_codes_embed.start.description: "Click the button below to enter all codes manually, comma separated"
-manual_codes.add_code_button.label: "Add Code"
 about_command: "About the Bot"
 about_command.desc: "This bot is designed to help you keep track of the latest codes for your favorite games, and provide easy access to them through Discord."
 about_command.guild_count: "Guild Count"
 about_command.ram_usage: "RAM Usage"
 about_command.uptime: "Uptime"
-link_command_description: "Link your accounts to the bot"
-linking_embed_title.method: "Select Linking Method"
-linking_embed_description.method: "Please select the method you want to use to link your account with the bot."
-linking_uid_input.title: "Enter UID to link"
-linking_uid_input.label: "UID"
-linking_uid_input.placeholder: "Enter your UID"
-linking_embed_title.game: "Select Game"
-linking_embed_description.game: "Please select the game you want to link your UID with."
-linking_method_select.placeholder: "Select a Method"
-linking_already_active: "You already have an active linking session. Please complete it first or wait for it to expire."
-linking_queue_full: "The linking queue is currently full. Please try again later."
-linking_embed_title.expired: "Account Linking Expired"
-linking_embed_description.expired: "Your account linking session has expired. Please start a new session to link your account."
-linking_embed_title.error: "Account Linking Error"
-linking_embed_description.max_accounts_reached: "You have reached the maximum number of accounts you can link."
-check_uid_unknown_error: "An unknown error occurred while checking the UID. Please try again later or contact support."
-enka_response.400: "Wrong UID format"
-enka_response.404: "UID not found"
-enka_response.424: "Game is under maintenance. Please try again later."
-enka_response.429: "Ratelimited by enka. Please try again later."
-enka_response.500: "Server error. Please try again later."
-enka_response.503: "Service unavailable. Please try again later."
-hoyolab_linking_embed_title.error: "Hoyolab Linking Error"
-hoyolab_linking_embed_description.error: "An error occurred while linking your Hoyolab account"
-hoyolab_linking_embed_description.no_accounts: "No supported game accounts found for the provided UID"
-hoyolab_linking_embed_description.already_linked: "All game accounts for this HoyolaB ID are already linked: If you think this is a mistake, please contact support."
-linking_method_select.description.hoyolab: "Recommended, All features available"
-linking_method_select.description.uid: "Limited, some features unavailable"
-hoyolab_linking_embed_title.started: "Hoyolab Linking Started"
-hoyolab_linking_embed_description.started: "To continue linking your Hoyolab account, we're going to need to verify that this account is actually yours!"
-hoyolab_linking_embed_field.hoyolab_id: "ID"
-hoyolab_linking_embed_field.accounts: "Accounts"
-hoyolab_linking_embed_field.expires: "Expires in"
-hoyolab_linking_embed_field.how_to_complete: "How to complete Verification"
-hoyolab_linking_embed_description.how_to_complete: "1. Go to your Hoyolab profile and add the key above anywhere in your profile signature\n2. Make sure you copy the key above exactly how it is written or else the bot will not be able to verify your account\n3. That's it! Please wait for the bot to verify your account"
-hoyolab_linking_embed_footer: "Please be patient while we verify your account! These changes can take a few minutes to appear on our end."
-hoyolab_linking_embed_title.expired: "Hoyolab Linking Expired"
-hoyolab_linking_embed_description.expired: "Your Hoyolab linking session has expired. Please start a new session to link your account."
-hoyolab_linking_embed_title.error: "Hoyolab Linking Error"
-hoyolab_linking_embed_description.error: "An error occurred while linking your Hoyolab account. {error}"
-hoyolab_linking_embed_title.success: "Hoyolab Linking Successful"
-hoyolab_linking_embed_description.success: "Your Hoyolab account has been successfully verified! Please wait for the bot finalizing the linking process."
-hoyolab_linking_embed_field.already_linked: "Following accounts are already linked to you"
-hoyolab_linking_embed_field.linked_someone_else: "Following accounts are linked to someone else. If you think this is a mistake, please contact support."
-hoyolab_linking_embed_title.finished: "Hoyolab Linking Finished"
-hoyolab_linking_embed_description.finished: "Your Hoyolab account and all related in-game accounts have been successfully linked!"
-uid_linking_embed_title.error: "UID Linking Error"
-uid_linking_embed_description.already_linked: "This UID is already linked to your account."
-uid_linking_embed_description.linked_someone_else: "This UID is linked to someone else's account. If you think this is a mistake, please contact support."
-uid_linking_embed_description.being_linked: "Someone is currently trying to link this UID to their account. If you think this is a mistake, please contact support."
-uid_linking_embed_title.started: "UID Linking Started"
-uid_linking_embed_description.started: "To continue linking the requested UID, we're going to need to verify that this account is actually yours!"
-uid_linking_embed_field.uid: "UID"
-uid_linking_embed_field.how_to_complete: "How to complete Verification"
-uid_linking_embed_description.how_to_complete: "1. Go in-game and add the key above anywhere in your profile signature\n2. Make sure you copy the key above exactly how it is written or else the bot will not be able to verify your account\n3. That's it! Please wait for the bot to verify your account"
-uid_linking_embed_footer: "Please be patient while we verify your account! These changes can take between 5-10 minutes to appear on our end."
-uid_linking_embed_title.success: "UID Linking Successful"
-uid_linking_embed_description.success: "Your UID has been successfully linked! You can now use related commands."
-unique_code: "Unique Verification Code"
-expires_in: "Expires in"
-hoyolab_api_error_title: "Hoyolab API Error"
-hoyolab_api_error_message: "An error occurred while fetching data from Hoyolab API"
-enka_api_error_title: "Enka API Error"
-enka_api_error_message: "An error occurred while fetching data from Enka API ({status_code})"
-accounts_command_description: "Manage your accounts linked to the bot"
-accounts_embed_title.no_accounts: "No Accounts Linked"
-accounts_embed_description.no_accounts: "You have no accounts linked to the bot. Please link your account using `/link` command."
-accounts_embed_title: "Account Manager"
-account_select.placeholder: "Select an Account"
-account_delete_button.label: "Delete selected account"
-game: "Game\n{emoji} {game}"
-alpha_feature_not_whitelisted.title: "Alpha Feature Not Whitelisted"
-alpha_feature_not_whitelisted.description: "This feature is currently in alpha and you are not whitelisted to use it. Please contact support if you think this is a mistake."
-channel_select.error: "I don't have the required permissions in this channel to use it. Please update the channel permissions for me with the following permissions: `send_messages`, `embed_links`, `view_channel`, `attach_files`, `use_external_emojis`. Otherwise, the bot will remove the channel from the configuration if it fails to send messages in it."
+choice_no: "No"
+choice_yes: "Yes"
+config_command.description: Configure guild settings
+error_title: Error
+guilds.codes_module_description: Manage Settings about receiving codes in your Server
+guilds.codes_module_label: Codes Module
+guilds.codes_module.edit.channel.placeholder: Select a channel
+guilds.codes_module.edit.mention_everyone.label: Mention @everyone
+guilds.codes_module.edit.mention_role.placeholder: Select a role
+guilds.codes_module.edit.ping_premium_only.label: Ping Valuable Currency Only
+guilds.codes_module.help.channel.description: This is the channel where new codes will be posted. You can set this to any text channel in your server where you want members to see the codes.
+guilds.codes_module.help.channel.title: Code Notification Channel
+guilds.codes_module.help.description: Get notifications for in-game redemption codes. Choose where codes appear, who gets pinged, and whether to notify only for valuable currency codes like Primogems. Keep your server updated with what matters most.
+guilds.codes_module.help.mention_everyone.description: If enabled, @everyone will be mentioned whenever a new code is posted.
+guilds.codes_module.help.mention_everyone.title: Mention @everyone
+guilds.codes_module.help.mention_role.description: If a specific role is selected, that role will be mentioned whenever a new code is posted.
+guilds.codes_module.help.mention_role.title: Mention Role
+guilds.codes_module.help.ping_premium_only.description: If enabled, members will only be notified about codes that provide valuable in-game currency, such as Primogems or Stellar Jades.
+guilds.codes_module.help.ping_premium_only.title: Ping Valuable Currency Only
+guilds.codes_module.help.title: Codes Module Help
+guilds.codes_module.setup.channel.description: This is the channel where codes will be sent
+guilds.codes_module.setup.channel.label: Channel
+guilds.codes_module.setup.channel.placeholder: Select a channel
+guilds.codes_module.setup.mention_everyone.description: Ping @everyone with new codes. For role mentions, disable this and select a role below instead.
+guilds.codes_module.setup.mention_everyone.label: Mention @everyone?
+guilds.codes_module.setup.mention_role.description: If you want to mention a specific role when a new code is sent, pick it here.
+guilds.codes_module.setup.mention_role.placeholder: Select a role
+guilds.codes_module.setup.ping_premium_only.description: Only ping for premium currency codes (Primogems, Stellar Jades). Leave empty to ping for all codes.
+guilds.codes_module.setup.ping_premium_only.label: Ping only for premium currency?
+guilds.reminders_module_description: Manage Settings about reminders in your Server
+guilds.reminders_module_label: Reminders Module
+guilds.reminders_module.edit.stream_reminder.label: Stream Reminder
+guilds.reminders_module.help.stream_reminder.description: Get notified about upcoming special programs.
+guilds.reminders_module.help.stream_reminder.title: Stream Reminder
+guilds.reminders_module.help.title: Reminders Module Help
+guilds.yt_notify_module_label: YouTube Notifications Module
+guilds.yt_notify_module_description: Manage Settings about YouTube notifications in your Server
+guilds.yt_notify_module.edit.channel.placeholder: Select a channel
+guilds.yt_notify_module.edit.mention_everyone.label: Mention @everyone
+guilds.yt_notify_module.edit.mention_role.placeholder: Select a role
+guilds.select_game: Select a game to configure
+guilds.select_module: Select a module to configure
+guilds.setup_modal_title: Setup Codes Module
+interaction_failed.description: You are not allowed to use this interaction.
+interaction_failed.title: Interaction Failed
+invalid_input.input_needs_to_be_int: Input `{input}` needs to be an integer
+invalid_input.input_out_of_range.max_value: Input `{input}` needs to be less than or equal to {max_value}
+invalid_input.input_out_of_range.min_value: Input `{input}` needs to be greater than or equal to {min_value}
+invalid_input.title: Invalid Input
+loading_text: Loading...
+off_button_label: "OFF"
+on_button_label: "ON"
+ytb_notification.content: "**{channel}** just uploaded a new video\n{url}"
+ytb_notification.watch_button.label: "Watch Video"
+codes_notification.content: "New codes for **{game_name}**"
+codes_notification.embed.title: Redeemable Codes
+codes_notification.direct_link: Direct Link
+stream_reminders_name: 'Version {version} "{title}" Special Program'
+stream_reminders_description: "**Watch via any of their official channels:**\n{youtube}[YouTube]({youtube_url})\n{twitch}[Twitch]({twitch_url})"
+stream_codes_message.embed.title: "{version} Stream Codes"
+stream_codes_message.embed.description: "{emj1} **Redeemable by clicking on the Buttons below!**\n\n{emj2} **Note:** Codes Expire soon, so be sure to redeem them as soon as possible!\n"

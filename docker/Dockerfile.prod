@@ -1,0 +1,28 @@
+# Production Dockerfile — multi-stage build for minimal final image
+FROM python:3.12-slim AS builder
+
+WORKDIR /app
+
+# Install uv via official image
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+
+COPY pyproject.toml uv.lock ./
+# Skip dev dependencies in production
+RUN uv sync --frozen --no-dev
+
+
+FROM python:3.12-slim
+
+WORKDIR /app
+
+# Copy the virtual environment from the builder stage
+COPY --from=builder /app/.venv /app/.venv
+
+# Copy source
+COPY . .
+
+ENV PATH="/app/.venv/bin:$PATH"
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+
+CMD ["python", "main.py", "--schedule"]

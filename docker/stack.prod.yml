@@ -1,0 +1,126 @@
+# Production stack — image pulled from GHCR, built via .github/workflows/build.prod.yml
+# Deploy: docker stack deploy -c docker/stack.prod.yml zenox
+
+services:
+  zenox-bot:
+    image: ghcr.io/derusbstick/zenox:prod
+    environment:
+      - ENV=prod
+    secrets:
+      - source: zenox_prod_bot_token
+        target: bot_token
+      - source: zenox_prod_discord_dev_guild_id
+        target: discord_dev_guild_id
+      - source: zenox_prod_sentry_dsn
+        target: sentry_dsn
+      - source: zenox_prod_youtube_api_key
+        target: youtube_api_key
+      - source: zenox_prod_seeleland_api_url
+        target: seeleland_api_url
+      - source: zenox_prod_twitch_client_id
+        target: twitch_client_id
+      - source: zenox_prod_twitch_client_secret
+        target: twitch_client_secret
+      - source: zenox_prod_db_url
+        target: db_url
+      - source: zenox_prod_discord_webhook
+        target: discord_webhook
+    networks:
+      - zenox_prod_net
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+        reservations:
+          cpus: "0.1"
+          memory: 256M
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+
+  zenox-mongo:
+    image: mongo:8
+    environment:
+      MONGO_INITDB_ROOT_USERNAME_FILE: /run/secrets/mongo_root_username
+      MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/mongo_root_password
+    secrets:
+      - source: zenox_prod_mongo_root_username
+        target: mongo_root_username
+      - source: zenox_prod_mongo_root_password
+        target: mongo_root_password
+    volumes:
+      - zenox_mongo_data:/data/db
+    networks:
+      - zenox_prod_net
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+        reservations:
+          memory: 256M
+
+networks:
+  zenox_prod_net:
+    driver: overlay
+
+volumes:
+  zenox_mongo_data:
+
+secrets:
+  zenox_prod_bot_token:
+    external: true
+  zenox_prod_discord_dev_guild_id:
+    external: true
+  zenox_prod_sentry_dsn:
+    external: true
+  zenox_prod_youtube_api_key:
+    external: true
+  zenox_prod_seeleland_api_url:
+    external: true
+  zenox_prod_twitch_client_id:
+    external: true
+  zenox_prod_twitch_client_secret:
+    external: true
+  zenox_prod_db_url:
+    external: true
+  zenox_prod_discord_webhook:
+    external: true
+  zenox_prod_mongo_root_username:
+    external: true
+  zenox_prod_mongo_root_password:
+    external: true
+  prod_sentry_dsn:
+    external: true
+  prod_youtube_api_key:
+    external: true
+  prod_seeleland_api_url:
+    external: true
+  prod_twitch_client_id:
+    external: true
+  prod_twitch_client_secret:
+    external: true
+  prod_db_url:
+    external: true
+  prod_discord_webhook:
+    external: true
+  prod_mongo_root_username:
+    external: true
+  prod_mongo_root_password:
+    external: true

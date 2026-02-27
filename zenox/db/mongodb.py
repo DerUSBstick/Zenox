@@ -1,78 +1,56 @@
-import sys, os, datetime
-from pymongo import MongoClient, collection
-from dotenv import load_dotenv
+import os
+from pymongo import AsyncMongoClient
+from pymongo.asynchronous.collection import AsyncCollection
+from typing import Any, Callable, Generic, TypeVar
 
-env = os.getenv("ENV")
-print(f"MongoDB Environment is {env}")
-CLUSTER = MongoClient(os.getenv(f'MONGODB_{env.upper()}'))
+CLUSTER = AsyncMongoClient(os.getenv("DB_URL"))
 
-class MongoDB:
-    _DB = None
+T = TypeVar("T")
 
-    def __init__(self) -> None:
-        if env == "prod":
-            self._DB = CLUSTER["zenox"] # DB Name
-        else:
-            self._DB = CLUSTER[f"zenox_{env}"] # DB Name
 
-    @property
-    def guilds(self) -> collection.Collection:
-        # Stores config for all guilds
-        return self._DB["guilds"]
-    @property
-    def users(self) -> collection.Collection:
-        # Stores config for all users
-        return self._DB["users"]
-    
-    @property
-    def accounts(self) -> collection.Collection:
-        # Stores linkable game accounts
-        return self._DB["accounts"]
+class DBProperty(Generic[T]):
+    """Python's @property does not work with type hints, so this is a workaround to make it work."""
 
-    @property
-    def const(self) -> collection.Collection:
-        # Stores information about bot growth
-        return self._DB["const"]
+    def __init__(self, getter: Callable[[Any], T]) -> None:
+        self.getter = getter
 
-class HoyoverseDB:
-    _DB = None
+    def __get__(self, obj, objtype=None) -> T:
+        return self.getter(obj)
 
+
+class Database:
     def __init__(self):
-        if env == "prod":
-            self._DB = CLUSTER["hoyoverseDB"]
-        else:
-            self._DB = CLUSTER[f"hoyoverseDB_{env}"]
-    @property
-    def event_reminders(self) -> collection.Collection:
-        return self._DB["event_reminders"]
-    @property
-    def special_programs(self) -> collection.Collection:
-        return self._DB["special_programs"]
-    @property
-    def codes(self) -> collection.Collection:
-        return self._DB["codes"]
+        self._db = CLUSTER.get_default_database()
 
-class AnalyticsDB:
-    _DB = None
+    @DBProperty
+    def guilds(self) -> AsyncCollection:
+        """Collection for guild configurations."""
+        return self._db["guilds"]
 
-    def __init__(self):
-        if env == "prod":
-            self._DB = CLUSTER["analytics"]
-        else:
-            self._DB = CLUSTER[f"analytics_{env}"]
-
-    @property
-    def reminders(self) -> collection.Collection:
-        return self._DB["reminders"]
-
-    @property
-    def wiki_codes(self) -> collection.Collection:
-        return self._DB["wiki_codes"]
+    @DBProperty
+    def videos(self) -> AsyncCollection:
+        """Collection for YouTube videos metadata."""
+        return self._db["videos"]
     
-    @property
-    def hoyolab_codes(self) -> collection.Collection:
-        return self._DB["hoyolab_codes"]
+    @DBProperty
+    def codes(self) -> AsyncCollection:
+        """Collection for redemption codes."""
+        return self._db["codes"]
+    
+    @DBProperty
+    def special_programs(self) -> AsyncCollection:
+        """Collection for special programs."""
+        return self._db["special_programs"]
+    
+    @DBProperty
+    def config(self) -> AsyncCollection:
+        """Collection for global configuration."""
+        return self._db["config"]
+    
+    @DBProperty
+    def cache(self) -> AsyncCollection:
+        """Collection for caching data."""
+        return self._db["cache"]
 
-DB = MongoDB()
-HOYOVERSEDB = HoyoverseDB()
-ANALYTICSDB = AnalyticsDB()
+
+DB = Database()
