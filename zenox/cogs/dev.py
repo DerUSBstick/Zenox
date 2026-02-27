@@ -73,6 +73,9 @@ class Dev(commands.GroupCog, group_name="dev"):
         
         _success, _forbidden, _failed = await self._create_events(i.client, special_program)
         await special_program._update_val("stream_reminder_published", True)
+        
+        assert i.client.db_config is not None, "Bot configuration is not loaded yet."
+        await i.client.db_config._update_module_setting(module_name="stream_codes_config", game=game, setting="state", value=1)
 
         await i.followup.send(f"Scheduled Stream for {game.value} {version}. Successfully created events in {_success} guilds, failed in {_failed} guilds, and missing permissions in {_forbidden} guilds.", ephemeral=True)
         await send_webhook(
