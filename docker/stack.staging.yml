@@ -39,6 +39,14 @@ services:
 
   zenox-mongo-staging:
     image: mongo:8
+    environment:
+      MONGO_INITDB_ROOT_USERNAME_FILE: /run/secrets/mongo_root_username
+      MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/mongo_root_password
+    secrets:
+      - source: zenox_staging_mongo_root_username
+        target: mongo_root_username
+      - source: zenox_staging_mongo_root_password
+        target: mongo_root_password
     volumes:
       - zenox_mongo_staging_data:/data/db
     networks:
@@ -78,4 +86,8 @@ secrets:
   zenox_staging_db_url:
     external: true
   zenox_staging_discord_webhook:
+    external: true
+  zenox_staging_mongo_root_username:
+    external: true
+  zenox_staging_mongo_root_password:
     external: true
