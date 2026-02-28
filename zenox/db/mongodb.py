@@ -1,9 +1,10 @@
-import os
 from pymongo import AsyncMongoClient
 from pymongo.asynchronous.collection import AsyncCollection
 from typing import Any, Callable, Generic, TypeVar
 
-CLUSTER = AsyncMongoClient(os.getenv("DB_URL"))
+from zenox.config import CONFIG
+
+CLUSTER = AsyncMongoClient(CONFIG.db_url)
 
 T = TypeVar("T")
 
