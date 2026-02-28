@@ -7,7 +7,7 @@ WORKDIR /app
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
 # Install system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends git && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends git netcat-openbsd && rm -rf /var/lib/apt/lists/*
 
 # Install dependencies first
 COPY pyproject.toml uv.lock ./
@@ -18,4 +18,4 @@ COPY . .
 
 ENV PYTHONUNBUFFERED=1
 
-CMD ["uv", "run", "python", "main.py", "--schedule"]
+CMD until nc -z zenox-mongo-staging 27017; do echo 'waiting for mongodb...'; sleep 2; done && uv run python main.py --schedule
