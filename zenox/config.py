@@ -25,10 +25,6 @@ class Config(BaseSettings):
     youtube_api_key: str
     seeleland_api_url: str
 
-    # Twitch API Credentials
-    twitch_client_id: str
-    twitch_client_secret: str
-
     # Misc
     env: EnvType = "dev"
     db_url: str

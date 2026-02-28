@@ -17,10 +17,6 @@ services:
         target: youtube_api_key
       - source: zenox_prod_seeleland_api_url
         target: seeleland_api_url
-      - source: zenox_prod_twitch_client_id
-        target: twitch_client_id
-      - source: zenox_prod_twitch_client_secret
-        target: twitch_client_secret
       - source: zenox_prod_db_url
         target: db_url
       - source: zenox_prod_discord_webhook
@@ -100,10 +96,6 @@ secrets:
     external: true
   zenox_prod_seeleland_api_url:
     external: true
-  zenox_prod_twitch_client_id:
-    external: true
-  zenox_prod_twitch_client_secret:
-    external: true
   zenox_prod_db_url:
     external: true
   zenox_prod_discord_webhook:
@@ -117,10 +109,6 @@ secrets:
   prod_youtube_api_key:
     external: true
   prod_seeleland_api_url:
-    external: true
-  prod_twitch_client_id:
-    external: true
-  prod_twitch_client_secret:
     external: true
   prod_db_url:
     external: true
