@@ -33,7 +33,7 @@ class SLClient:
 
         assert self.client.session is not None, "Client session is not initialized"
 
-        url = self.base_url + f"/get_player_data?uid={uid}"
+        url = self.base_url + f"/getPlayer?uid={uid}"
         async with self.client.session.get(url) as response:
             response.raise_for_status()
             data = await response.json()
