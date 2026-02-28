@@ -37,40 +37,9 @@ services:
         constraints:
           - node.hostname == Lifty
 
-  zenox-mongo-staging:
-    image: mongo:8
-    environment:
-      MONGO_INITDB_ROOT_USERNAME_FILE: /run/secrets/mongo_root_username
-      MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/mongo_root_password
-    secrets:
-      - source: zenox_staging_mongo_root_username
-        target: mongo_root_username
-      - source: zenox_staging_mongo_root_password
-        target: mongo_root_password
-    volumes:
-      - zenox_mongo_staging_data:/data/db
-    networks:
-      - zenox_staging_net
-    healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    deploy:
-      replicas: 1
-      restart_policy:
-        condition: on-failure
-        max_attempts: 3
-      placement:
-        constraints:
-          - node.hostname == Stashy
-
 networks:
   zenox_staging_net:
     driver: overlay
-
-volumes:
-  zenox_mongo_staging_data:
 
 secrets:
   zenox_staging_bot_token:
@@ -86,8 +55,4 @@ secrets:
   zenox_staging_db_url:
     external: true
   zenox_staging_discord_webhook:
-    external: true
-  zenox_staging_mongo_root_username:
-    external: true
-  zenox_staging_mongo_root_password:
     external: true
