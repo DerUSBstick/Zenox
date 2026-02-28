@@ -44,6 +44,9 @@ services:
         parallelism: 1
         delay: 10s
         order: start-first
+      placement:
+        constraints:
+          - node.hostname == Lifty
 
   zenox-mongo:
     image: mongo:8
@@ -75,6 +78,9 @@ services:
           memory: 512M
         reservations:
           memory: 256M
+      placement:
+        constraints:
+          - node.hostname == Stashy
 
 networks:
   zenox_prod_net:

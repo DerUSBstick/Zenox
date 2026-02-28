@@ -31,6 +31,9 @@ services:
       restart_policy:
         condition: on-failure
         delay: 5s
+      placement:
+        constraints:
+          - node.hostname == Lifty
 
   zenox-mongo-staging:
     image: mongo:8
@@ -47,6 +50,9 @@ services:
       replicas: 1
       restart_policy:
         condition: on-failure
+      placement:
+        constraints:
+          - node.hostname == Stashy
 
 networks:
   zenox_staging_net:
