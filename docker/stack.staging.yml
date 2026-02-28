@@ -27,6 +27,12 @@ services:
       restart_policy:
         condition: on-failure
         delay: 5s
+        max_attempts: 3
+      resources:
+        limits:
+          memory: 3G
+        reservations:
+          memory: 256M
       placement:
         constraints:
           - node.hostname == Lifty
@@ -46,6 +52,7 @@ services:
       replicas: 1
       restart_policy:
         condition: on-failure
+        max_attempts: 3
       placement:
         constraints:
           - node.hostname == Stashy

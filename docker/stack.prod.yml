@@ -1,6 +1,3 @@
-# Production stack — image pulled from GHCR, built via .github/workflows/build.prod.yml
-# Deploy: docker stack deploy -c docker/stack.prod.yml zenox
-
 services:
   zenox-bot:
     image: ghcr.io/derusbstick/zenox:prod
@@ -31,10 +28,8 @@ services:
         max_attempts: 3
       resources:
         limits:
-          cpus: "0.5"
-          memory: 512M
+          memory: 3G
         reservations:
-          cpus: "0.1"
           memory: 256M
       update_config:
         parallelism: 1
@@ -68,6 +63,7 @@ services:
       restart_policy:
         condition: on-failure
         delay: 5s
+        max_attempts: 3
       resources:
         limits:
           cpus: "0.5"
