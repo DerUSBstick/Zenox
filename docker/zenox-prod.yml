@@ -41,7 +41,8 @@ services:
 
 networks:
   zenox_prod_net:
-    driver: overlay
+    external: true
+    name: zenox-mongodb-prod_zenox_prod_net
 
 secrets:
   zenox_prod_bot_token:

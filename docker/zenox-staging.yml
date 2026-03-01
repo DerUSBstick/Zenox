@@ -39,7 +39,8 @@ services:
 
 networks:
   zenox_staging_net:
-    driver: overlay
+    external: true
+    name: zenox-mongodb-staging_zenox_staging_net
 
 secrets:
   zenox_staging_bot_token:
