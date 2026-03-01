@@ -195,10 +195,9 @@ class CheckCodes:
             DESC = f"\n{emojis.CODES1}{emojis.CODES2}{emojis.CODES3}\n"
 
             for code in codes:
-                has_valuable = GAME_VALUABLES[game].lower() in code["rewards"].lower()
-                DESC += f"> {emojis.GAME_VALUABLE_EMOJIS[game] if has_valuable else ''} `{code['code']}` | **[{DIRECT_LINK}]({HOYO_REDEEM_URLS[game]+code['code']})**\n"
+                DESC += f"> `{code['code']}` | **[{DIRECT_LINK}]({HOYO_REDEEM_URLS[game]+code['code']})**\n"
                 if not VIEW_POPULATED:
-                    _view.add_item(Button(label=code["code"], url=HOYO_REDEEM_URLS[game]+code["code"], emoji=emojis.GAME_VALUABLE_EMOJIS[game] if has_valuable else None))
+                    _view.add_item(Button(label=code["code"], url=HOYO_REDEEM_URLS[game]+code["code"]))
             
             VIEW_POPULATED = True
             
