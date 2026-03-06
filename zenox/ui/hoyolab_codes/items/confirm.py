@@ -121,7 +121,7 @@ class ConfirmButton(Button["HoyolabCodesUI"]):
             return False
 
         channel = i.client.get_channel(channel_id) or await i.client.fetch_channel(channel_id)
-        if not channel or not isinstance(channel, discord.TextChannel):
+        if not channel or not isinstance(channel, (discord.TextChannel, discord.Thread)):
             return False
 
         role = None

@@ -16,7 +16,7 @@ class ChannelSelector(ChannelSelect["GuildSettingsUI"]):
     def __init__(self, channel: int | None):
         super().__init__(
             default_values=[discord.SelectDefaultValue(id=channel, type=discord.SelectDefaultValueType.channel)] if channel else [],
-            channel_type=[discord.ChannelType.text, discord.ChannelType.news],
+            channel_type=[discord.ChannelType.text, discord.ChannelType.news, discord.ChannelType.public_thread, discord.ChannelType.private_thread],
             placeholder=LocaleStr(key="guilds.codes_module.edit.channel.placeholder"),
             min_values=0,
             max_values=1,
