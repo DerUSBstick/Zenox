@@ -8,7 +8,7 @@ import discord
 from fake_useragent import UserAgent
 
 from zenox import emojis
-from zenox.constants import CODE_URLS, ZENOX_LOCALES, HOYO_REDEEM_URLS, GAME_THUMBNAILS, GAME_VALUABLES, GAME_TO_ID, HOYOLAB_STREAM_CODES_ENDPOINT
+from zenox.constants import CODE_URLS, ZENOX_LOCALES, HOYO_REDEEM_URLS, GAME_THUMBNAILS, GAME_TO_ID, HOYOLAB_STREAM_CODES_ENDPOINT
 from zenox.db.mongodb import DB
 from zenox.enums import Game
 from zenox.embeds import Embed
@@ -227,7 +227,7 @@ class CheckCodes:
                 channel_id = guild.codes[game].channel
                 if channel_id is None:
                     continue
-
+                
                 channel = cls._client.get_channel(channel_id) or await cls._client.fetch_channel(channel_id)
                 if not channel:
                     await guild._update_module_setting(
