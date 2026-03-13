@@ -36,6 +36,39 @@ class CheckCodes:
     _ua = UserAgent()
 
     @classmethod
+    def _get_header(cls, gameID: int):
+        HEADERS = {
+            "User-Agent": cls._ua.random,
+            "authority": "bbs-api-os.hoyolab.com",
+            "method": "GET",
+            "path": f"/community/painter/wapi/circle/channel/guide/material?game_id={gameID}",
+            "scheme": "https",
+            "accept": "application/json, text/plain, */*",
+            "accept-encoding": "gzip, deflate, br",
+            "accept-language": "en-DE,en;q=0.9,de-DE;q=0.8,de;q=0.7,en-GB;q=0.6,en-US;q=0.5,zh-CN;q=0.4,zh;q=0.3",
+            "origin": "https://www.hoyolab.com",
+            "referer": "https://www.hoyolab.com/",
+            "sec-ch-ua": '"Chromium";v="130", "Google Chrome";v="130", "Not?A_Brand";v="99"',
+            "sec-ch-ua-mobile": "?1",
+            "sec-ch-ua-platform": "Windows",
+            "sec-fetch-dest": "empty",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-site",
+            "x-rpc-app_version": "3.1.0",
+            "x-rpc-client_type": "5",
+            "x-rpc-hour": "18",
+            "x-rpc-language": "en-us",
+            "x-rpc-page_info": '{"pageName":"","pageType":"","pageId":"","pageArrangement":"","gameId":""}',
+            "x-rpc-page_name": "",
+            "x-rpc-show-translated": "False",
+            "x-rpc-source_info": '{"sourceName":"","sourceType":"","sourceId":"","sourceArrangement":"","sourceGameId":""}',
+            "x-rpc-sys_version": "Windows NT 10.0",
+            "x-rpc-timezone": "Europe/Berlin",
+            "x-rpc-weekday": "5"
+        }
+        return HEADERS
+
+    @classmethod
     async def _get_codes(cls, session: aiohttp.ClientSession, game: Game) -> CodeFetchResult:
         response = await session.get(CODE_URLS[game], headers={"User-Agent": cls._ua.random})
         response.raise_for_status()
@@ -49,12 +82,13 @@ class CheckCodes:
         game: Game,
     ) -> dict[str, Any]:
         try:
-            async with session.get(
+            response = await session.get(
                 HOYOLAB_STREAM_CODES_ENDPOINT.format(game_id=GAME_TO_ID[game]),
-                headers={"User-Agent": cls._ua.random},
-            ) as response:
-                response.raise_for_status()
-                data = await response.json()
+                headers=cls._get_header(GAME_TO_ID[game]),
+            )
+            response.raise_for_status()
+            data = await response.json()
+            print(data)
 
             return data
         except Exception as e:
