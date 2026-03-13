@@ -34,21 +34,21 @@ class SLClient:
         assert self.client.session is not None, "Client session is not initialized"
 
         url = self.base_url + f"/getPlayer?uid={uid}"
-        async with self.client.session.get(url) as response:
-            response.raise_for_status()
-            data = await response.json()
-            
-            # Extract account data (k="p") and leaderboard data from characters
-            account = cast(AccountData, next((item for item in data if item.get("k") == "p"), {}))
-            
-            leaderboard = cast(
-                dict[str, SeelelandLeaderboardData],
-                {
-                    f"{item['k']}_{lb_key}": lb_value
-                    for item in data
-                    if "lb" in item and item.get("k") != "p"
-                    for lb_key, lb_value in item["lb"].items()
-                }
-            )
-            
-            return SeelelandResponse(account=account, leaderboard=leaderboard)
+        response = await self.client.session.get(url)
+        response.raise_for_status()
+        data = await response.json()
+
+        # Extract account data (k="p") and leaderboard data from characters
+        account = cast(AccountData, next((item for item in data if item.get("k") == "p"), {}))
+
+        leaderboard = cast(
+            dict[str, SeelelandLeaderboardData],
+            {
+                f"{item['k']}_{lb_key}": lb_value
+                for item in data
+                if "lb" in item and item.get("k") != "p"
+                for lb_key, lb_value in item["lb"].items()
+            }
+        )
+
+        return SeelelandResponse(account=account, leaderboard=leaderboard)

@@ -37,10 +37,10 @@ class CheckCodes:
 
     @classmethod
     async def _get_codes(cls, session: aiohttp.ClientSession, game: Game) -> CodeFetchResult:
-        async with session.get(CODE_URLS[game], headers={"User-Agent": cls._ua.random}) as response:
-            response.raise_for_status()
-            codes = await response.json()
-            return codes
+        response = await session.get(CODE_URLS[game], headers={"User-Agent": cls._ua.random})
+        response.raise_for_status()
+        codes = await response.json()
+        return codes
     
     @classmethod
     async def _get_stream_codes(

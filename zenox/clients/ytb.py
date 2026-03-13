@@ -67,14 +67,13 @@ class YTBClient:
         self.youtube = googleapiclient.discovery.build(
             API_SERVICE_NAME, API_VERSION, developerKey=API_KEY
         )
-    
+
     async def get_recent_channel_videos_rss(self, channel_id: str) -> RSSFeed:
         assert self.client.session is not None, "Client session is not initialized."
 
         rss_feed_url = f"https://www.youtube.com/feeds/videos.xml?channel_id={channel_id}"
-        # Fetch and parse in function
-        async with self.client.session.get(rss_feed_url) as response:
-            xml = await response.text()
+        response = await self.client.session.get(rss_feed_url)
+        xml = await response.text()
 
         feed = parse(xml)
         return cast(RSSFeed, feed)

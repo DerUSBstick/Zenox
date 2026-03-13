@@ -60,6 +60,5 @@ async def send_webhook(client: Zenox, webhook_url: str, username="Zenox Logs", *
     
     assert client.session is not None, "Client session is not initialized."
 
-    async with client.session as session:
-        webhook = discord.Webhook.from_url(webhook_url, session=session)
-        await webhook.send(content=content, embed=embed, embeds=embeds, username=username)
+    webhook = discord.Webhook.from_url(webhook_url, session=client.session)
+    await webhook.send(content=content, embed=embed, embeds=embeds, username=username)
