@@ -44,7 +44,6 @@ networks:
   zenox_prod_private:
     external: true
   zenox_prod_public:
-    external: true
 
 secrets:
   zenox_prod_bot_token:

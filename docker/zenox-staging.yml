@@ -42,7 +42,6 @@ networks:
   zenox_staging_private:
     external: true
   zenox_staging_public:
-    external: true
 
 secrets:
   zenox_staging_bot_token:
