@@ -196,13 +196,14 @@ class CheckCodes:
         async with cls._lock:
             cls._client = client
             for game in CODE_URLS.keys():
+                print(f"[CheckCodes] Checking codes for {game.value}")
                 try:
                     if client.db_config.stream_codes_config[game].stream_time - int(time.time()) < 3600 and client.db_config.stream_codes_config[game].state != 5 and client.db_config.stream_codes_config[game].stream_time != 0:
-                        print(f"Stream codes for {game.value} are going live within an hour or already live. Fetching stream codes.")
+                        print(f"[CheckCodes] Stream for {game.value} is starting within an hour or already started. Fetching stream codes.")
                         special_program = await SpecialProgram.new(game=game, version=client.db_config.stream_codes_config[game].version)
                         await cls._handle_hoyolab_codes(client.session, game, special_program)
                     else:
-                        print(f"Fetching non-stream codes for {game.value}.")
+                        print(f"[CheckCodes] Fetching non-stream codes for {game.value}.")
                         await cls._handle_non_stream_codes(client.session, game)
                 except Exception as e:
                     client.capture_exception(e)
@@ -248,7 +249,7 @@ class CheckCodes:
     @classmethod
     async def notify_codes(cls, game: Game, codes: list[dict[str, str]]) -> None:
         """Notifies guilds about new codes for a specific game."""
-        print("Notifying guilds about new codes for", game.name, "Codes:", codes)
+        print(f"[CheckCodes] Notifying guilds about new codes for {game.value}. Codes: {codes}")
         notifies = DB.guilds.find({f"codes.{game.value}.channel": {"$ne": None}}, {"_id": 0, "id": 1})
         translations, embeds, view = cls._pre_translate(codes, game)
         async for guild_data in notifies:
