@@ -22,6 +22,7 @@ services:
         target: discord_webhook
     networks:
       - zenox_staging_private
+      - zenox_staging_public
     deploy:
       replicas: 1
       restart_policy:
