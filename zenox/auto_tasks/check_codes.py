@@ -198,7 +198,7 @@ class CheckCodes:
             for game in CODE_URLS.keys():
                 print(f"[CheckCodes] Checking codes for {game.value}")
                 try:
-                    if client.db_config.stream_codes_config[game].stream_time - int(time.time()) < 3600 and client.db_config.stream_codes_config[game].state != 5 and client.db_config.stream_codes_config[game].stream_time != 0:
+                    if client.db_config.stream_codes_config[game].stream_time and client.db_config.stream_codes_config[game].state != 5 and client.db_config.stream_codes_config[game].stream_time - int(time.time()) < 3600:
                         print(f"[CheckCodes] Stream for {game.value} is starting within an hour or already started. Fetching stream codes.")
                         special_program = await SpecialProgram.new(game=game, version=client.db_config.stream_codes_config[game].version)
                         await cls._handle_hoyolab_codes(client.session, game, special_program)
