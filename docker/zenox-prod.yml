@@ -19,7 +19,7 @@ services:
       - source: zenox_prod_discord_webhook
         target: discord_webhook
     networks:
-      - zenox_prod_net
+      - zenox_prod_private
     deploy:
       replicas: 1
       restart_policy:
@@ -40,9 +40,8 @@ services:
           - node.hostname == Lifty
 
 networks:
-  zenox_prod_net:
+  zenox_prod_private:
     external: true
-    name: zenox-mongodb-prod_zenox_prod_net
 
 secrets:
   zenox_prod_bot_token:

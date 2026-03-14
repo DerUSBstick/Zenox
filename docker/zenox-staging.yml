@@ -21,7 +21,7 @@ services:
       - source: zenox_staging_discord_webhook
         target: discord_webhook
     networks:
-      - zenox_staging_net
+      - zenox_staging_private
     deploy:
       replicas: 1
       restart_policy:
@@ -38,9 +38,8 @@ services:
           - node.hostname == Lifty
 
 networks:
-  zenox_staging_net:
+  zenox_staging_private:
     external: true
-    name: zenox-mongodb-staging_zenox_staging_net
 
 secrets:
   zenox_staging_bot_token:
