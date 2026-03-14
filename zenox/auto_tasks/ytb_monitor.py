@@ -4,6 +4,8 @@ import asyncio
 import datetime
 from typing import TYPE_CHECKING, ClassVar
 
+import discord
+
 from zenox.db.mongodb import DB
 from zenox.db.classes import Guild, Video
 from zenox.ui.components import URLButtonView
@@ -95,6 +97,10 @@ class YTBMonitor:
                     continue
 
                 channel = cls._client.get_channel(channel_id) or await cls._client.fetch_channel(channel_id)
+
+                if not channel or not isinstance(channel, (discord.TextChannel, discord.Thread)):
+                    continue
+
                 
                 role_id = guild.youtube_notifications[game].mention_role
                 if role_id is not None:
@@ -117,9 +123,7 @@ class YTBMonitor:
                     locale=guild.language,
                 )
                 send_msg = f"{role.mention + ' ' if role else ''}{'@everyone' + ' ' if guild.youtube_notifications[game].mention_everyone else ''}{msg}"
-                await channel.send(send_msg, view=view) # pyright: ignore[reportAttributeAccessIssue]
-
-                print(guild.id)
+                await channel.send(send_msg, view=view)
             except Exception as e:
                 cls._client.capture_exception(e)
 

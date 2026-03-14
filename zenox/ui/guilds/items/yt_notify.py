@@ -3,8 +3,7 @@ from __future__ import annotations
 import discord
 from typing import TYPE_CHECKING
 
-from ...components import ChannelSelect, RoleSelect, ToggleButton, Button
-from zenox.embeds import DefaultEmbed
+from ...components import ChannelSelect, RoleSelect, ToggleButton
 from zenox.l10n import LocaleStr
 
 if TYPE_CHECKING:  #
@@ -15,7 +14,7 @@ class YTChannelSelector(ChannelSelect["GuildSettingsUI"]):
     def __init__(self, channel: int | None):
         super().__init__(
             default_values=[discord.SelectDefaultValue(id=channel, type=discord.SelectDefaultValueType.channel)] if channel else [],
-            channel_type=[discord.ChannelType.text, discord.ChannelType.news],
+            channel_type=[discord.ChannelType.text, discord.ChannelType.news, discord.ChannelType.public_thread, discord.ChannelType.private_thread],
             placeholder=LocaleStr(key="guilds.yt_notify_module.edit.channel.placeholder"),
             min_values=1,
             max_values=1,
