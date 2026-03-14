@@ -40,6 +40,7 @@ services:
 networks:
   zenox_staging_private:
     external: true
+  zenox_staging_public:
 
 secrets:
   zenox_staging_bot_token:
