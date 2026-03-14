@@ -21,8 +21,9 @@ services:
       - source: zenox_staging_discord_webhook
         target: discord_webhook
     networks:
-      - zenox_staging_private
-      - zenox_staging_public
+      - swarm-ops_private
+      - zenox-staging_private
+      - zenox-staging_public
     deploy:
       replicas: 1
       restart_policy:
@@ -39,9 +40,11 @@ services:
           - node.hostname == Lifty
 
 networks:
-  zenox_staging_private:
+  swarm-ops_private:
     external: true
-  zenox_staging_public:
+  zenox-staging_private:
+    external: true
+  zenox-staging_public:
 
 secrets:
   zenox_staging_bot_token:
