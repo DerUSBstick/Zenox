@@ -100,6 +100,7 @@ class CheckCodes:
     @classmethod
     async def _handle_non_stream_codes(cls, session: aiohttp.ClientSession, game: Game) -> None:
         codes = await cls._get_codes(session, game)
+        print(f"Non-stream codes for {game.value}:", codes)
         published_codes: list[dict[str, str]] = []
         for code_data in codes["codes"]:
             if code_data["status"] != "OK":
@@ -201,6 +202,7 @@ class CheckCodes:
                         special_program = await SpecialProgram.new(game=game, version=client.db_config.stream_codes_config[game].version)
                         await cls._handle_hoyolab_codes(client.session, game, special_program)
                     else:
+                        print(f"Fetching non-stream codes for {game.value}.")
                         await cls._handle_non_stream_codes(client.session, game)
                 except Exception as e:
                     client.capture_exception(e)
