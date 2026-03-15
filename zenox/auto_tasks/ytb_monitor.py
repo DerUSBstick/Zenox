@@ -29,7 +29,7 @@ if TYPE_CHECKING:
 """
 
 class YTBMonitor:
-    _after_date: datetime.datetime = datetime.datetime(2025, 11, 14, 4, 0, 20) # Avoid backfill of old videos
+    _after_date: datetime.datetime = datetime.datetime(2026, 3, 15, 0, 0, 0) # Avoid backfill of old videos
     _client: ClassVar[Zenox]
     _lock: ClassVar[asyncio.Lock] = asyncio.Lock()
     
@@ -47,8 +47,6 @@ class YTBMonitor:
                     GAME_YOUTUBE_CHANNEL_ID[game]
                 )
                 for entry in feed["entries"]:
-                    # if entry["yt_videoid"] not in ["Sx7xZp96nZM", "j8i2c-ZMFJY"]:
-                    #     continue
                     if any("shorts" in link["href"] for link in entry["links"]):
                         # print("Skipping Shorts video:", entry["yt_videoid"])
                         continue

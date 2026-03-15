@@ -157,3 +157,6 @@ class ConfirmButton(Button["HoyolabCodesUI"]):
                 await self._publish_to_guild(i, guild_data["id"], translations, embeds, view, guild_verified=True)
             except Exception as e:
                 i.client.capture_exception(e)
+
+        assert i.client.db_config is not None, "Bot configuration is not loaded yet."
+        await i.client.db_config._update_module_setting(module_name="stream_codes_config", game=game, setting="state", value=5)
