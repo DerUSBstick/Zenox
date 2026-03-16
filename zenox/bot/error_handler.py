@@ -3,6 +3,7 @@ from __future__ import annotations
 import discord
 from ..embeds import ErrorEmbed
 from ..l10n import LocaleStr
+from ..enums import PrintColors
 
 
 def get_error_embed(error: Exception, locale: discord.Locale):
@@ -17,7 +18,7 @@ def get_error_embed(error: Exception, locale: discord.Locale):
         description = (
             f"{type(error).__name__}: {error}" if error else type(error).__name__
         )
-
+        print(f"[ErrorHandler] Error - {PrintColors.FAIL}{type(error).__name__}: {error}{PrintColors.ENDC}")
         embed = ErrorEmbed(
             locale, title=LocaleStr(key="error_title"), description=description
         )

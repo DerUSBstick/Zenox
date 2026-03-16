@@ -10,7 +10,7 @@ from fake_useragent import UserAgent
 from zenox import emojis
 from zenox.constants import CODE_URLS, ZENOX_LOCALES, HOYO_REDEEM_URLS, GAME_THUMBNAILS, GAME_TO_ID, HOYOLAB_STREAM_CODES_ENDPOINT
 from zenox.db.mongodb import DB
-from zenox.enums import Game
+from zenox.enums import Game, PrintColors
 from zenox.embeds import Embed
 from zenox.db.classes import Guild, RedemptionCode, SpecialProgram
 from zenox.ui.components import View, Button
@@ -88,11 +88,11 @@ class CheckCodes:
             )
             response.raise_for_status()
             data = await response.json()
-            print(data)
+            print(f"[CheckCodes] Info - {PrintColors.OKCYAN}Stream codes fetched{PrintColors.ENDC}")
 
             return data
         except Exception as e:
-            print(f"Failed to fetch stream codes for {game.value}: {e}")
+            print(f"[CheckCodes] Error - {PrintColors.FAIL}Failed to fetch stream codes for {game.value}:{PrintColors.ENDC} {e}")
             cls._client.capture_exception(e)
             # fallback shape
             return {"retcode": -1, "message": str(e), "data": {"modules": [], "in_feed_modules": [], "server_time": "0"}}
@@ -100,7 +100,7 @@ class CheckCodes:
     @classmethod
     async def _handle_non_stream_codes(cls, session: aiohttp.ClientSession, game: Game) -> None:
         codes = await cls._get_codes(session, game)
-        print(f"Non-stream codes for {game.value}:", codes)
+        print(f"[CheckCodes] Info - {PrintColors.OKCYAN}Non-stream codes for {game.value}:{PrintColors.ENDC} {codes}")
         published_codes: list[dict[str, str]] = []
         for code_data in codes["codes"]:
             if code_data["status"] != "OK":
@@ -114,12 +114,12 @@ class CheckCodes:
                             
         if published_codes:
             await cls.notify_codes(game, published_codes)
-        print(f"Published codes for {game.name}: {published_codes}")
+        print(f"[CheckCodes] Info - {PrintColors.OKGREEN}Published codes for {game.name}:{PrintColors.ENDC} {published_codes}")
     
     @classmethod
     async def _update_message(cls, channel_id: int, message_id: int, special_program: SpecialProgram, *, client: Zenox | None = None, embed_only: bool = False) -> None:
         client = client or cls._client
-        print(f"Updating message for channel {channel_id} and message {message_id} with game {special_program.game.value} stream codes. Codes: {special_program.codes}")
+        print(f"[CheckCodes] Info - {PrintColors.OKBLUE}Updating message for channel {channel_id} and message {message_id} with game {special_program.game.value} stream codes.{PrintColors.ENDC} Codes: {special_program.codes}")
         try:
             channel = client.get_channel(channel_id) or await client.fetch_channel(channel_id)
             if not channel:
@@ -154,7 +154,7 @@ class CheckCodes:
     @classmethod
     async def _handle_hoyolab_codes(cls, session: aiohttp.ClientSession, game: Game, special_program: SpecialProgram) -> None:
         if special_program.codes_count != 0 and special_program.codes_count == len(special_program.codes):
-            print(f"Codes for {game.value} stream already up to date. Skipping fetch.")
+            print(f"[CheckCodes] Info - {PrintColors.WARNING}Codes for {game.value} stream already up to date. Skipping fetch.{PrintColors.ENDC}")
             return
         codes = await cls._get_stream_codes(session, game)
         module_data: dict[str, Any] | None = None
@@ -162,7 +162,7 @@ class CheckCodes:
             if module["module_type"] != 7:
                 continue
             module_data = module
-            print(module)
+            print(f"[CheckCodes] Info - {PrintColors.OKCYAN}Module data:{PrintColors.ENDC} {module}")
  
         if not module_data or not module_data["exchange_group"]["bonuses"]:
             return
@@ -180,12 +180,12 @@ class CheckCodes:
                 await special_program._add_code(redemption_code)
                 redemption_code.published = True
                 await DB.codes.update_one({"code": redemption_code.code, "game": redemption_code.game.value}, {"$set": {"published": True}})
-        print(f"Published stream codes for {game.value}: {published_codes}")
+        print(f"[CheckCodes] Info - {PrintColors.OKGREEN}Published stream codes for {game.value}:{PrintColors.ENDC} {published_codes}")
 
     @classmethod
     async def execute(cls, client: Zenox) -> None:
         if cls._lock.locked():
-            print("CheckCodes is already running, skipping this execution.")
+            print(f"[CheckCodes] Warning - {PrintColors.WARNING}CheckCodes is already running, skipping this execution.{PrintColors.ENDC}")
             return
         
         if client.session is None:
@@ -196,14 +196,14 @@ class CheckCodes:
         async with cls._lock:
             cls._client = client
             for game in CODE_URLS.keys():
-                print(f"[CheckCodes] Checking codes for {game.value}")
+                print(f"[CheckCodes] Info - {PrintColors.HEADER}Checking codes for {game.value}{PrintColors.ENDC}")
                 try:
                     if client.db_config.stream_codes_config[game].stream_time and client.db_config.stream_codes_config[game].state != 5 and client.db_config.stream_codes_config[game].stream_time - int(time.time()) < 3600:
-                        print(f"[CheckCodes] Stream for {game.value} is starting within an hour or already started. Fetching stream codes.")
+                        print(f"[CheckCodes] Info - {PrintColors.OKBLUE}Stream for {game.value} is starting within an hour or already started. Fetching stream codes.{PrintColors.ENDC}")
                         special_program = await SpecialProgram.new(game=game, version=client.db_config.stream_codes_config[game].version)
                         await cls._handle_hoyolab_codes(client.session, game, special_program)
                     else:
-                        print(f"[CheckCodes] Fetching non-stream codes for {game.value}.")
+                        print(f"[CheckCodes] Info - {PrintColors.OKCYAN}Fetching non-stream codes for {game.value}.{PrintColors.ENDC}")
                         await cls._handle_non_stream_codes(client.session, game)
                 except Exception as e:
                     client.capture_exception(e)
@@ -249,7 +249,7 @@ class CheckCodes:
     @classmethod
     async def notify_codes(cls, game: Game, codes: list[dict[str, str]]) -> None:
         """Notifies guilds about new codes for a specific game."""
-        print(f"[CheckCodes] Notifying guilds about new codes for {game.value}. Codes: {codes}")
+        print(f"[CheckCodes] Info - {PrintColors.OKGREEN}Notifying guilds about new codes for {game.value}.{PrintColors.ENDC} Codes: {codes}")
         notifies = DB.guilds.find({f"codes.{game.value}.channel": {"$ne": None}}, {"_id": 0, "id": 1})
         translations, embeds, view = cls._pre_translate(codes, game)
         async for guild_data in notifies:

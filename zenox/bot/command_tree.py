@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 from discord import app_commands
 
 from .error_handler import get_error_embed
+from ..enums import PrintColors
 
 if TYPE_CHECKING:
     from ..types import Interaction
@@ -26,6 +27,7 @@ class CommandTree(app_commands.CommandTree):
 
         embed, recognized = get_error_embed(error, discord.Locale.american_english)
         if not recognized:
+            print(f"[CommandTree] Error - {PrintColors.FAIL}Unrecognized command error:{PrintColors.ENDC} {error}")
             interaction.client.capture_exception(error)
 
         with contextlib.suppress(discord.NotFound):

@@ -5,6 +5,7 @@ import discord
 from typing import TYPE_CHECKING, ClassVar
 
 from zenox.embeds import DefaultEmbed
+from zenox.enums import PrintColors
 from zenox.db.mongodb import DB
 from zenox.db.classes import Guild
 
@@ -39,6 +40,7 @@ class CheckDatabase:
         await cls.reset()
         cls._start = int(time.time())
 
+        print(f"[CheckDatabase] Info - {PrintColors.HEADER}Starting database check...{PrintColors.ENDC}")
         for guild in client.guilds:
             cls._guilds.add(guild.id)
 
@@ -62,7 +64,11 @@ class CheckDatabase:
                         cls._results["pending"] += 1
             except Exception as e:
                 cls._results["error"] += 1
+                print(f"[CheckDatabase] Error - {PrintColors.FAIL}Exception for guild {guild.id}:{PrintColors.ENDC} {e}")
                 client.capture_exception(e)
+
+        print(f"[CheckDatabase] Info - {PrintColors.BOLD}Database check completed.{PrintColors.ENDC}")
+        print(f"[CheckDatabase] Info - {PrintColors.OKBLUE}Results:{PrintColors.ENDC} Skipped: {cls._results['skipped']}, Restored: {cls._results['restored']}, Pending: {cls._results['pending']}, Deleted: {cls._results['deleted']}, Errors: {cls._results['error']}")
 
         if client.config.webhook_url:
             webhook = discord.Webhook.from_url(client.config.webhook_url, client=client)

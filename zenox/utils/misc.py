@@ -9,6 +9,7 @@ import io
 from typing import TYPE_CHECKING
 
 from zenox.constants import UTC_8
+from zenox.enums import PrintColors
 from discord.utils import MISSING
 
 if TYPE_CHECKING:
@@ -57,8 +58,8 @@ def path_to_bytesio(path) -> io.BytesIO:
 async def send_webhook(client: Zenox, webhook_url: str, username="Zenox Logs", *, content: str=MISSING, embed: Embed=MISSING, embeds: list[Embed]=MISSING):
     if embed and embeds:
         raise ValueError("Cannot specify both `embed` and `embeds`.")
-    
     assert client.session is not None, "Client session is not initialized."
-
+    print(f"[Utils] Info - {PrintColors.OKBLUE}Sending webhook to {webhook_url} with username {username}.{PrintColors.ENDC}")
     webhook = discord.Webhook.from_url(webhook_url, session=client.session)
     await webhook.send(content=content, embed=embed, embeds=embeds, username=username)
+    print(f"[Utils] Info - {PrintColors.OKGREEN}Webhook sent successfully.{PrintColors.ENDC}")

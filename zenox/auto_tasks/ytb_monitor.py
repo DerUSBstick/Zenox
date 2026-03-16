@@ -9,7 +9,7 @@ import discord
 from zenox.db.mongodb import DB
 from zenox.db.classes import Guild, Video
 from zenox.ui.components import URLButtonView
-from zenox.enums import Game
+from zenox.enums import Game, PrintColors
 from zenox.constants import GAME_YOUTUBE_CHANNEL_ID
 from zenox.clients.ytb import YTBClient, VideoDetails
 from zenox.l10n import LocaleStr, translator
@@ -36,7 +36,7 @@ class YTBMonitor:
     @classmethod
     async def execute(cls, client: Zenox) -> None:
         if cls._lock.locked():
-            print("YTBMonitor is already running, skipping this execution.")
+            print(f"[YTBMonitor] Warning - {PrintColors.WARNING}YTBMonitor is already running, skipping this execution.{PrintColors.ENDC}")
             return
         
         async with cls._lock:
@@ -48,12 +48,10 @@ class YTBMonitor:
                 )
                 for entry in feed["entries"]:
                     if any("shorts" in link["href"] for link in entry["links"]):
-                        # print("Skipping Shorts video:", entry["yt_videoid"])
                         continue
                     db_res = await DB.videos.find_one({"video_id": entry["yt_videoid"], "game": game.value})
                     if db_res is not None:
                         continue  # Video already processed
-                    # print(entry["yt_videoid"], entry['title'])
                     videos = await ytbclient.get_video_details(entry["yt_videoid"])
                     if videos is None:
                         continue # Video not found
@@ -69,20 +67,20 @@ class YTBMonitor:
                         """Normal Video"""
                         await cls.notify_video(videos[0], game)
                     else:
-                        print("Unknown Video type", videos[0])
+                        print(f"[YTBMonitor] Error - {PrintColors.FAIL}Unknown Video type:{PrintColors.ENDC} {videos[0]}")
                     
                     await asyncio.sleep(3)
     
     @classmethod
     async def schedule_stream(cls, video_data: VideoDetails) -> None:
-        print("Scheduling stream:", video_data["id"])
+        print(f"[YTBMonitor] Info - {PrintColors.OKBLUE}Scheduling stream:{PrintColors.ENDC} {video_data['id']}")
         """Schedules a livestream for all guilds and internally in the database."""
         pass
 
     @classmethod
     async def notify_video(cls, video_data: VideoDetails, game: Game) -> None:
         """Notifies all guilds about a new video."""
-        print("Notifying guilds about new video:", video_data["id"])
+        print(f"[YTBMonitor] Info - {PrintColors.OKGREEN}Notifying guilds about new video:{PrintColors.ENDC} {video_data['id']}")
 
         notifies = DB.guilds.find({f"youtube_notifications.{game.value}.channel": {"$ne": None}}, {"_id": 0, "id": 1})
         async for guild_data in notifies:

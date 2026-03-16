@@ -62,24 +62,25 @@ class Zenox(commands.AutoShardedBot):
 
         # Load global configuration from database
         self.db_config = await ModuleConfig.new()
+        print(f"[Zenox] Info - {PrintColors.OKCYAN}Loaded DB config.{PrintColors.ENDC}")
 
         # Set translator
         await self.tree.set_translator(AppCommandTranslator())
+        print(f"[Zenox] Info - {PrintColors.OKCYAN}Translator set.{PrintColors.ENDC}")
 
         # Load Cogs
         for filepath in Path("zenox/cogs").glob("*.py"):
             cog_name = Path(filepath).stem
             try:
                 await self.load_extension(f"zenox.cogs.{cog_name}")
-                print(f"{PrintColors.OKGREEN}Loaded cog {cog_name!r}{PrintColors.ENDC}")
+                print(f"[Zenox] Info - {PrintColors.OKGREEN}Loaded cog {cog_name!r}{PrintColors.ENDC}")
             except Exception as e:
-                print(
-                    f"{PrintColors.FAIL}Failed to load cog {cog_name!r}{PrintColors.ENDC}"
-                )
+                print(f"[Zenox] Error - {PrintColors.FAIL}Failed to load cog {cog_name!r}{PrintColors.ENDC}")
                 self.capture_exception(e)
         return await super().setup_hook()
 
     async def close(self) -> None:
+        print(f"[Zenox] Warning - {PrintColors.WARNING}Shutting down Zenox bot...{PrintColors.ENDC}")
         if self.session:
             await self.session.close()
         return await super().close()
