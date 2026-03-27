@@ -63,4 +63,4 @@ codes_notification.direct_link: "Direkt einlösen"
 stream_reminders_name: 'Version {version} "{title}" Sonderprogramm'
 stream_reminders_description: "**Schau über einen ihrer offiziellen Kanäle:**\n{youtube}[YouTube]({youtube_url})\n{twitch}[Twitch]({twitch_url})"
 stream_codes_message.embed.title: "{version} Stream-Codes"
-stream_codes_message.embed.description: "{emj1} **Einlösbar durch Klicken auf die Buttons unten!**\n\n{emj2} **Hinweis:** Codes laufen bald ab, also löse sie so schnell wie möglich ein!\n"
+stream_codes_message.embed.description: "{emj1} **Einlösbar durch Klicken auf die Buttons unten!**\n\n{emj2} **Hinweis:** Einlösungscodes laufen <t:{codes_expire_at}:R> ab!\n"

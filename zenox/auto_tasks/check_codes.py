@@ -174,6 +174,8 @@ class CheckCodes:
         for bonus in module_data["exchange_group"]["bonuses"]:
             if not bonus["exchange_code"]:
                 continue
+            if special_program.codes_expire_at is None or special_program.codes_expire_at != int(bonus["offline_at"]):
+                await special_program._update_val("codes_expire_at", int(bonus["offline_at"]))
             published_codes.append({"code": bonus["exchange_code"]})
             redemption_code = await RedemptionCode.new(code=bonus["exchange_code"], game=game)
             if not redemption_code.published:

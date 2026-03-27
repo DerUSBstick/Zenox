@@ -45,6 +45,7 @@ def _pre_translate(
                 key="stream_codes_message.embed.description",
                 emj1=emojis.ANNOUNCEMENT,
                 emj2=emojis.BLURPLE_LINK,
+                codes_expire_at=data.codes_expire_at or 0
             ).translate(language),
         )
         embed.set_thumbnail(url=GAME_THUMBNAILS[data.game])

@@ -27,6 +27,7 @@ class SpecialProgram:
     codes: list[RedemptionCode] = field(default_factory=list)
     codes_published: bool = False
     codes_count: int = 0
+    codes_expire_at: int | None = None
 
     @classmethod
     async def new(cls, game: Game, version: str, *, stream_start_time: int = 0, stream_end_time: int = 0, stream_title: str = "", stream_early_image: discord.Attachment | None = None) -> SpecialProgram:
@@ -51,7 +52,9 @@ class SpecialProgram:
             stream_reminder_published=data["stream_reminder_published"],
             codes=[await RedemptionCode.new(code_data["code"], Game(code_data["game"])) for code_data in data.get("codes", [])],
             codes_published=data.get("codes_published", False),
-            codes_count=data.get("codes_count", 0)
+            codes_count=data.get("codes_count", 0),
+            codes_expire_at=data.get("codes_expire_at")
+
         )
 
         return instance
@@ -69,7 +72,8 @@ class SpecialProgram:
             "stream_reminder_published": False,
             "codes": [],
             "codes_published": False,
-            "codes_count": 0
+            "codes_count": 0,
+            "codes_expire_at": None
         })
     
     async def _update_val(self, key: str, value: Any, operator: str = "$set") -> None:
