@@ -3,7 +3,7 @@ name: Build & Push Staging
 on:
   push:
     branches:
-      - staging
+      - main
   workflow_dispatch:
 
 env:
