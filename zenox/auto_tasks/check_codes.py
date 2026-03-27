@@ -132,7 +132,7 @@ class CheckCodes:
 
             message = await channel.fetch_message(message_id)
 
-            embed = Embed(locale=discord.Locale.american_english, title=LocaleStr(key="stream_codes_message.embed.title", version=special_program.version), description=LocaleStr(key="stream_codes_message.embed.description", emj1=emojis.ANNOUNCEMENT, emj2=emojis.BLURPLE_LINK).translate(discord.Locale.american_english))
+            embed = Embed(locale=discord.Locale.american_english, title=LocaleStr(key="stream_codes_message.embed.title", version=special_program.version), description=LocaleStr(key="stream_codes_message.embed.description", emj1=emojis.ANNOUNCEMENT, emj2=emojis.BLURPLE_LINK, codes_expire_at=special_program.codes_expire_at or 0).translate(discord.Locale.american_english), )
             embed.set_thumbnail(url=GAME_THUMBNAILS[special_program.game])
             embed.add_field(name=emojis.CODES1+emojis.CODES2+emojis.CODES3, value=codes_str)
             if special_program.stream_late_image:
