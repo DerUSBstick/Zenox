@@ -105,10 +105,10 @@ class CheckCodes:
         for code_data in codes["codes"]:
             if code_data["status"] != "OK":
                 continue
-            redemption_code = await RedemptionCode.new(code=code_data["code"], game=game)
+            redemption_code = await RedemptionCode.new(code=code_data["code"].upper(), game=game)
 
             if not redemption_code.published:
-                published_codes.append({"code": code_data["code"]})
+                published_codes.append({"code": code_data["code"].upper()})
                 redemption_code.published = True
                 await DB.codes.update_one({"code": redemption_code.code, "game": redemption_code.game.value}, {"$set": {"published": True}})
                             
@@ -176,8 +176,8 @@ class CheckCodes:
                 continue
             if special_program.codes_expire_at is None or special_program.codes_expire_at != int(bonus["offline_at"]):
                 await special_program._update_val("codes_expire_at", int(bonus["offline_at"]))
-            published_codes.append({"code": bonus["exchange_code"]})
-            redemption_code = await RedemptionCode.new(code=bonus["exchange_code"], game=game)
+            published_codes.append({"code": bonus["exchange_code"].upper()})
+            redemption_code = await RedemptionCode.new(code=bonus["exchange_code"].upper(), game=game)
             if not redemption_code.published:
                 await special_program._add_code(redemption_code)
                 redemption_code.published = True
