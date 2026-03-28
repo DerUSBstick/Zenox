@@ -58,11 +58,10 @@ class Guild:
         cls.cache[guild_id] = instance
         return instance
 
-    @classmethod
-    async def delete(cls):
-        if cls.id in cls.cache:
-            del cls.cache[cls.id]
-        await DB.guilds.delete_one({"id": cls.id})
+    async def delete(self):
+        if self.id in self.cache:
+            del self.cache[self.id]
+        await DB.guilds.delete_one({"id": self.id})
 
     @classmethod
     async def add_empty(cls, guild_id: int):
