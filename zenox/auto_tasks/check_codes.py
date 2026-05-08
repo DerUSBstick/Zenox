@@ -208,6 +208,7 @@ class CheckCodes:
                         print(f"[CheckCodes] Info - {PrintColors.OKCYAN}Fetching non-stream codes for {game.value}.{PrintColors.ENDC}")
                         await cls._handle_non_stream_codes(client.session, game)
                 except Exception as e:
+                    print(f"[CheckCodes] Error - {PrintColors.FAIL}An error occurred while checking codes for {game.value}:{PrintColors.ENDC} {e}")
                     client.capture_exception(e)
                 finally:
                     try:
