@@ -1,4 +1,3 @@
-import os
 import logging
 import argparse
 from zenox.config import CONFIG
