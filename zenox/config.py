@@ -24,7 +24,7 @@ class Config(BaseSettings):
     # API Keys
     youtube_api_key: str
     seeleland_api_url: str
-    topgg_token: str
+    topgg_token: str = Field(default="", validation_alias="topgg_token")
 
     # Misc
     env: EnvType = "dev"
