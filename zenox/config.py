@@ -24,6 +24,7 @@ class Config(BaseSettings):
     # API Keys
     youtube_api_key: str
     seeleland_api_url: str
+    topgg_token: str
 
     # Misc
     env: EnvType = "dev"
@@ -37,6 +38,7 @@ class Config(BaseSettings):
         env_file=None if _USE_SECRETS else ".env",
         env_file_encoding="utf-8",
         secrets_dir=str(_SECRETS_DIR) if _USE_SECRETS else None,
+        extra="forbid" if _USE_SECRETS else "allow",
         cli_parse_args=True,
         cli_implicit_flags=True,
     )
