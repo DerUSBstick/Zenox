@@ -8,11 +8,11 @@ from .accounts import GameAccount
 from ..mongodb import DB
 from ...enums import Game
 
-__all__ = ("User",)
+__all__ = ("UserConfig",)
 
 
 @dataclass
-class User:
+class UserConfig:
     id: int
     features: list[str]
     flags: list[str]
@@ -21,10 +21,10 @@ class User:
     # Accounts
     accounts: list[GameAccount]
 
-    cache: ClassVar[Dict[int, User]] = {}
+    cache: ClassVar[Dict[int, UserConfig]] = {}
 
     @classmethod
-    async def new(cls, user_id: int) -> User:
+    async def new(cls, user_id: int) -> UserConfig:
         if user_id in cls.cache:
             return cls.cache[user_id]
 
@@ -35,7 +35,7 @@ class User:
 
         assert data is not None
 
-        instance = User(
+        instance = UserConfig(
             id=data["id"],
             features=data["features"],
             flags=data["flags"],
