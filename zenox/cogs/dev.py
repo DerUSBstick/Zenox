@@ -35,6 +35,19 @@ class Dev(commands.GroupCog, group_name="dev"):
     @staticmethod
     def is_owner(i: Interaction):
         return i.user.id == 585834029484343298
+    
+    @app_commands.command(
+            name=locale_str("user_config"),
+            description=locale_str("View RAW User Configuration")
+    )
+    @app_commands.check(is_owner)
+    async def user_config(self, i: Interaction, user_id: str):
+        raw_config = await DB.users.find_one({"id": int(user_id)})
+        if not raw_config:
+           return await i.response.send_message(f"No Data found for `{user_id}`", ephemeral=True) 
+        embed = DefaultEmbed(locale=discord.Locale.american_english, title=f"Raw Data for `{user_id}`", description=f"```json\n{raw_config}\n```")
+        embed.set_footer(text=f"Description Length: {len(str(raw_config))}")
+        return await i.response.send_message(embed=embed, ephemeral=False)
 
     @app_commands.command(
             name=locale_str("guild_config"),
