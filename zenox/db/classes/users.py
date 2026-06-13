@@ -74,3 +74,9 @@ class UserConfig:
         self.accounts.remove(account)
         await DB.accounts.delete_one({"uid": account.uid, "game": account.game.value})
         await DB.users.update_one({"id": self.id}, {"$pull": {"accounts": {"uid": account.uid, "game": account.game.value}}})
+
+    async def _update_language(self, locale: discord.Locale) -> None:
+        await DB.users.update_one(
+            {"id": self.id}, {"$set": {"language": locale.value}}
+        )
+        self.language = locale
