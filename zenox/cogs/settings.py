@@ -23,7 +23,6 @@ class Settings(commands.Cog):
             "Configure user settings", key="settings_command.description"
         ),
     )
-    @app_commands.guild_install()
     @app_commands.user_install()
     @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
     async def settings_command(self, interaction: Interaction):
