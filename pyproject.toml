@@ -23,6 +23,7 @@ dependencies = [
     "rsa>=4.9",
     "sentry-sdk[loguru]>=2.37.1",
     "toml>=0.10.2",
+    "debugpy>=1.8.21",
 ]
 
 [tool.pyright]

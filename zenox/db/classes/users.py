@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import contextlib
 import discord
 from dataclasses import dataclass
 from typing import Any, ClassVar, Dict
@@ -23,6 +24,43 @@ class UserConfig:
 
     cache: ClassVar[Dict[int, UserConfig]] = {}
 
+    @staticmethod
+    async def _parse_accounts(raw_accounts: Any) -> list[GameAccount]:
+        """Parse account data from both legacy and current schema shapes.
+
+        Legacy shape: dict[str, account_payload]
+        Current shape: list[{"uid": str, "game": str}]
+        """
+        accounts: list[GameAccount] = []
+
+        if isinstance(raw_accounts, list):
+            for ref in raw_accounts:
+                if not isinstance(ref, dict):
+                    continue
+                uid = ref.get("uid")
+                game_value = ref.get("game")
+                if not uid or not game_value:
+                    continue
+                with contextlib.suppress(Exception):
+                    accounts.append(await GameAccount.new(uid=str(uid), game=Game(str(game_value))))
+            return accounts
+
+        if isinstance(raw_accounts, dict):
+            for payload in raw_accounts.values():
+                if not isinstance(payload, dict):
+                    continue
+                with contextlib.suppress(Exception):
+                    normalized = payload.copy()
+                    normalized["game"] = Game(str(normalized["game"]))
+                    accounts.append(GameAccount(**normalized))
+
+        return accounts
+
+    async def _sync_account_refs(self) -> None:
+        """Persist account references in the current list schema."""
+        refs = [{"uid": acc.uid, "game": acc.game.value} for acc in self.accounts]
+        await DB.users.update_one({"id": self.id}, {"$set": {"accounts": refs}})
+
     @classmethod
     async def new(cls, user_id: int) -> UserConfig:
         if user_id in cls.cache:
@@ -35,15 +73,19 @@ class UserConfig:
 
         assert data is not None
 
+        parsed_accounts = await cls._parse_accounts(data.get("accounts", []))
+
         instance = UserConfig(
             id=data["id"],
             features=data["features"],
             flags=data["flags"],
             language=discord.Locale(data["language"]),
-            accounts=[
-                GameAccount(**data["accounts"][game]) for game in data["accounts"]
-            ]
+            accounts=parsed_accounts,
         )
+
+        # Opportunistically migrate legacy object schema to list references.
+        if isinstance(data.get("accounts"), dict):
+            await instance._sync_account_refs()
 
         cls.cache[user_id] = instance
         return instance
@@ -55,7 +97,7 @@ class UserConfig:
             "features": [],
             "flags": [],
             "language": "en-US",
-            "accounts": {}
+            "accounts": []
         })
 
     async def _update_val(self, key: str, value: Any, operator: str = "$set") -> None:
@@ -68,12 +110,12 @@ class UserConfig:
     async def _add_account(self, game: Game, account: GameAccount) -> None:
         self.accounts.append(account)
         await DB.accounts.insert_one(account.to_dict())
-        await DB.users.update_one({"id": self.id}, {"$push": {"accounts": {"uid": account.uid, "game": game.value}}})
+        await self._sync_account_refs()
         
     async def _remove_account(self, account: GameAccount) -> None:
         self.accounts.remove(account)
         await DB.accounts.delete_one({"uid": account.uid, "game": account.game.value})
-        await DB.users.update_one({"id": self.id}, {"$pull": {"accounts": {"uid": account.uid, "game": account.game.value}}})
+        await self._sync_account_refs()
 
     async def _update_language(self, locale: discord.Locale) -> None:
         await DB.users.update_one(

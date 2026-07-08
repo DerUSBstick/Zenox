@@ -95,13 +95,17 @@ class EnkaOwner:
 
 @dataclass
 class LinkingEntryTemplate:
-    method: Literal["UID", "Hoyolab"]
+    method: Literal["UID", "Hoyolab", "Enka"]
     hoyolab_id: str | None
     data: list[tuple[str, Game]]
     user_id: int
     started: datetime.datetime
     code: int
     interaction: discord.Interaction
+    # Tracks when the entry was last actively polled against the external API.
+    # None = never polled yet (first check runs immediately).
+    last_checked: datetime.datetime | None = None
+    enka_username: str | None = None
 
 class GameAccountTemplate(GameAccount):
     def __init__(self, uid: str, game: Game, username: str, public: bool, linked_date: datetime.datetime, user_id: int, hoyolab_id: str | None = None, enka_owner: EnkaOwner | None = None) -> None:

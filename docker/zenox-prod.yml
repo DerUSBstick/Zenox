@@ -3,6 +3,10 @@ services:
     image: ghcr.io/derusbstick/zenox:prod
     environment:
       - ENV=prod
+      - API_PORT=8080
+      - HOYOLAB_COOKIE_CACHE=/data/hoyolab_cookies.json
+    volumes:
+      - zenox-data:/data
     secrets:
       - source: zenox_prod_bot_token
         target: bot_token
@@ -18,6 +22,10 @@ services:
         target: db_url
       - source: zenox_prod_discord_webhook
         target: discord_webhook
+      - source: zenox_prod_hoyolab_username
+        target: hoyolab_username
+      - source: zenox_prod_hoyolab_password
+        target: hoyolab_password
     networks:
       - swarm-ops_private
       - zenox-prod_private
@@ -41,6 +49,31 @@ services:
         constraints:
           - node.hostname == Lifty
 
+  zenox-web:
+    image: ghcr.io/derusbstick/zenox-web:prod
+    environment:
+      - BOT_UPSTREAM=zenox-bot:8080
+    networks:
+      - swarm-ops_private
+      - zenox-prod_private
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+      resources:
+        limits:
+          memory: 64M
+        reservations:
+          memory: 32M
+      placement:
+        constraints:
+          - node.hostname == Lifty
+
+volumes:
+  zenox-data:
+
 networks:
   swarm-ops_private:
     external: true
@@ -62,4 +95,8 @@ secrets:
   zenox_prod_db_url:
     external: true
   zenox_prod_discord_webhook:
+    external: true
+  zenox_prod_hoyolab_username:
+    external: true
+  zenox_prod_hoyolab_password:
     external: true
