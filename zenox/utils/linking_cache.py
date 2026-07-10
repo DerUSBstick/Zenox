@@ -11,7 +11,6 @@ from discord.ext import tasks
 from typing import TYPE_CHECKING
 
 from zenox.constants import NICKNAME_LOC, SIGNATURE_LOC
-from zenox.config import CONFIG
 from zenox.enums import PrintColors, Game
 from zenox.db.classes import LinkingEntryTemplate, GameAccountTemplate, EnkaOwner, UserConfig
 from zenox.db.mongodb import DB
@@ -38,7 +37,6 @@ class LinkingCacheManager:
         self._lock = asyncio.Lock()
         self._queue: asyncio.Queue[LinkingEntryTemplate] = asyncio.Queue()
         self._linking_client = LinkingClient()
-        self._startup_auth_task: asyncio.Task[None] | None = None
 
     # ------------------------------------------------------------------ #
     # Lifecycle                                                            #
@@ -49,12 +47,6 @@ class LinkingCacheManager:
         self._linking_client.start()
         self._finalize_entries.start()
         self._check_entries.start()
-        # Run an auth preflight in the background so any captcha challenge is
-        # created immediately on startup and visible in the web UI.
-        if CONFIG.hoyolab_enabled:
-            self._startup_auth_task = asyncio.create_task(
-                self._startup_hoyolab_auth_check()
-            )
         print(
             f"[LinkingCache] Info - {PrintColors.OKGREEN}Background tasks started.{PrintColors.ENDC}"
         )
@@ -63,32 +55,7 @@ class LinkingCacheManager:
         """Cancel background tasks and close HTTP client. Call from ``bot.close``."""
         self._finalize_entries.cancel()
         self._check_entries.cancel()
-        if self._startup_auth_task is not None:
-            self._startup_auth_task.cancel()
-            with contextlib.suppress(asyncio.CancelledError):
-                await self._startup_auth_task
-            self._startup_auth_task = None
         await self._linking_client.close()
-
-    async def _startup_hoyolab_auth_check(self) -> None:
-        """Proactively verify HoYoLAB auth right after startup.
-
-        This surfaces captcha/email verification challenges before any user
-        starts a linking flow.
-        """
-        # Give bot startup a tiny head-start so logs are easier to follow.
-        await asyncio.sleep(1)
-        try:
-            await self._linking_client.ensure_hoyolab_auth()
-            logger.info("[LinkingCache] Startup HoYoLAB auth preflight succeeded")
-        except Exception as exc:
-            # Keep startup non-fatal: challenge flows/errors are expected here.
-            logger.warning(
-                "[LinkingCache] Startup HoYoLAB auth preflight failed; "
-                "continuing startup. Error=%s",
-                type(exc).__name__,
-                exc_info=True,
-            )
 
     # ------------------------------------------------------------------ #
     # Public helpers                                                       #
@@ -138,12 +105,6 @@ class LinkingCacheManager:
             return 0
         return 2 if doc["user_id"] == user_id else 1
 
-    async def fetch_hoyolab_game_records(self, hoyolab_uid: str) -> list[dict]:
-        """Return game account records from a HoYoLAB profile via the linking client."""
-        return await self._linking_client.fetch_hoyolab_game_records(hoyolab_uid)
-
-    # ------------------------------------------------------------------ #
-    # Internal: Enka helpers                                              #
     # ------------------------------------------------------------------ #
 
     async def _fetch_enka(self, uid: str, game: Game) -> dict:
@@ -194,19 +155,11 @@ class LinkingCacheManager:
         while not self._queue.empty():
             entry = await self._queue.get()
 
-            if entry.method not in ("Hoyolab", "Enka"):
-                continue  # Only Hoyolab and Enka entries use the queue
+            if entry.method != "Enka":
+                continue  # Only Enka entries use the queue
 
-            finished_title = (
-                "linking.hoyolab.finished.title"
-                if entry.method == "Hoyolab"
-                else "linking.enka.finished.title"
-            )
-            finished_desc = (
-                "linking.hoyolab.finished.description"
-                if entry.method == "Hoyolab"
-                else "linking.enka.finished.description"
-            )
+            finished_title = "linking.enka.finished.title"
+            finished_desc = "linking.enka.finished.description"
 
             failed = False
             for uid, game in entry.data:
@@ -288,9 +241,7 @@ class LinkingCacheManager:
 
                 entry.last_checked = now
 
-                if entry.method == "Hoyolab":
-                    await self._check_hoyolab_entry(entry)
-                elif entry.method == "UID":
+                if entry.method == "UID":
                     await self._check_uid_entry(entry)
                 elif entry.method == "Enka":
                     await self._check_enka_entry(entry)
@@ -345,35 +296,6 @@ class LinkingCacheManager:
                     embed=embed,
                     view=None,
                 )
-
-    async def _check_hoyolab_entry(self, entry: LinkingEntryTemplate) -> None:
-        """Check whether the user has placed the verification code in their Hoyolab bio."""
-        if not CONFIG.hoyolab_enabled:
-            return
-
-        assert entry.hoyolab_id is not None
-
-        data = await self._linking_client.fetch_hoyolab_profile(entry.hoyolab_id)
-        bio: str = data["data"]["user_info"]["introduce"]
-        if str(entry.code) not in bio:
-            return  # Code not in bio yet — wait for next poll
-
-        # Verification confirmed
-        embed = _default_embed(
-            entry.interaction.locale,
-            title_key="linking.hoyolab.verified.title",
-            desc_key="linking.hoyolab.verified.description",
-        )
-        with contextlib.suppress(discord.NotFound, discord.HTTPException):
-            if entry.interaction.message is not None:
-                await entry.interaction.followup.edit_message(
-                    message_id=entry.interaction.message.id,
-                    embed=embed,
-                    view=None,
-                )
-
-        await self._queue.put(entry)
-        await self.remove_entry(entry)
 
     async def _check_enka_entry(self, entry: LinkingEntryTemplate) -> None:
         """Check whether the user has placed the verification code in their Enka profile bio."""

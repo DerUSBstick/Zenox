@@ -25,12 +25,7 @@ jobs:
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Build and push bot image
+      - name: Build and push
         run: |
           docker build -f docker/Dockerfile -t ghcr.io/derusbstick/zenox:staging .
           docker push ghcr.io/derusbstick/zenox:staging
-
-      - name: Build and push web image
-        run: |
-          docker build -f web/Dockerfile -t ghcr.io/derusbstick/zenox-web:staging web/
-          docker push ghcr.io/derusbstick/zenox-web:staging

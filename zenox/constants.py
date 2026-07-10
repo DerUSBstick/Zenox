@@ -15,8 +15,8 @@ from zenox.enums import Game
 #     "REMINDERS_CONFIG_NOT_SUPPORTED", "YOUTUBE_NOTIFICATIONS_CONFIG_NOT_SUPPORTED",
 #     "CODE_URLS", "HOYOLAB_STREAM_CODES_ENDPOINT", "GAME_TO_ID", "HOYO_REDEEM_URLS",
 #     "HOYO_OFFICIAL_CHANNELS", "GAME_THUMBNAILS", "GAME_VALUABLES", "ENKA_API_URLS",
-#     "SIGNATURE_LOC", "NICKNAME_LOC", "LINKING_SUPPORTED_GAMES", "HOYOLAB_GAME_ID_TO_GAME",
-#     "LINKING_IMAGE_GUIDE", "HOYOLAB_LINKING_GUIDE_IMAGE", "HOYOLAB_GAME_RECORD_URL",
+#     "SIGNATURE_LOC", "NICKNAME_LOC", "LINKING_SUPPORTED_GAMES",
+#     "LINKING_IMAGE_GUIDE",
 #     "ENKA_PROFILE_URL", "ENKA_HOYOS_URL", "ENKA_HOYO_TYPE_TO_GAME", "ENKA_LINKING_GUIDE_IMAGE",
 #     )
 
@@ -132,11 +132,6 @@ LINKING_IMAGE_GUIDE: dict[Game, str] = {
     Game.STARRAIL: "",
     Game.ZZZ: "",
 }
-HOYOLAB_LINKING_GUIDE_IMAGE: str = ""
-
-HOYOLAB_GAME_RECORD_URL: str = (
-    "https://bbs-api-os.hoyolab.com/game_record/card/wapi/getGameRecordCard"
-)
 
 # Enka Network profile API — used by the Enka linking method.
 ENKA_PROFILE_URL: Final[str] = "https://enka.network/api/profile/{username}/"

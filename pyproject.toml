@@ -20,7 +20,6 @@ dependencies = [
     "pytz>=2025.2",
     "pyyaml>=6.0.2",
     "ruff>=0.13.0",
-    "rsa>=4.9",
     "sentry-sdk[loguru]>=2.37.1",
     "toml>=0.10.2",
     "debugpy>=1.8.21",

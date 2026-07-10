@@ -11,7 +11,6 @@ from pathlib import Path
 from typing import Optional
 
 from .command_tree import CommandTree
-from zenox.api import ApiServer
 from zenox.l10n import AppCommandTranslator
 from zenox.utils import get_now, get_repo_version, LinkingCacheManager
 from zenox.enums import PrintColors
@@ -34,7 +33,6 @@ class Zenox(commands.AutoShardedBot):
         # Add Module Configurations from db/classes/config.py
         self.db_config: Optional[ModuleConfig] = None
         self.linking_cache: Optional[LinkingCacheManager] = None
-        self.api_server: Optional[ApiServer] = None
 
         super().__init__(
             command_prefix=commands.when_mentioned,
@@ -68,12 +66,6 @@ class Zenox(commands.AutoShardedBot):
         self.linking_cache.start()
         print(f"[Zenox] Info - {PrintColors.OKCYAN}Linking cache manager started.{PrintColors.ENDC}")
 
-        # Start API server (for web UI captcha solving)
-        if self.config.api_port > 0:
-            self.api_server = ApiServer(host=self.config.api_host, port=self.config.api_port)
-            await self.api_server.start()
-            print(f"[Zenox] Info - {PrintColors.OKCYAN}API server started on port {self.config.api_port}.{PrintColors.ENDC}")
-
         # Load global configuration from database
         self.db_config = await ModuleConfig.new()
         print(f"[Zenox] Info - {PrintColors.OKCYAN}Loaded DB config.{PrintColors.ENDC}")
@@ -95,8 +87,6 @@ class Zenox(commands.AutoShardedBot):
 
     async def close(self) -> None:
         print(f"[Zenox] Warning - {PrintColors.WARNING}Shutting down Zenox bot...{PrintColors.ENDC}")
-        if self.api_server:
-            await self.api_server.stop()
         if self.linking_cache:
             await self.linking_cache.stop()
         if self.session:

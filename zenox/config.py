@@ -31,24 +31,6 @@ class Config(BaseSettings):
     db_url: str
     webhook_url: str = Field(validation_alias="discord_webhook")
 
-    # Hoyolab linking
-    hoyolab_enabled: bool = False
-    hoyolab_username: str = ""
-    hoyolab_password: str = ""
-    hoyolab_cookie: str = ""
-    hoyolab_cookie_token: str = ""
-    hoyolab_ltoken_v2: str = ""
-    hoyolab_ltuid_v2: str = ""
-    hoyolab_account_id_v2: str = ""
-    # When HOYOLAB_USERNAME/PASSWORD is set and HoYoLAB returns a captcha or email
-    # verification challenge, Zenox posts it to an internal REST API so the web UI
-    # can present it to the operator.  Set to a non-zero port to enable (e.g. 8080).
-    api_port: int = 0
-    api_host: str = "0.0.0.0"
-    # Path to a JSON file for persisting cookies obtained via password login so the
-    # bot survives restarts without re-solving the captcha (e.g. /data/hl_cookies.json).
-    hoyolab_cookie_cache: str = ""
-
     # Command-line arguments
     schedule: bool = False
 

@@ -370,20 +370,6 @@ wheels = [
 ]
 
 [[package]]
-name = "genshin"
-version = "1.7.28"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "aiohttp" },
-    { name = "pydantic" },
-    { name = "tenacity" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/6b/ae/ff9b7f6e9b1e8d78e1d0d19fa0c570dc14dcc6cd43ffadd5c09b21c13720/genshin-1.7.28.tar.gz", hash = "sha256:6e5a6271093572e65ae0f28a70276f01f0505c9ec8eab9a15e04b5abd2b5941d", size = 134727, upload-time = "2026-07-01T04:45:57.761Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/36/61/f905a5b9fa43d542a9bcf1e5c2ad9ecf47321cbc6576d13c44a6b37daf09/genshin-1.7.28-py3-none-any.whl", hash = "sha256:573c92580533e872630390c8c27638899348405042309bab928ec9c0afd7efe3", size = 190624, upload-time = "2026-07-01T04:45:56.442Z" },
-]
-
-[[package]]
 name = "gitdb"
 version = "4.0.12"
 source = { registry = "https://pypi.org/simple" }
@@ -1049,15 +1035,6 @@ wheels = [
 ]
 
 [[package]]
-name = "tenacity"
-version = "9.1.4"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/47/c6/ee486fd809e357697ee8a44d3d69222b344920433d3b6666ccd9b374630c/tenacity-9.1.4.tar.gz", hash = "sha256:adb31d4c263f2bd041081ab33b498309a57c77f9acf2db65aadf0898179cf93a", size = 49413, upload-time = "2026-02-07T10:45:33.841Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/d7/c1/eb8f9debc45d3b7918a32ab756658a0904732f75e555402972246b0b8e71/tenacity-9.1.4-py3-none-any.whl", hash = "sha256:6095a360c919085f28c6527de529e76a06ad89b23659fa881ae0649b867a9d55", size = 28926, upload-time = "2026-02-07T10:45:32.24Z" },
-]
-
-[[package]]
 name = "toml"
 version = "0.10.2"
 source = { registry = "https://pypi.org/simple" }
@@ -1190,7 +1167,6 @@ dependencies = [
     { name = "dotenv" },
     { name = "fake-useragent" },
     { name = "feedparser" },
-    { name = "genshin" },
     { name = "gitpython" },
     { name = "google-api-python-client" },
     { name = "pillow" },
@@ -1200,7 +1176,6 @@ dependencies = [
     { name = "pymongo" },
     { name = "pytz" },
     { name = "pyyaml" },
-    { name = "rsa" },
     { name = "ruff" },
     { name = "sentry-sdk", extra = ["loguru"] },
     { name = "toml" },
@@ -1214,7 +1189,6 @@ requires-dist = [
     { name = "dotenv", specifier = ">=0.9.9" },
     { name = "fake-useragent", specifier = ">=2.2.0" },
     { name = "feedparser", specifier = ">=6.0.12" },
-    { name = "genshin", specifier = ">=1.7.0" },
     { name = "gitpython", specifier = ">=3.1.45" },
     { name = "google-api-python-client", specifier = ">=2.184.0" },
     { name = "pillow", specifier = ">=12.0.0" },
@@ -1224,7 +1198,6 @@ requires-dist = [
     { name = "pymongo", specifier = ">=4.15.0" },
     { name = "pytz", specifier = ">=2025.2" },
     { name = "pyyaml", specifier = ">=6.0.2" },
-    { name = "rsa", specifier = ">=4.9" },
     { name = "ruff", specifier = ">=0.13.0" },
     { name = "sentry-sdk", extras = ["loguru"], specifier = ">=2.37.1" },
     { name = "toml", specifier = ">=0.10.2" },

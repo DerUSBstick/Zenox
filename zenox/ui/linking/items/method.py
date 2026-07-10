@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING, Any
 
 from ...components import Select, SelectOption
 from zenox.l10n import LocaleStr
-from zenox.config import CONFIG
 
 if TYPE_CHECKING:
     from zenox.types import Interaction
@@ -15,14 +14,6 @@ __all__ = ("MethodSelector",)
 
 class MethodSelector(Select["LinkingUI"]):
     def __init__(self) -> None:
-        options = self._build_options()
-        super().__init__(
-            options=options,
-            placeholder=LocaleStr(key="linking.method.placeholder"),
-        )
-
-    @staticmethod
-    def _build_options() -> list[SelectOption]:
         options = [
             SelectOption(
                 label=LocaleStr(key="linking.method.uid.label"),
@@ -35,15 +26,10 @@ class MethodSelector(Select["LinkingUI"]):
                 description=LocaleStr(key="linking.method.enka.description"),
             ),
         ]
-        if CONFIG.hoyolab_enabled:
-            options.append(
-                SelectOption(
-                    label=LocaleStr(key="linking.method.hoyolab.label"),
-                    value="Hoyolab",
-                    description=LocaleStr(key="linking.method.hoyolab.description"),
-                )
-            )
-        return options
+        super().__init__(
+            options=options,
+            placeholder=LocaleStr(key="linking.method.placeholder"),
+        )
 
     async def callback(self, interaction: Interaction) -> Any:
         from .game import GameSelector
