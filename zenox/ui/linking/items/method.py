@@ -2,8 +2,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+from .game import GameSelector
+from .uid import EnkaUsernameModal
+
 from ...components import Select, SelectOption
 from zenox.l10n import LocaleStr
+from zenox.embeds import DefaultEmbed
 
 if TYPE_CHECKING:
     from zenox.types import Interaction
@@ -32,10 +36,6 @@ class MethodSelector(Select["LinkingUI"]):
         )
 
     async def callback(self, interaction: Interaction) -> Any:
-        from .game import GameSelector
-        from .uid import HoyolabUIDModal, EnkaUsernameModal
-        from zenox.embeds import DefaultEmbed
-
         selected = self.values[0]
 
         if selected == "UID":
@@ -57,13 +57,3 @@ class MethodSelector(Select["LinkingUI"]):
             if not username:
                 return
             await self.view.enka_linking(username, interaction)
-
-        elif selected == "Hoyolab":
-            modal = HoyolabUIDModal()
-            modal.translate(self.view.locale)
-            await interaction.response.send_modal(modal)
-            await modal.wait()
-            uid = modal.uid_input.component.value.strip()
-            if not uid:
-                return
-            await self.view.hoyolab_linking(uid, interaction)

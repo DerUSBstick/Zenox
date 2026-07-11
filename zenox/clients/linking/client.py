@@ -1,20 +1,9 @@
-"""Main LinkingClient – composes HoyolabClient and EnkaClient.
-
-Usage
------
-    client = LinkingClient()
-    client.start()              # call from bot.setup_hook (inside an event loop)
-    ...
-    await client.close()        # call from bot.close
-"""
 from __future__ import annotations
 
 import logging
-
 import aiohttp
 
 from zenox.enums import Game
-
 from .enka import EnkaClient
 
 __all__ = ("LinkingClient",)
