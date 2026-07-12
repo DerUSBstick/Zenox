@@ -136,7 +136,7 @@ class LinkingCacheManager:
             uid=uid,
             game=game,
             username=nickname,
-            public=True,
+            public=False,
             linked_date=discord.utils.utcnow(),
             user_id=entry.user_id,
             hoyolab_id=entry.hoyolab_id,

@@ -5,7 +5,7 @@ from zenox.embeds import DefaultEmbed
 from zenox.emojis import get_game_emoji
 from zenox.l10n import LocaleStr
 from ..components import View
-from .items.account import AccountSelector, DeleteAccountButton
+from .items.account import AccountSelector, PublicToggleButton, DeleteAccountButton
 
 class AccountsView(View):
     def __init__(
@@ -22,6 +22,7 @@ class AccountsView(View):
     def _add_items(self) -> None:
         if self.selected:
             self.add_item(AccountSelector(self.user.accounts, self.selected))
+            self.add_item(PublicToggleButton(self.selected.public))
             self.add_item(DeleteAccountButton())
 
     def acc_embed(self) -> DefaultEmbed:
