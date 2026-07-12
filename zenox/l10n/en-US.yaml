@@ -7,6 +7,7 @@ choice_no: "No"
 choice_yes: "Yes"
 config_command.description: Configure guild settings
 error_title: Error
+game: "Game\n{emoji} {game}"
 guilds.codes_module_description: Manage Settings about receiving codes in your Server
 guilds.codes_module_label: Codes Module
 guilds.codes_module.edit.channel.placeholder: Select a channel
@@ -163,3 +164,9 @@ linking.enka.verified.title: "Enka Profile Verified"
 linking.enka.verified.description: "Your Enka profile was verified. Your accounts are now being processed..."
 linking.enka.finished.title: "Accounts Linked!"
 linking.enka.finished.description: "All accounts from your Enka Network profile have been successfully linked."
+
+accounts_command_description: "Manage your linked game accounts"
+accounts_embed_title.no_accounts: "No linked accounts"
+accounts_embed_description.no_accounts: "You currently have no linked accounts. Use the `/link` command to link your game accounts to your Discord account."
+account_select.placeholder: "Select an account"
+account_delete_button.label: "Delete Account"
