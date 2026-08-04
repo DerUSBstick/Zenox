@@ -5,12 +5,12 @@ from discord.app_commands import locale_str
 from discord.ext import commands
 from typing import TYPE_CHECKING
 
-from ..ui.users.view import UserSettingsUI
-from ..db.classes import UserConfig
+from zenox.ui.settings.users.view import UserSettingsView
+from zenox.db.classes import UserConfig
 
 if TYPE_CHECKING:
-    from ..bot import Zenox
-    from ..types import Interaction
+    from zenox.bot import Zenox
+    from zenox.types import Interaction
 
 
 class Settings(commands.Cog):
@@ -26,17 +26,13 @@ class Settings(commands.Cog):
     @app_commands.user_install()
     @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
     async def settings_command(self, interaction: Interaction):
-        await interaction.response.defer(ephemeral=True)
+        await interaction.response.defer(ephemeral=False)
 
         user = await UserConfig.new(interaction.user.id)
-        view = UserSettingsUI(
+        view = UserSettingsView(
             author=interaction.user, locale=user.language, user=user
         )
-        await interaction.followup.send(
-            embed=view.get_embed(), file=view.get_brand_image_file(), view=view
-        )
-
-        view.message = await interaction.original_response()
+        await view.update(interaction)
 
 
 async def setup(client: Zenox) -> None:

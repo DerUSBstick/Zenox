@@ -5,8 +5,9 @@ import datetime
 import git
 import toml
 import io
+import re
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, TypeVar
 
 from zenox.constants import UTC_8
 from zenox.enums import PrintColors
@@ -22,9 +23,12 @@ __all__ = (
     "shorten",
     "get_project_version",
     "path_to_bytesio",
-    "send_webhook"
+    "send_webhook",
+    "split_list_to_chunks",
+    "is_valid_hex_color",
 )
 
+T = TypeVar("T")
 
 def get_now(tz: datetime.timezone | None = None) -> datetime.datetime:
     """Get the current time in UTC+8 or the specified timezone."""
@@ -63,3 +67,11 @@ async def send_webhook(client: Zenox, webhook_url: str, username="Zenox Logs", *
     webhook = discord.Webhook.from_url(webhook_url, session=client.session)
     await webhook.send(content=content, embed=embed, embeds=embeds, username=username)
     print(f"[Utils] Info - {PrintColors.OKGREEN}Webhook sent successfully.{PrintColors.ENDC}")
+
+def split_list_to_chunks(lst: list[T], chunk_size: int) -> list[list[T]]:
+    """Split a list into chunks of a specified size."""
+    return [lst[i:i + chunk_size] for i in range(0, len(lst), chunk_size)]
+
+def is_valid_hex_color(color: str) -> bool:
+    """Check if a string is a valid hex color."""
+    return bool(re.match(r"^#(?:[0-9a-fA-F]{3}){1,2}$", color))

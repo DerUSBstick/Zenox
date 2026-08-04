@@ -23,8 +23,8 @@ class LocaleStr:
     def __init__(
         self,
         *,
-        key: str | None = None,
         custom_str: str | None = None,
+        key: str | None = None,
         translate: bool = True,
         **kwargs,
     ) -> None:

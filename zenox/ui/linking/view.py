@@ -6,7 +6,7 @@ import discord
 
 from typing import TYPE_CHECKING
 
-from ..components import View
+from zenox import ui
 from zenox.embeds import DefaultEmbed, ErrorEmbed
 from zenox.l10n import LocaleStr
 from zenox.enums import Game
@@ -30,7 +30,7 @@ _MAX_ACCOUNTS = 10
 _SESSION_TTL_MINUTES = 15
 
 
-class LinkingUI(View):
+class LinkingUI(ui.View):
     def __init__(self, *, author: User, locale: discord.Locale) -> None:
         super().__init__(author=author, locale=locale)
         self.add_item(MethodSelector())
@@ -119,7 +119,7 @@ class LinkingUI(View):
             embed.set_image(url=guide)
         embed.set_footer(text=LocaleStr(key="linking.uid.pending.footer"))
 
-        await View.absolute_edit(interaction, embed=embed, view=None)
+        await self._absolute_edit(interaction, embed=embed, view=None)
 
     # ------------------------------------------------------------------
     # Helpers
@@ -167,7 +167,7 @@ class LinkingUI(View):
             title=LocaleStr(key=title_key),
             description=LocaleStr(key=desc_key, **(desc_extras or {})),
         )
-        await View.absolute_edit(interaction, embed=embed, view=None)
+        await self._absolute_edit(interaction, embed=embed, view=None)
 
     # ------------------------------------------------------------------
     # Enka linking flow
@@ -231,7 +231,7 @@ class LinkingUI(View):
                 already_linked_field="linking.enka.already_linked_field",
                 linked_to_other_field="linking.enka.linked_to_other_field",
             )
-            await View.absolute_edit(interaction, embed=embed, view=None)
+            await self._absolute_edit(interaction, embed=embed, view=None)
             return
 
         user = await UserConfig.new(interaction.user.id)
@@ -282,4 +282,4 @@ class LinkingUI(View):
             embed.set_image(url=ENKA_LINKING_GUIDE_IMAGE)
         embed.set_footer(text=LocaleStr(key="linking.enka.pending.footer"))
 
-        await View.absolute_edit(interaction, embed=embed, view=None)
+        await self._absolute_edit(interaction, embed=embed, view=None)

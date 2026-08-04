@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from ...components import Label, Modal, TextInput, Select, SelectOption
+from zenox import ui
 from zenox.l10n import LocaleStr
 from zenox.enums import Game
 from zenox.constants import LINKING_SUPPORTED_GAMES
@@ -15,10 +15,10 @@ if TYPE_CHECKING:
 __all__ = ("GameSelector", "UIDModal")
 
 
-class UIDModal(Modal):
-    uid_input: Label[TextInput] = Label(
+class UIDModal(ui.Modal):
+    uid_input: ui.Label[ui.TextInput] = ui.Label(
         text=LocaleStr(key="linking.uid_modal.uid.label"),
-        component=TextInput(
+        component=ui.TextInput(
             placeholder=LocaleStr(key="linking.uid_modal.uid.placeholder"),
             min_length=9,
             max_length=10,
@@ -29,10 +29,10 @@ class UIDModal(Modal):
         super().__init__(title=LocaleStr(key="linking.uid_modal.title"))
 
 
-class GameSelector(Select["LinkingUI"]):
+class GameSelector(ui.Select["LinkingUI"]):
     def __init__(self) -> None:
         options = [
-            SelectOption(
+            ui.SelectOption(
                 label=game.value,
                 value=game.value,
                 emoji=get_game_emoji(game),
