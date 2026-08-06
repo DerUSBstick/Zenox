@@ -22,6 +22,8 @@ services:
       - swarm-ops_private
       - zenox-prod_private
       - zenox-prod_public
+    volumes:
+      - zenox-prod:/app/
     deploy:
       replicas: 1
       restart_policy:
@@ -47,6 +49,9 @@ networks:
   zenox-prod_private:
     external: true
   zenox-prod_public:
+
+volumes:
+  zenox-prod:
 
 secrets:
   zenox_prod_bot_token:

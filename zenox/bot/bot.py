@@ -17,6 +17,7 @@ from zenox.enums import PrintColors
 from zenox.constants import POOL_MAX_WORKERS
 from zenox.config import Config
 from zenox.db.classes import ModuleConfig
+from zenox.clients.store import Store
 
 
 class Zenox(commands.AutoShardedBot):
@@ -33,6 +34,7 @@ class Zenox(commands.AutoShardedBot):
         # Add Module Configurations from db/classes/config.py
         self.db_config: Optional[ModuleConfig] = None
         self.linking_cache: Optional[LinkingCacheManager] = None
+        self.store = Store()
 
         super().__init__(
             command_prefix=commands.when_mentioned,
@@ -60,6 +62,13 @@ class Zenox(commands.AutoShardedBot):
 
     async def setup_hook(self) -> None:
         self.session = ClientSession()
+        try:
+            await self.store.warm_up(self.session)
+            print(f"[Zenox] Info - {PrintColors.OKCYAN}Store warmed up.{PrintColors.ENDC}")
+        except Exception as e:
+            print(f"[Zenox] Error - {PrintColors.FAIL}Failed to warm up store.{PrintColors.ENDC}")
+            print(f"[Zenox] Error - {PrintColors.FAIL}{e}{PrintColors.ENDC}")
+            self.capture_exception(e)
 
         # Start linking cache manager
         self.linking_cache = LinkingCacheManager(self)
@@ -82,6 +91,7 @@ class Zenox(commands.AutoShardedBot):
                 print(f"[Zenox] Info - {PrintColors.OKGREEN}Loaded cog {cog_name!r}{PrintColors.ENDC}")
             except Exception as e:
                 print(f"[Zenox] Error - {PrintColors.FAIL}Failed to load cog {cog_name!r}{PrintColors.ENDC}")
+                print(f"[Zenox] Error - {PrintColors.FAIL}{e}{PrintColors.ENDC}")
                 self.capture_exception(e)
         return await super().setup_hook()
 

@@ -24,6 +24,8 @@ services:
       - swarm-ops_private
       - zenox-staging_private
       - zenox-staging_public
+    volumes:
+      - zenox-staging:/app/
     deploy:
       replicas: 1
       restart_policy:
@@ -45,6 +47,9 @@ networks:
   zenox-staging_private:
     external: true
   zenox-staging_public:
+
+volumes:
+  zenox-staging:
 
 secrets:
   zenox_staging_bot_token:
