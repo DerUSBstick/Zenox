@@ -13,7 +13,7 @@ SEELELAND_SITE_URL = "https://seeleland.com/"
 # How long a cached Seeleland API response stays "fresh" (seconds). Short-lived
 # on purpose - just long enough to cover one command's cascading autocomplete
 # calls, not a long-term cache (leaderboard data changes over time).
-SEELELAND_CACHE_TTL_SECONDS = 60
+SEELELAND_CACHE_TTL_SECONDS = 60 * 60 * 12
 
 # Short build/team code -> readable display name.
 SEELELAND_TEAM_NAMES: dict[str, str] = {
