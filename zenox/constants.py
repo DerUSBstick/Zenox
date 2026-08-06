@@ -7,11 +7,23 @@ import os
 
 from typing import Final
 
-from zenox.enums import Game
+from zenox.enums import Game, Path
 
 UTC_8 = datetime.timezone(datetime.timedelta(hours=8))
 SOURCE_LANG = "en-US"
 L10N_PATH = pathlib.Path("./zenox/l10n")
+
+PATH_DISPLAY_NAMES: Final[dict[Path, str]] = {
+    Path.WARRIOR: "Destruction",
+    Path.ROGUE: "Hunt",
+    Path.MAGE: "Erudition",
+    Path.SHAMAN: "Harmony",
+    Path.KNIGHT: "Preservation",
+    Path.PRIEST: "Abundance",
+    Path.WARLOCK: "Nihility",
+    Path.MEMORY: "Remembrance",
+    Path.ELATION: "Elation",
+}
 
 POOL_MAX_WORKERS = min(16, (os.cpu_count() or 1))
 
@@ -135,3 +147,4 @@ ENKA_HOYO_TYPE_TO_GAME: Final[dict[int, Game]] = {
 }
 
 ENKA_LINKING_GUIDE_IMAGE: str = ""
+SEELELAND_REGEX = r"^(\d+)_([ES\d]+)_(\d{5})([A-Z]*)(?:_(\d+))?$"
