@@ -1,9 +1,9 @@
 """Seeleland-specific constants: leaderboard category key parsing/formatting.
 
-Ported from seel's ``src/lib/components/navigators/TeamFilter.ts`` (short
-team/build code -> readable name) so leaderboard categories chosen by a
-player can be displayed with human-readable labels instead of raw codes.
-Not every code is mapped; fall back to the raw code when a lookup misses.
+Maps short team/build codes to human-readable names so leaderboard
+categories chosen by a player can be displayed nicely instead of as raw
+codes. Not every code is mapped; fall back to the raw code when a lookup
+misses.
 """
 from __future__ import annotations
 
@@ -105,10 +105,9 @@ SEELELAND_TEAM_NAMES: dict[str, str] = {
     "EAGL": "Eagle",
 }
 
-# Canonical per-character display order for build/team codes, "" = SOLO/base
-# (no team suffix). Used only to sort category options consistently with the
-# seel website - NOT a validity filter (we only ever show categories the
-# signed-in player actually has leaderboard data for).
+# Canonical per-character display order for build/team codes, "" = base
+# (no team suffix). Used only to sort category options consistently with
+# Seeleland's own site - NOT a validity filter
 SEELELAND_CATEGORY_ORDER: dict[str, list[str]] = {
     "1003": ["", "HMCRMFUG"],
     "1005": ["", "RMHHBS"],
@@ -165,7 +164,7 @@ def get_category_order(char_id: str) -> list[str]:
     variant), one apart, sharing the same category order (e.g. ``8007`` and
     ``8008`` both being "Trailblazer (Remembrance)"). If ``char_id`` itself
     has no entry, fall back to ``char_id + 1`` when that's a Trailblazer-range
-    id (> 8000), mirroring the equivalent remap in seel's ``TeamFilter.ts``.
+    id (> 8000).
     """
     if char_id in SEELELAND_CATEGORY_ORDER:
         return SEELELAND_CATEGORY_ORDER[char_id]

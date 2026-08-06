@@ -1,14 +1,11 @@
 """Static catalog of Seeleland-tracked light cones per character.
 
-Ported verbatim from seel's ``src/lib/leaderboards.ts`` (the ``leaderboards``
-array's ``info: [...]`` entries, char/light-cone/ctgr identity fields only -
-``prefers``/``tag``/``searchTerm``/relic-filter objects are irrelevant here)
+Maps each character to its known (light cone, category-key template) pairs,
 so ``/sl3`` can browse leaderboard categories without needing any specific
-account's own played data - there is no "list valid leaderboards" discovery
-endpoint on the Seeleland API itself.
+account's own played data.
 
 Unlike the account-driven path (``SLClient.get_player_data``), each catalog
-entry is already seel's single canonical/featured ctgr for that
+entry is already the single canonical/featured category for that
 (character, light cone) pair - team code and speed-threshold suffix are
 often already baked into ``ctgr_template`` as fixed constants (e.g. Jingliu's
 ``"E0S1_xxxxxPL_134"``), not independently selectable axes.
@@ -38,7 +35,7 @@ class CatalogEntry:
         return self.ctgr_template.replace(_LC_PLACEHOLDER, str(self.light_cone_id))
 
 
-# Verbatim (char_id -> list[(light_cone_id, ctgr_template)]) from leaderboards.ts.
+# (char_id -> list[(light_cone_id, ctgr_template)]) catalog of tracked builds.
 _RAW_CATALOG: dict[int, list[tuple[int, str]]] = {
     1102: [
         (23001, "E0S1_xxxxx"),

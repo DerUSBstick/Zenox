@@ -128,12 +128,10 @@ class SLClient:
     async def get_rankings(
         self, k: str, ctgr: str, page: int, *, requested_by: int | None = None
     ) -> RankingsResponse:
-        """Fetch a character leaderboard page sorted by rank.
+        """Fetch a character leaderboard page, sorted ascending by rank.
 
-        Mirrors the seel frontend's ``getRankings`` route, which itself just
-        fetches ``getLbData`` and sorts the results ascending by rank - that
-        route is unreachable directly on the deployed API (returns HTTP 404),
-        so the same behaviour is replicated here client-side.
+        Sorting is done client-side on top of ``get_lb_data`` rather than
+        relying on the API to return pre-sorted results.
         """
 
         entries = await self.get_lb_data(k, ctgr, page, requested_by=requested_by)
