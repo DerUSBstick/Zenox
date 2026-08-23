@@ -26,6 +26,7 @@ __all__ = (
     "send_webhook",
     "split_list_to_chunks",
     "is_valid_hex_color",
+    "blur_uid",
 )
 
 T = TypeVar("T")
@@ -75,3 +76,11 @@ def split_list_to_chunks(lst: list[T], chunk_size: int) -> list[list[T]]:
 def is_valid_hex_color(color: str) -> bool:
     """Check if a string is a valid hex color."""
     return bool(re.match(r"^#(?:[0-9a-fA-F]{3}){1,2}$", color))
+
+def blur_uid(uid: int | str | None, *, arterisk: str = "*") -> str:
+    """Blur a UID by replacing the middle digits with asterisks."""
+    if uid is None:
+        return ""
+    uid_str = str(uid)
+    middle_index = len(uid_str) // 2
+    return uid_str[: middle_index - 2] + arterisk * 5 + uid_str[middle_index + 3 :]
