@@ -125,11 +125,6 @@ class SeelelandClassicPaginatorView(ui.View):
             lines.append(you_line)
             lines.append("---")
         elif self.highlight_uid is not None:
-            # We resolved an account, but it has no score on this exact
-            # leaderboard - surface *which* account we checked instead of
-            # silently showing nothing, since players can have multiple
-            # linked accounts and the "default" one may not be the one
-            # they expect (see `account` command option).
             lines.append(
                 translator.translate(
                     LocaleStr(
