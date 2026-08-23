@@ -232,7 +232,7 @@ seeleland_lb.pagination.next.label: "Next"
 seeleland_lb.pagination.website.label: "View on Seeleland"
 seeleland_lb.invalid_selection: "Invalid selection for `{field}`. Please pick one of the autocomplete suggestions."
 seeleland_lb.no_leaderboard_found: "No leaderboard found for that combination."
-seeleland_lb.classic.no_rank_found: "No rank found for **{name}** ({uid}) on this leaderboard. If you have multiple linked accounts, use the `account` option to pick a different one."
+seeleland_lb.classic.no_rank_found: "No rank found for **{name}** (`{uid}`) on this leaderboard. If you have multiple linked accounts, use the `account` option to pick a different one."
 
 guild_settings: "Guild Settings"
 guild_settings.title: "Guild Settings"

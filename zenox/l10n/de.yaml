@@ -232,7 +232,7 @@ seeleland_lb.pagination.next.label: "Weiter"
 seeleland_lb.pagination.website.label: "Auf Seeleland ansehen"
 seeleland_lb.invalid_selection: "Ungültige Auswahl für `{field}`. Bitte wähle einen der Autovervollständigungsvorschläge aus."
 seeleland_lb.no_leaderboard_found: "Für diese Kombination wurde keine Bestenliste gefunden."
-seeleland_lb.classic.no_rank_found: "Für **{name}** ({uid}) wurde in dieser Bestenliste kein Rang gefunden. Wenn du mehrere verlinkte Accounts hast, verwende die Option `account`, um einen anderen auszuwählen."
+seeleland_lb.classic.no_rank_found: "Für **{name}** (`{uid}`) wurde in dieser Bestenliste kein Rang gefunden. Wenn du mehrere verlinkte Accounts hast, verwende die Option `account`, um einen anderen auszuwählen."
 
 guild_settings: "Server-Einstellungen"
 guild_settings.title: "Server-Einstellungen"
