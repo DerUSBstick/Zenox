@@ -4,6 +4,7 @@ import sys
 from typing import TYPE_CHECKING
 
 from zenox.db.classes import CacheEntry
+from zenox.enums import PrintColors
 from zenox.exceptions import SeelelandPageError
 
 from .constants import SEELELAND_CACHE_TTL_SECONDS
@@ -41,22 +42,31 @@ class SLClient:
             return []
         raise SeelelandPageError(data)
 
+    @staticmethod
+    def _log_cache(hit: bool, description: str) -> None:
+        color = PrintColors.OKGREEN if hit else PrintColors.WARNING
+        status = "HIT" if hit else "MISS"
+        print(f"[SLClient] Info - {color}Cache {status}{PrintColors.ENDC} - {PrintColors.OKCYAN}{description}{PrintColors.ENDC}")
+
     async def get_player_data(self, uid: str, *, requested_by: int | None = None) -> SeelelandResponse:
         """Fetch player data from Seeleland API by UID"""
 
         cache_key = f"seeleland:player:{uid}"
         cached = await CacheEntry.get(cache_key, ttl_seconds=SEELELAND_CACHE_TTL_SECONDS)
+        self._log_cache(cached is not None, f"get_player_data(uid={uid})")
         if cached is not None:
             data = cached.data["payload"]
         else:
             assert self.client.session is not None, "Client session is not initialized"
 
             url = self.base_url + f"/getPlayer?uid={uid}"
-            print(f"Fetching player data from URL: {url}")  # Debugging line
             response = await self.client.session.get(url)
             response.raise_for_status()
             data = await response.json()
-            print(f"Received Status Code: {response.status} for UID: {uid}")  # Debugging line
+            print(
+                f"[SLClient] Info - {PrintColors.OKBLUE}Fetched get_player_data(uid={uid}){PrintColors.ENDC} - "
+                f"status {PrintColors.OKGREEN if response.status < 400 else PrintColors.FAIL}{response.status}{PrintColors.ENDC}"
+            )
 
             await CacheEntry.set(cache_key, {"payload": data}, cached_by=requested_by or 0)
 
@@ -82,6 +92,7 @@ class SLClient:
 
         cache_key = f"seeleland:lb:{k}:{ctgr}:{page}"
         cached = await CacheEntry.get(cache_key, ttl_seconds=SEELELAND_CACHE_TTL_SECONDS)
+        self._log_cache(cached is not None, f"get_lb_data(k={k}, ctgr={ctgr}, page={page})")
         if cached is not None:
             data = cached.data["payload"]
         else:
@@ -91,6 +102,10 @@ class SLClient:
             response = await self.client.session.get(url)
             response.raise_for_status()
             data = await response.json()
+            print(
+                f"[SLClient] Info - {PrintColors.OKBLUE}Fetched get_lb_data(k={k}, ctgr={ctgr}, page={page}){PrintColors.ENDC} - "
+                f"status {PrintColors.OKGREEN if response.status < 400 else PrintColors.FAIL}{response.status}{PrintColors.ENDC}"
+            )
 
             if isinstance(data, list):
                 await CacheEntry.set(cache_key, {"payload": data}, cached_by=requested_by or 0)
@@ -106,6 +121,7 @@ class SLClient:
 
         cache_key = f"seeleland:ach:{page}"
         cached = await CacheEntry.get(cache_key, ttl_seconds=SEELELAND_CACHE_TTL_SECONDS)
+        self._log_cache(cached is not None, f"get_ach_lb_data(page={page})")
         if cached is not None:
             data = cached.data["payload"]
         else:
@@ -115,6 +131,10 @@ class SLClient:
             response = await self.client.session.get(url)
             response.raise_for_status()
             data = await response.json()
+            print(
+                f"[SLClient] Info - {PrintColors.OKBLUE}Fetched get_ach_lb_data(page={page}){PrintColors.ENDC} - "
+                f"status {PrintColors.OKGREEN if response.status < 400 else PrintColors.FAIL}{response.status}{PrintColors.ENDC}"
+            )
 
             if isinstance(data, list):
                 await CacheEntry.set(cache_key, {"payload": data}, cached_by=requested_by or 0)
