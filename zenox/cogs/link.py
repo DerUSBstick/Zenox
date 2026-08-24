@@ -26,7 +26,7 @@ class Link(commands.Cog):
     @app_commands.guild_install()
     @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
     async def link_command(self, interaction: Interaction) -> None:
-        await interaction.response.defer(ephemeral=True)
+        await interaction.response.defer(ephemeral=False, thinking=True)
 
         cache = interaction.client.linking_cache
         if cache is None:
