@@ -23,7 +23,7 @@ services:
       - zenox-prod_private
       - zenox-prod_public
     volumes:
-      - zenox-prod:/app/
+      - zenox-prod:/app/data
     deploy:
       replicas: 1
       restart_policy:
