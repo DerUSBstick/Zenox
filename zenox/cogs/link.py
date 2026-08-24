@@ -23,6 +23,7 @@ class Link(commands.Cog):
         description=locale_str("Link your Game Accounts to your Discord Account", key="link_command.description"),
     )
     @app_commands.user_install()
+    @app_commands.guild_install()
     @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
     async def link_command(self, interaction: Interaction) -> None:
         await interaction.response.defer(ephemeral=True)

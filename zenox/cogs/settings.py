@@ -24,6 +24,7 @@ class Settings(commands.Cog):
         ),
     )
     @app_commands.user_install()
+    @app_commands.guild_install()
     @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
     async def settings_command(self, interaction: Interaction):
         await interaction.response.defer(ephemeral=True)
