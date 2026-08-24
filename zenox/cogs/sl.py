@@ -115,6 +115,7 @@ class Seele(commands.Cog):
         await interaction.response.defer(ephemeral=False)
 
         user = await UserConfig.new(interaction.user.id)
+        account = account if account != "none" else None
         uid = self._resolve_account_uid(user, account)
 
         base_ctgr = entry.resolve_ctgr()
@@ -235,6 +236,8 @@ class Seele(commands.Cog):
             app_commands.Choice(name=f"{account.username} ({account.uid})", value=account.uid)
             for account in self._starrail_accounts(user)
         ]
+        if not choices:
+            return self._matching([app_commands.Choice(name="No linked Star Rail accounts", value="none")], current)
         return self._matching(choices, current)
 
 
