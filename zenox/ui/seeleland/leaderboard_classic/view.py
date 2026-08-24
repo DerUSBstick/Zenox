@@ -124,7 +124,7 @@ class SeelelandClassicPaginatorView(ui.View):
                 you_line += f" - {crit_suffix}"
             lines.append(you_line)
             lines.append("---")
-        elif self.highlight_uid is not None:
+        elif self.highlight_uid is not None and self.highlight_name is not None:
             lines.append(
                 translator.translate(
                     LocaleStr(
