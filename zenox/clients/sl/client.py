@@ -11,7 +11,7 @@ from .constants import SEELELAND_CACHE_TTL_SECONDS
 from .models import (
     AccountData,
     AchievementLbEntry,
-    CritStats,
+    # CritStats,
     LbDataEntry,
     RankingsResponse,
     SeelelandLeaderboardData,
@@ -76,7 +76,7 @@ class SLClient:
         leaderboard = {
             f"{item['k']}_{lb_key}": SeelelandLeaderboardData.from_raw(
                 lb_value,
-                crit_stats=CritStats.from_raw(item["effstats"][lb_key]) if lb_key in item.get("effstats", {}) else None,
+                crit_stats=None, # CritStats.from_raw(item["effstats"][lb_key]) if lb_key in item.get("effstats", {}) else None,
             )
             for item in data
             if "lb" in item and item.get("k") != "p"
