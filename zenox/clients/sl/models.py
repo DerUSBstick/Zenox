@@ -46,7 +46,7 @@ class CritStats:
 
     @classmethod
     def from_raw(cls, data: list) -> CritStats | None:
-        stats = {stat: float(value) for stat, value in data}
+        stats = {stat: float(value.split("%")[0]) for stat, value in data}
         if "CR" not in stats or "CD" not in stats:
             return None
         return cls(cr=stats["CR"], cd=stats["CD"])
