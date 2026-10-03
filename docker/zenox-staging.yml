@@ -25,7 +25,7 @@ services:
       - zenox-staging_private
       - zenox-staging_public
     volumes:
-      - zenox-staging:/app/data
+      - zenox-staging-cache:/app/cache
     deploy:
       replicas: 1
       restart_policy:
@@ -49,7 +49,7 @@ networks:
   zenox-staging_public:
 
 volumes:
-  zenox-staging:
+  zenox-staging-cache:
 
 secrets:
   zenox_staging_bot_token:

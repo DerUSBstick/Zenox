@@ -23,7 +23,7 @@ services:
       - zenox-prod_private
       - zenox-prod_public
     volumes:
-      - zenox-prod:/app/data
+      - zenox-prod-cache:/app/cache
     deploy:
       replicas: 1
       restart_policy:
@@ -51,7 +51,7 @@ networks:
   zenox-prod_public:
 
 volumes:
-  zenox-prod:
+  zenox-prod-cache:
 
 secrets:
   zenox_prod_bot_token:
