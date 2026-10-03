@@ -27,7 +27,8 @@ class TopGG:
                     headers = {"Authorization": f"Bearer {token}"}
                     data = {"server_count": len(client.guilds)}
 
-                    await client.session.post(cls._url, json=data, headers=headers)
+                    async with client.session.post(cls._url, json=data, headers=headers) as response:
+                        response.raise_for_status()
                     print(f"[TopGG] Info - {PrintColors.OKGREEN}Successfully posted stats to TopGG.{PrintColors.ENDC}")
                 else:
                     print(f"[TopGG] Warning - {PrintColors.WARNING}TopGG token not provided or HTTP session not initialized, skipping posting stats.{PrintColors.ENDC}")
