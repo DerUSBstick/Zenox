@@ -17,6 +17,11 @@ __all__ = ("GameStore",)
 logger = logging.getLogger(__name__)
 
 
+def _store_lang(lang: discord.Locale) -> str:
+    """Map a discord.Locale to the store's text map language key."""
+    return lang.value.split("-")[0].lower()
+
+
 class GameStore:
     """Base class for a single game's data store.
 
@@ -66,14 +71,15 @@ class GameStore:
     def get_loc(self, loc: str, lang: discord.Locale) -> str:
         """Resolve a localized string from the store's text map file."""
         file = self._raw.get(self.TEXT_MAP_FILE, {})
+        store_lang = _store_lang(lang)
 
         source = file.get("en", {}).get(loc)
-        localized = file.get(lang.language_code, {}).get(loc)
+        localized = file.get(store_lang, {}).get(loc)
 
         if not (source or localized):
             raise ValueError(
                 f"Localization for '{loc}' not found in store for language "
-                f"'{lang.language_code}' or source language 'en'."
+                f"'{store_lang}' or source language 'en'."
             )
 
         return localized if localized else source
