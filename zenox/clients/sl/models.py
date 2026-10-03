@@ -64,9 +64,9 @@ class SeelelandLeaderboardData:
     def from_raw(cls, data: dict, crit_stats: CritStats | None = None) -> SeelelandLeaderboardData:
         return cls(
             sc=data["sc"],
-            rank=data["rank"],
-            percrank=data["percrank"],
-            percraw=data["percraw"],
+            rank=str(data["rank"]),
+            percrank=data.get("percrank", ""),
+            percraw=data.get("percraw", 0.0),
             crit_stats=crit_stats,
         )
 
@@ -133,8 +133,10 @@ class LbEntryScore:
     def from_raw(cls, data: dict, crit_stats: CritStats | None = None) -> LbEntryScore:
         return cls(
             score=data["sc"],
-            rank=data["rank"],
-            percrank=data["percrank"],
+            # Plain int (no "N/total") for very low-population leaderboards.
+            rank=str(data["rank"]),
+            # Omitted by the API for very low-population leaderboards (e.g. brand-new characters).
+            percrank=data.get("percrank", ""),
             percraw=data.get("percraw"),
             crit_stats=crit_stats,
         )
