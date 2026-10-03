@@ -63,7 +63,12 @@ class GameAccount:
         })
     
     async def _update_val(self, key: str, value: Any, operator: str = "$set") -> None:
-        await DB.accounts.update_one({"uid": self.uid, "game": self.game.value}, {operator: {key: value}})
+        result = await DB.accounts.update_one(
+            {"uid": self.uid, "game": self.game.value, "user_id": self.user_id},
+            {operator: {key: value}},
+        )
+        if result.matched_count != 1:
+            raise ValueError("This account is no longer linked to this user.")
 
         # Update the cache for direct class attributes (non-nested fields)
         if "." not in key:
