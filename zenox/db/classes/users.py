@@ -26,33 +26,21 @@ class UserConfig:
 
     @staticmethod
     async def _parse_accounts(raw_accounts: Any) -> list[GameAccount]:
-        """Parse account data from both legacy and current schema shapes.
-
-        Legacy shape: dict[str, account_payload]
-        Current shape: list[{"uid": str, "game": str}]
-        """
+        """Parse account references: list[{"uid": str, "game": str}]."""
         accounts: list[GameAccount] = []
 
-        if isinstance(raw_accounts, list):
-            for ref in raw_accounts:
-                if not isinstance(ref, dict):
-                    continue
-                uid = ref.get("uid")
-                game_value = ref.get("game")
-                if not uid or not game_value:
-                    continue
-                with contextlib.suppress(Exception):
-                    accounts.append(await GameAccount.new(uid=str(uid), game=Game(str(game_value))))
+        if not isinstance(raw_accounts, list):
             return accounts
 
-        if isinstance(raw_accounts, dict):
-            for payload in raw_accounts.values():
-                if not isinstance(payload, dict):
-                    continue
-                with contextlib.suppress(Exception):
-                    normalized = payload.copy()
-                    normalized["game"] = Game(str(normalized["game"]))
-                    accounts.append(GameAccount(**normalized))
+        for ref in raw_accounts:
+            if not isinstance(ref, dict):
+                continue
+            uid = ref.get("uid")
+            game_value = ref.get("game")
+            if not uid or not game_value:
+                continue
+            with contextlib.suppress(Exception):
+                accounts.append(await GameAccount.new(uid=str(uid), game=Game(str(game_value))))
 
         return accounts
 
@@ -82,10 +70,6 @@ class UserConfig:
             language=discord.Locale(data["language"]),
             accounts=parsed_accounts,
         )
-
-        # Opportunistically migrate legacy object schema to list references.
-        if isinstance(data.get("accounts"), dict):
-            await instance._sync_account_refs()
 
         cls.cache[user_id] = instance
         return instance
