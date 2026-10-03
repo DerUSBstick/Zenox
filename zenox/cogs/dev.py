@@ -47,7 +47,7 @@ class Dev(commands.GroupCog, group_name="dev"):
            return await i.response.send_message(f"No Data found for `{user_id}`", ephemeral=True) 
         embed = DefaultEmbed(locale=discord.Locale.american_english, title=f"Raw Data for `{user_id}`", description=f"```json\n{raw_config}\n```")
         embed.set_footer(text=f"Description Length: {len(str(raw_config))}")
-        return await i.response.send_message(embed=embed, ephemeral=False)
+        return await i.response.send_message(embed=embed, ephemeral=True)
 
     @app_commands.command(
             name=locale_str("guild_config"),
