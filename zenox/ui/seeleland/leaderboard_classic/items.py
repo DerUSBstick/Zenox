@@ -19,13 +19,14 @@ class FirstPageButton(ui.Button["SeelelandClassicPaginatorView"]):
 
     async def callback(self, interaction: Interaction) -> None:
         view = self.view
+        prev_page = view.page
         view.page = 1
         try:
             view.rankings = await view.sl.get_rankings(
                 view.char_id, view.ctgr, view.page, requested_by=interaction.user.id
             )
         except SeelelandPageError:
-            pass
+            view.page = prev_page
 
         await view.refresh(interaction)
 
@@ -41,13 +42,14 @@ class PrevPageButton(ui.Button["SeelelandClassicPaginatorView"]):
 
     async def callback(self, interaction: Interaction) -> None:
         view = self.view
+        prev_page = view.page
         view.page = max(1, view.page - 1)
         try:
             view.rankings = await view.sl.get_rankings(
                 view.char_id, view.ctgr, view.page, requested_by=interaction.user.id
             )
         except SeelelandPageError:
-            pass
+            view.page = prev_page
 
         await view.refresh(interaction)
 
@@ -63,13 +65,14 @@ class NextPageButton(ui.Button["SeelelandClassicPaginatorView"]):
 
     async def callback(self, interaction: Interaction) -> None:
         view = self.view
+        prev_page = view.page
         view.page = min(10, view.page + 1)
         try:
             view.rankings = await view.sl.get_rankings(
                 view.char_id, view.ctgr, view.page, requested_by=interaction.user.id
             )
         except SeelelandPageError:
-            pass
+            view.page = prev_page
 
         await view.refresh(interaction)
 
@@ -80,13 +83,14 @@ class LastPageButton(ui.Button["SeelelandClassicPaginatorView"]):
 
     async def callback(self, interaction: Interaction) -> None:
         view = self.view
+        prev_page = view.page
         view.page = 10
         try:
             view.rankings = await view.sl.get_rankings(
                 view.char_id, view.ctgr, view.page, requested_by=interaction.user.id
             )
         except SeelelandPageError:
-            pass
+            view.page = prev_page
 
         await view.refresh(interaction)
 
