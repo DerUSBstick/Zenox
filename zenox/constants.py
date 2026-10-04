@@ -7,11 +7,23 @@ import os
 
 from typing import Final
 
-from zenox.enums import Game
+from zenox.enums import Game, Path
 
 UTC_8 = datetime.timezone(datetime.timedelta(hours=8))
 SOURCE_LANG = "en-US"
 L10N_PATH = pathlib.Path("./zenox/l10n")
+
+PATH_DISPLAY_NAMES: Final[dict[Path, str]] = {
+    Path.WARRIOR: "Destruction",
+    Path.ROGUE: "Hunt",
+    Path.MAGE: "Erudition",
+    Path.SHAMAN: "Harmony",
+    Path.KNIGHT: "Preservation",
+    Path.PRIEST: "Abundance",
+    Path.WARLOCK: "Nihility",
+    Path.MEMORY: "Remembrance",
+    Path.ELATION: "Elation",
+}
 
 POOL_MAX_WORKERS = min(16, (os.cpu_count() or 1))
 
@@ -80,3 +92,59 @@ GAME_VALUABLES: dict[Game, str] = {
     Game.STARRAIL: "Stellar Jade",
     Game.ZZZ: "Polychrome"
 }
+
+ENKA_API_URLS: Final[dict[Game, str]] = {
+    Game.GENSHIN: "https://enka.network/api/uid/{uid}?info",
+    Game.STARRAIL: "https://enka.network/api/hsr/uid/{uid}?info",
+    Game.ZZZ: "https://enka.network/api/zzz/uid/{uid}?info",
+}
+
+SIGNATURE_LOC: Final[dict[Game, list[str]]] = {
+    Game.GENSHIN: ["playerInfo", "signature"],
+    Game.STARRAIL: ["detailInfo", "signature"],
+    Game.ZZZ: ["PlayerInfo", "SocialDetail", "Desc"]
+}
+
+NICKNAME_LOC: Final[dict[Game, list[str]]] = {
+    Game.GENSHIN: ["playerInfo", "nickname"],
+    Game.STARRAIL: ["detailInfo", "nickname"],
+    Game.ZZZ: ["PlayerInfo", "SocialDetail", "ProfileDetail", "Nickname"]
+}
+
+# ---------------------------------------------------------------------------
+# Linking
+# ---------------------------------------------------------------------------
+
+LINKING_SUPPORTED_GAMES: list[Game] = [
+    Game.GENSHIN,
+    Game.STARRAIL,
+    Game.ZZZ,
+]
+
+HOYOLAB_GAME_ID_TO_GAME: dict[int, Game] = {
+    2: Game.GENSHIN,
+    6: Game.STARRAIL,
+    8: Game.ZZZ,
+}
+
+# Guide images shown in the pending embed — fill in the URLs.
+LINKING_IMAGE_GUIDE: dict[Game, str] = {
+    Game.GENSHIN: "",
+    Game.STARRAIL: "",
+    Game.ZZZ: "",
+}
+
+# Enka Network profile API — used by the Enka linking method.
+ENKA_PROFILE_URL: Final[str] = "https://enka.network/api/profile/{username}/"
+ENKA_HOYOS_URL: Final[str] = "https://enka.network/api/profile/{username}/hoyos/"
+
+# Maps Enka's hoyo_type field to the internal Game enum.
+# 0 = Genshin Impact, 1 = Honkai: Star Rail, 2 = Zenless Zone Zero
+ENKA_HOYO_TYPE_TO_GAME: Final[dict[int, Game]] = {
+    0: Game.GENSHIN,
+    1: Game.STARRAIL,
+    2: Game.ZZZ,
+}
+
+ENKA_LINKING_GUIDE_IMAGE: str = ""
+SEELELAND_REGEX = r"^(\d+)_([ES\d]+)_(\d{5})([A-Z]*)(?:_(\d+))?$"

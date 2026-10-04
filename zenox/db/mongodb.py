@@ -27,6 +27,16 @@ class Database:
     def guilds(self) -> AsyncCollection:
         """Collection for guild configurations."""
         return self._db["guilds"]
+    
+    @DBProperty
+    def users(self) -> AsyncCollection:
+        """Collection for user data."""
+        return self._db["users"]
+
+    @DBProperty
+    def accounts(self) -> AsyncCollection:
+        """Collection for linked accounts (e.g. Genshin Impact)."""
+        return self._db["accounts"]
 
     @DBProperty
     def videos(self) -> AsyncCollection:

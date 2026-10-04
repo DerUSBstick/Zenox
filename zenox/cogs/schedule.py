@@ -8,6 +8,7 @@ from zenox.constants import UTC_8
 from ..auto_tasks.check_codes import CheckCodes
 from ..auto_tasks.check_database import CheckDatabase
 from ..auto_tasks.ytb_monitor import YTBMonitor
+from ..auto_tasks.topgg import TopGG
 
 if TYPE_CHECKING:
     from zenox.bot.bot import Zenox
@@ -22,6 +23,7 @@ class Schedule(commands.Cog):
         self.check_codes.start()
         self.check_database.start()
         self.ytb_monitor.start()
+        self.topgg_task.start()
     
     async def cog_unload(self):
         if not self.client.config.schedule:
@@ -29,6 +31,7 @@ class Schedule(commands.Cog):
         self.check_codes.stop()
         self.check_database.stop()
         self.ytb_monitor.stop()
+        self.topgg_task.stop()
 
     @tasks.loop(minutes=5)
     async def check_codes(self):
@@ -41,10 +44,15 @@ class Schedule(commands.Cog):
     @tasks.loop(minutes=3)
     async def ytb_monitor(self):
         await YTBMonitor.execute(self.client)
+
+    @tasks.loop(hours=12)
+    async def topgg_task(self):
+        await TopGG.execute(self.client)
     
     @check_codes.before_loop
     @check_database.before_loop
     @ytb_monitor.before_loop
+    @topgg_task.before_loop
     async def before_loops(self) -> None:
         await self.client.wait_until_ready()
 
