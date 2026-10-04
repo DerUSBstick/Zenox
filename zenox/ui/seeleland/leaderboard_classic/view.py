@@ -7,6 +7,7 @@ from zenox.clients.sl.constants import SEELELAND_TEAM_NAMES
 from zenox.clients.sl.formatting import format_crit_stats, parse_category_key
 from zenox.embeds import DefaultEmbed
 from zenox.l10n import LocaleStr, translator
+from zenox.utils.misc import blur_uid
 
 from .items import (
     FirstPageButton,
@@ -112,7 +113,11 @@ class SeelelandClassicPaginatorView(ui.View):
             crit_suffix = format_crit_stats(self.highlight_score.crit_stats)
             lines.append(
                 translator.translate(
-                    LocaleStr(key="seeleland_lb.classic.you_header", percrank=self.highlight_score.percrank),
+                    LocaleStr(
+                        key="seeleland_lb.classic.you_header",
+                        percrank=self.highlight_score.percrank,
+                        position=position,
+                    ),
                     self.locale,
                 )
             )
@@ -130,7 +135,7 @@ class SeelelandClassicPaginatorView(ui.View):
                     LocaleStr(
                         key="seeleland_lb.classic.no_rank_found",
                         name=self.highlight_name or "?",
-                        uid=self.highlight_uid,
+                        uid=blur_uid(self.highlight_uid),
                     ),
                     self.locale,
                 )

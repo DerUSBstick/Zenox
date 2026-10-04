@@ -293,7 +293,7 @@ class PaginatorSelect[V_co: View | LayoutView](Select):
             self.page_idx = 0
         
         if self.page_idx == 0:
-            if len(split_options) > 1:
+            if len(split_options) == 1:
                 return split_options[0]
             current_page_options = self.remove_duplicate_options(current_options, split_options[0])
             return [NEXT_PAGE] + current_page_options + split_options[0]

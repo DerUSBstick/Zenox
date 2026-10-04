@@ -10,9 +10,7 @@ from __future__ import annotations
 # Public Seeleland website (distinct from the API base url in config).
 SEELELAND_SITE_URL = "https://seeleland.com/"
 
-# How long a cached Seeleland API response stays "fresh" (seconds). Short-lived
-# on purpose - just long enough to cover one command's cascading autocomplete
-# calls, not a long-term cache (leaderboard data changes over time).
+# Time-to-live for cached Seeleland API responses (seconds).
 SEELELAND_CACHE_TTL_SECONDS = 60 * 60 * 12
 
 # Short build/team code -> readable display name.
