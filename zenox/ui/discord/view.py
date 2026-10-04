@@ -160,11 +160,11 @@ class View(discord.ui.View, ViewMixin):
         return await ViewMixin.on_error(self, i, error, item)
     
     async def on_timeout(self) -> None:
-        only_url_buttons = all(
-            item.url for item in self.children if isinstance(item, (discord.ui.Button))
+        only_url_buttons = len(self.children) > 0 and all(
+            isinstance(item, discord.ui.Button) and item.url for item in self.children
         )
         if self.message is not None and not only_url_buttons:
-            self.clear_items()
+            self.disable_items()
             with contextlib.suppress(discord.HTTPException):
                 await self.message.edit(view=self)
 

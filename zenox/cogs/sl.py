@@ -6,7 +6,6 @@ from discord.app_commands import locale_str
 from discord.ext import commands
 from typing import TYPE_CHECKING
 
-from ..utils.misc import blur_uid
 from ..ui.seeleland.leaderboard_classic.view import SeelelandClassicPaginatorView
 from ..clients.sl import SLClient
 from ..clients.sl.constants import SEELELAND_TEAM_NAMES
@@ -143,7 +142,7 @@ class Seele(commands.Cog):
             char_id=character,
             ctgr=ctgr,
             rankings=rankings,
-            highlight_uid=blur_uid(uid),
+            highlight_uid=uid,
             highlight_name=highlight_name,
             highlight_score=highlight_score,
         )
