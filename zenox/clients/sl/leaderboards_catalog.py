@@ -1,7 +1,7 @@
 """Static catalog of Seeleland-tracked light cones per character.
 
 Maps each character to its known (light cone, category-key template) pairs,
-so ``/sl3`` can browse leaderboard categories without needing any specific
+so ``/sl`` can browse leaderboard categories without needing any specific
 account's own played data.
 
 Unlike the account-driven path (``SLClient.get_player_data``), each catalog

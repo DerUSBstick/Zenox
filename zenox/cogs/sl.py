@@ -67,33 +67,33 @@ class Seele(commands.Cog):
     @app_commands.command(
         name=locale_str("sl"),
         description=locale_str(
-            "(A/B test) View Seeleland leaderboards, browsing all characters/light cones (not account-scoped)",
-            key="sl3_command.description",
+            "View Seeleland leaderboards, browsing all characters/light cones",
+            key="sl_command.description",
         ),
     )
     @app_commands.describe(
-        character=locale_str("Character to view the leaderboard for", key="sl3_command.character_param_desc"),
+        character=locale_str("Character to view the leaderboard for", key="sl_command.character_param_desc"),
         leaderboard=locale_str(
-            "Eidolon/Superimposition bracket, e.g. E0S5", key="sl3_command.leaderboard_param_desc"
+            "Eidolon/Superimposition bracket, e.g. E0S5", key="sl_command.leaderboard_param_desc"
         ),
-        weapon=locale_str("Light cone to view the leaderboard for", key="sl3_command.weapon_param_desc"),
+        weapon=locale_str("Light cone to view the leaderboard for", key="sl_command.weapon_param_desc"),
         variant=locale_str(
             "Team/build variant override, defaults to this weapon's featured build",
-            key="sl3_command.variant_param_desc",
+            key="sl_command.variant_param_desc",
         ),
         speed=locale_str(
             "Speed breakpoint override, defaults to this weapon's featured build",
-            key="sl3_command.speed_param_desc",
+            key="sl_command.speed_param_desc",
         ),
         account=locale_str(
             "Account to highlight your own rank, if you're on this leaderboard",
-            key="sl3_command.account_param_desc",
+            key="sl_command.account_param_desc",
         ),
     )
     @app_commands.user_install()
     @app_commands.guild_install()
     @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
-    async def sl3_command(
+    async def sl_command(
         self,
         interaction: Interaction,
         character: str,
@@ -148,17 +148,18 @@ class Seele(commands.Cog):
         )
         await view.start(interaction)
 
-    @sl3_command.autocomplete("character")
-    async def sl3_character_autocomplete(self, interaction: Interaction, current: str) -> list[app_commands.Choice[str]]:
+    @sl_command.autocomplete("character")
+    async def sl_character_autocomplete(self, interaction: Interaction, current: str) -> list[app_commands.Choice[str]]:
         hsr = interaction.client.store.hsr
+        user = await UserConfig.new(interaction.user.id)
         choices = [
-            app_commands.Choice(name=hsr.get_character_name(int(char_id), interaction.locale) or char_id, value=char_id)
+            app_commands.Choice(name=hsr.get_character_name(int(char_id), user.language) or char_id, value=char_id)
             for char_id in SEELELAND_LEADERBOARDS_CATALOG
         ]
         return self._matching(choices, current)
 
-    @sl3_command.autocomplete("leaderboard")
-    async def sl3_leaderboard_autocomplete(self, interaction: Interaction, current: str) -> list[app_commands.Choice[str]]:
+    @sl_command.autocomplete("leaderboard")
+    async def sl_leaderboard_autocomplete(self, interaction: Interaction, current: str) -> list[app_commands.Choice[str]]:
         char_id = interaction.namespace.character
         if not char_id or char_id == "none":
             return self._error_choice("Select a character first")
@@ -167,26 +168,27 @@ class Seele(commands.Cog):
         choices = [app_commands.Choice(name=bracket, value=bracket) for bracket in brackets]
         return self._matching(choices, current)
 
-    @sl3_command.autocomplete("weapon")
-    async def sl3_weapon_autocomplete(self, interaction: Interaction, current: str) -> list[app_commands.Choice[str]]:
+    @sl_command.autocomplete("weapon")
+    async def sl_weapon_autocomplete(self, interaction: Interaction, current: str) -> list[app_commands.Choice[str]]:
         char_id = interaction.namespace.character
         bracket = interaction.namespace.leaderboard
         if not char_id or char_id == "none" or not bracket or bracket == "none":
             return self._error_choice("Select a character and leaderboard first")
 
         hsr = interaction.client.store.hsr
+        user = await UserConfig.new(interaction.user.id)
         entries = get_catalog_entries_for_bracket(char_id, bracket)
         choices = [
             app_commands.Choice(
-                name=hsr.get_light_cone_name(entry.light_cone_id, interaction.locale) or str(entry.light_cone_id),
+                name=hsr.get_light_cone_name(entry.light_cone_id, user.language) or str(entry.light_cone_id),
                 value=str(entry.light_cone_id),
             )
             for entry in entries
         ]
         return self._matching(choices, current)
 
-    @sl3_command.autocomplete("variant")
-    async def sl3_variant_autocomplete(self, interaction: Interaction, current: str) -> list[app_commands.Choice[str]]:
+    @sl_command.autocomplete("variant")
+    async def sl_variant_autocomplete(self, interaction: Interaction, current: str) -> list[app_commands.Choice[str]]:
         char_id = interaction.namespace.character
         bracket = interaction.namespace.leaderboard
         weapon = interaction.namespace.weapon
@@ -209,8 +211,8 @@ class Seele(commands.Cog):
         ]
         return self._matching(choices, current)
 
-    @sl3_command.autocomplete("speed")
-    async def sl3_speed_autocomplete(self, interaction: Interaction, current: str) -> list[app_commands.Choice[str]]:
+    @sl_command.autocomplete("speed")
+    async def sl_speed_autocomplete(self, interaction: Interaction, current: str) -> list[app_commands.Choice[str]]:
         char_id = interaction.namespace.character
         bracket = interaction.namespace.leaderboard
         weapon = interaction.namespace.weapon
@@ -228,7 +230,7 @@ class Seele(commands.Cog):
         choices = [app_commands.Choice(name=speed, value=speed)]
         return self._matching(choices, current)
 
-    @sl3_command.autocomplete("account")
+    @sl_command.autocomplete("account")
     async def sl_account_autocomplete(self, interaction: Interaction, current: str) -> list[app_commands.Choice[str]]:
         user = await UserConfig.new(interaction.user.id)
         choices = [

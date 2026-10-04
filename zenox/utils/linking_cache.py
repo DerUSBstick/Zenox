@@ -112,6 +112,12 @@ class LinkingCacheManager:
         return await self._linking_client.fetch_enka(uid, game)
 
     @staticmethod
+    async def _get_locale(entry: LinkingEntryTemplate) -> discord.Locale:
+        """Resolve the user's configured locale, not the one the interaction was invoked with."""
+        user = await UserConfig.new(entry.user_id)
+        return user.language
+
+    @staticmethod
     def _extract_nested(data: dict, keys: list[str]) -> str:
         """Walk a nested dict using *keys* and return the string leaf value."""
         value = data
@@ -176,7 +182,7 @@ class LinkingCacheManager:
                 except Exception as exc:
                     failed = True
                     self.client.capture_exception(exc)
-                    embed, _ = _get_error_embed(exc, entry.interaction.locale)
+                    embed, _ = _get_error_embed(exc, await self._get_locale(entry))
                     with contextlib.suppress(discord.NotFound, discord.HTTPException):
                         if entry.interaction.message is not None:
                             await entry.interaction.followup.edit_message(
@@ -187,7 +193,7 @@ class LinkingCacheManager:
 
             if not failed:
                 embed = _default_embed(
-                    entry.interaction.locale,
+                    await self._get_locale(entry),
                     title_key=finished_title,
                     desc_key=finished_desc,
                 )
@@ -217,7 +223,7 @@ class LinkingCacheManager:
                 # Always check TTL — no cooldown needed here.
                 if entry.started < now - datetime.timedelta(minutes=_ENTRY_TTL_MINUTES):
                     embed = _default_embed(
-                        entry.interaction.locale,
+                        await self._get_locale(entry),
                         title_key="linking.expired.title",
                         desc_key="linking.expired.description",
                     )
@@ -247,7 +253,7 @@ class LinkingCacheManager:
                     await self._check_enka_entry(entry)
 
             except Exception as exc:
-                embed, recognized = _get_error_embed(exc, entry.interaction.locale)
+                embed, recognized = _get_error_embed(exc, await self._get_locale(entry))
                 if not recognized:
                     self.client.capture_exception(exc)
                 with contextlib.suppress(discord.NotFound, discord.HTTPException):
@@ -285,7 +291,7 @@ class LinkingCacheManager:
         await self.remove_entry(entry)
 
         embed = _default_embed(
-            entry.interaction.locale,
+            await self._get_locale(entry),
             title_key="linking.uid.success.title",
             desc_key="linking.uid.success.description",
         )
@@ -310,7 +316,7 @@ class LinkingCacheManager:
 
         # Verification confirmed
         embed = _default_embed(
-            entry.interaction.locale,
+            await self._get_locale(entry),
             title_key="linking.enka.verified.title",
             desc_key="linking.enka.verified.description",
         )

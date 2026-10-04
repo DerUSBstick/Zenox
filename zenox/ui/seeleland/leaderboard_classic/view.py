@@ -29,12 +29,6 @@ ENKA_ASSET_BASE = "https://enka.network"
 
 
 class SeelelandClassicPaginatorView(ui.View):
-    """Plain ``View`` + ``Embed`` leaderboard paginator (A/B alternative to the
-    LayoutView-based ``ui/seeleland/leaderboard``), shared by ``/sl2`` and
-    ``/sl3`` - they only differ in how they resolve ``char_id``/``ctgr``
-    before constructing this view.
-    """
-
     def __init__(
         self,
         *,

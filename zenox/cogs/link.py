@@ -5,6 +5,7 @@ from discord.app_commands import locale_str
 from discord.ext import commands
 from typing import TYPE_CHECKING
 
+from ..db.classes import UserConfig
 from ..embeds import ErrorEmbed
 from ..l10n import LocaleStr
 from ..ui.linking.view import LinkingUI
@@ -32,9 +33,11 @@ class Link(commands.Cog):
         if cache is None:
             return
 
+        user = await UserConfig.new(interaction.user.id)
+
         if cache.is_user_linking(interaction.user.id):
             embed = ErrorEmbed(
-                interaction.locale,
+                user.language,
                 title=LocaleStr(key="linking.already_active.title"),
                 description=LocaleStr(key="linking.already_active.description"),
             )
@@ -43,60 +46,17 @@ class Link(commands.Cog):
 
         if cache.is_cache_full:
             embed = ErrorEmbed(
-                interaction.locale,
+                user.language,
                 title=LocaleStr(key="linking.cache_full.title"),
                 description=LocaleStr(key="linking.cache_full.description"),
             )
             await interaction.followup.send(embed=embed)
             return
 
-        view = LinkingUI(author=interaction.user, locale=interaction.locale)
+        view = LinkingUI(author=interaction.user, locale=user.language)
         await view.start(interaction)
         view.message = await interaction.original_response()
 
 
 async def setup(client: Zenox) -> None:
     await client.add_cog(Link(client))
-
-"""
-class Link(commands.Cog):
-    def __init__(self, client: Zenox) -> None:
-        self.client = client
-
-    @app_commands.command(
-        name=locale_str("link"),
-        description=locale_str("Link your accounts to the bot", key="link_command_description")
-    )
-    @app_commands.user_install()
-    @app_commands.allowed_contexts(guilds=False, dms=True, private_channels=False)
-    async def link_command(self, interaction: discord.Interaction) -> Any:
-        doc = DB.users.find_one({"id": interaction.user.id})
-        if not doc:
-            embed = DefaultEmbed(
-                locale=interaction.locale,
-                title=LocaleStr(key="alpha_feature_not_whitelisted.title"),
-                description=LocaleStr(key="alpha_feature_not_whitelisted.description")
-            )
-            return await interaction.response.send_message(embed=embed, ephemeral=True)
-        await interaction.response.defer(ephemeral=True, thinking=True)
-
-        if linking_cache.is_user_linked(interaction.user.id):
-            await interaction.followup.send(
-                content=locale_str("You already have an active linking session. Please complete it first or wait for it to expire.", key="linking_already_active")
-            )
-            return
-
-        elif linking_cache.is_cache_full:
-            await interaction.followup.send(
-                content=locale_str("The linking queue is currently full. Please try again later.", key="linking_queue_full")
-            )
-            return
-
-        view = LinkingUI(
-            author=interaction.user,
-            locale=interaction.locale
-        )
-
-        await view.start(interaction)
-        view.message = await interaction.original_response()
-"""
