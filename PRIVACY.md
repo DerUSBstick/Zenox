@@ -6,6 +6,10 @@ This Privacy Policy describes how Zenox collects, uses, and shares your informat
 
 ## Information We Collect
 
+### User and Account Data
+
+Zenox stores your Discord user ID, language preferences, and linked game account identifiers and metadata to support account linking and account settings.
+
 ### Guild Data
 
 Zenox collects and stores usage data to improve the quality of service. This includes, but is not limited to:
@@ -27,7 +31,7 @@ Guild Data is stored as long as it is necessary for the operation of Zenox. Guil
 
 ## Information We Share
 
-Zenox does not share any data with third parties. We do not sell your data to advertisers or other companies.
+Zenox shares limited information with service providers: user-provided game UIDs/profile names with Enka to retrieve account data, aggregate server counts with Top.gg, and error logs with Sentry for debugging. Zenox does not sell your data to advertisers or other companies.
 
 # Your Consent
 
