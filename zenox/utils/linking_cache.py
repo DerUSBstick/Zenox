@@ -72,17 +72,32 @@ class LinkingCacheManager:
         self, data: list[tuple[str, Game]]
     ) -> list[tuple[str, Game]]:
         """Return which (uid, game) pairs from *data* are already in a linking session."""
-        result = []
-        for uid, game in data:
-            for entry in self._linking_cache:
-                if any(uid == u and game == g for u, g in entry.data):
-                    result.append((uid, game))
-                    break
-        return result
+        reserved = {pair for e in self._linking_cache for pair in e.data}
+        return [pair for pair in data if pair in reserved]
 
-    async def add_entry(self, entry: LinkingEntryTemplate) -> None:
+    async def add_entry(self, entry: LinkingEntryTemplate) -> str | None:
+        """Atomically reserve a linking session for *entry*.
+
+        Returns a rejection reason string if the entry could not be added:
+        - ``"full"`` if the cache is full.
+        - ``"user_linking"`` if the user already has an active linking session.
+        - ``"uid_reserved"`` if any of the (uid, game) pairs are already reserved.
+
+        Returns ``None`` if the entry was successfully added.
+        """
         async with self._lock:
+            if len(self._linking_cache) >= _MAX_CACHE_SIZE:
+                return "full"
+
+            if any(e.user_id == entry.user_id for e in self._linking_cache):
+                return "user_linking"
+
+            reserved = {pair for e in self._linking_cache for pair in e.data}
+            if any(pair in reserved for pair in entry.data):
+                return "uid_reserved"
+
             self._linking_cache.append(entry)
+            return None
 
     async def remove_entry(self, entry: LinkingEntryTemplate) -> None:
         async with self._lock:
@@ -205,6 +220,10 @@ class LinkingCacheManager:
                             view=None,
                         )
 
+            # Reservation is only released once persistence has actually
+            # completed (success or failure), closing the race window.
+            await self.remove_entry(entry)
+
     # ------------------------------------------------------------------ #
     # Background task: poll entries                                       #
     # ------------------------------------------------------------------ #
@@ -219,6 +238,10 @@ class LinkingCacheManager:
         """
         now = discord.utils.utcnow()
         for entry in self._linking_cache.copy():
+            # Already verified and queued for finalization: keep its
+            # reservation but don't poll it again.
+            if entry.pending_finalization:
+                continue
             try:
                 # Always check TTL — no cooldown needed here.
                 if entry.started < now - datetime.timedelta(minutes=_ENTRY_TTL_MINUTES):
@@ -228,13 +251,8 @@ class LinkingCacheManager:
                         desc_key="linking.expired.description",
                     )
                     with contextlib.suppress(discord.NotFound, discord.HTTPException):
-                        print(entry.interaction.message, "MESSAGE")
                         if entry.interaction.message is not None:
-                            await entry.interaction.followup.edit_message(
-                                message_id=entry.interaction.message.id,
-                                embed=embed,
-                                view=None
-                            )
+                            await entry.interaction.message.edit(embed=embed, view=None)
                     await self.remove_entry(entry)
                     continue
 
@@ -328,8 +346,8 @@ class LinkingCacheManager:
                     view=None,
                 )
 
+        entry.pending_finalization = True
         await self._queue.put(entry)
-        await self.remove_entry(entry)
 
 
 # ------------------------------------------------------------------ #

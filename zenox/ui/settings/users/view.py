@@ -51,9 +51,9 @@ class AccountSelector(ui.Select["UserSettingsView"]):
             options = [
                 ui.SelectOption(
                     label=f"{account.username} ({account.uid})",
-                    value=account.uid,
+                    value=f"{account.game.value}:{account.uid}",
                     emoji=get_game_emoji(account.game),
-                    default=selected is not None and account.uid == selected.uid
+                    default=selected is not None and account.uid == selected.uid and account.game == selected.game
                 ) for account in accounts if game_filter is None or account.game == game_filter
             ]
         else:
@@ -67,8 +67,11 @@ class AccountSelector(ui.Select["UserSettingsView"]):
         super().__init__(options=options, placeholder=LocaleStr(key="account_select.placeholder"), disabled=not accounts)
     
     async def callback(self, interaction: Interaction) -> None:
-        selected_uid = self.values[0]
-        self.view.selected = [account for account in self.view.user.accounts if account.uid == selected_uid][0]
+        selected_game, selected_uid = self.values[0].split(":", 1)
+        self.view.selected = [
+            account for account in self.view.user.accounts
+            if account.uid == selected_uid and account.game.value == selected_game
+        ][0]
 
         await self.view.update(interaction)
 

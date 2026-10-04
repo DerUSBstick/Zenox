@@ -111,6 +111,9 @@ class LinkingEntryTemplate:
     # None = never polled yet (first check runs immediately).
     last_checked: datetime.datetime | None = None
     enka_username: str | None = None
+    # True once verified and queued for finalization: still reserved in the
+    # cache but must be skipped by further verification polls.
+    pending_finalization: bool = False
 
 class GameAccountTemplate(GameAccount):
     def __init__(self, uid: str, game: Game, username: str, public: bool, linked_date: datetime.datetime, user_id: int, hoyolab_id: str | None = None, enka_owner: EnkaOwner | None = None) -> None:
