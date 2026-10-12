@@ -105,7 +105,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "discord_connected{shard=\"None\"}",
+          "expr": "max by (job) (discord_connected{shard=\"None\"})",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "{{job}}",
@@ -120,7 +120,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "discord_connected{shard!=\"None\"}",
+          "expr": "max by (job, shard) (discord_connected{shard!=\"None\"})",
           "fullMetaSearch": false,
           "hide": false,
           "includeNullMetadata": true,
@@ -224,7 +224,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "discord_latency{shard!=\"None\"}",
+          "expr": "max by (job, shard) (discord_latency{shard!=\"None\"})",
           "fullMetaSearch": false,
           "hide": false,
           "includeNullMetadata": true,
@@ -298,10 +298,10 @@
         {
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "discord_ram_usage",
+          "expr": "max by (job) (discord_ram_usage)",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
-          "legendFormat": "__auto",
+          "legendFormat": "{{job}}",
           "range": true,
           "refId": "A",
           "useBackend": false
@@ -368,13 +368,13 @@
           },
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "time() - discord_uptime",
+          "expr": "time() - max by (job) (discord_uptime)",
           "format": "time_series",
           "fullMetaSearch": false,
           "hide": false,
           "includeNullMetadata": true,
           "instant": false,
-          "legendFormat": "__auto",
+          "legendFormat": "{{job}}",
           "range": true,
           "refId": "A",
           "useBackend": false
@@ -478,10 +478,10 @@
         {
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "discord_guild_members",
+          "expr": "max by (job) (discord_guild_members)",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
-          "legendFormat": "__auto",
+          "legendFormat": "{{job}}",
           "range": true,
           "refId": "A",
           "useBackend": false
@@ -576,10 +576,10 @@
         {
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "discord_guilds",
+          "expr": "max by (job) (discord_guilds)",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
-          "legendFormat": "{{app}}",
+          "legendFormat": "{{job}}",
           "range": true,
           "refId": "A",
           "useBackend": false
@@ -653,12 +653,12 @@
           "disableTextWrap": false,
           "editorMode": "builder",
           "exemplar": false,
-          "expr": "discord_cpu_usage",
+          "expr": "max by (job) (discord_cpu_usage)",
           "format": "time_series",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
-          "legendFormat": "__auto",
+          "legendFormat": "{{job}}",
           "range": true,
           "refId": "A",
           "useBackend": false
@@ -789,7 +789,7 @@
         {
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "discord_guild_locale",
+          "expr": "max by (job, country) (discord_guild_locale)",
           "format": "table",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
@@ -1635,7 +1635,7 @@
                 "uid": "delecwvk2nfgga"
               },
               "editorMode": "code",
-              "expr": "cache_entries",
+              "expr": "max by (job) (cache_entries)",
               "legendFormat": "In-memory entries",
               "range": true,
               "instant": false,
@@ -1647,7 +1647,7 @@
                 "uid": "delecwvk2nfgga"
               },
               "editorMode": "code",
-              "expr": "cache_db_documents",
+              "expr": "max by (job) (cache_db_documents)",
               "legendFormat": "DB documents",
               "range": true,
               "instant": false,
@@ -1907,7 +1907,7 @@
                 "uid": "delecwvk2nfgga"
               },
               "editorMode": "code",
-              "expr": "sort_desc(topk(10, sum by (character) (seeleland_character_lookups_lifetime) * on (character) group_left (name) max by (character, name) (seeleland_character_info)))",
+              "expr": "sort_desc(topk(10, sum by (character) (max by (job, character) (seeleland_character_lookups_lifetime)) * on (character) group_left (name) max by (character, name) (seeleland_character_info)))",
               "legendFormat": "{{name}} (ID {{character}})",
               "range": false,
               "instant": true,
@@ -1969,7 +1969,7 @@
                 "uid": "delecwvk2nfgga"
               },
               "editorMode": "code",
-              "expr": "sum(seeleland_character_lookups_lifetime)",
+              "expr": "sum(max by (job, character) (seeleland_character_lookups_lifetime))",
               "legendFormat": "Lookups",
               "range": false,
               "instant": true,
@@ -2039,7 +2039,7 @@
                 "uid": "delecwvk2nfgga"
               },
               "editorMode": "code",
-              "expr": "sum(seeleland_leaderboard_failures_lifetime{stage!=\"parse\"}) / sum(seeleland_leaderboard_attempts_lifetime)",
+              "expr": "sum(max by (job, stage, error) (seeleland_leaderboard_failures_lifetime{stage!=\"parse\"})) / sum(max by (job, stage) (seeleland_leaderboard_attempts_lifetime))",
               "legendFormat": "Failure rate",
               "range": false,
               "instant": true,
@@ -2103,7 +2103,7 @@
                 "uid": "delecwvk2nfgga"
               },
               "editorMode": "code",
-              "expr": "sum by (stage, error) (seeleland_leaderboard_failures_lifetime)",
+              "expr": "sum by (stage, error) (max by (job, stage, error) (seeleland_leaderboard_failures_lifetime))",
               "legendFormat": "{{stage}}: {{error}}",
               "range": false,
               "instant": true,
@@ -2484,7 +2484,7 @@
                 "uid": "delecwvk2nfgga"
               },
               "editorMode": "code",
-              "expr": "linking_active_sessions",
+              "expr": "max by (job) (linking_active_sessions)",
               "legendFormat": "Active Sessions",
               "range": true,
               "instant": false,
@@ -2738,7 +2738,7 @@
                 "uid": "delecwvk2nfgga"
               },
               "editorMode": "code",
-              "expr": "linking_active_sessions",
+              "expr": "max by (job) (linking_active_sessions)",
               "legendFormat": "Active sessions",
               "range": true,
               "instant": false,
@@ -2750,7 +2750,7 @@
                 "uid": "delecwvk2nfgga"
               },
               "editorMode": "code",
-              "expr": "linking_queue_size",
+              "expr": "max by (job) (linking_queue_size)",
               "legendFormat": "Finalize queue",
               "range": true,
               "instant": false,
@@ -3076,7 +3076,7 @@
                 "uid": "delecwvk2nfgga"
               },
               "editorMode": "code",
-              "expr": "sum by (event) (linking_sessions_lifetime)",
+              "expr": "sum by (event) (max by (job, event) (linking_sessions_lifetime))",
               "legendFormat": "{{event}}",
               "range": false,
               "instant": true,
@@ -3140,7 +3140,7 @@
                 "uid": "delecwvk2nfgga"
               },
               "editorMode": "code",
-              "expr": "sum by (reason) (linking_rejections_lifetime)",
+              "expr": "sum by (reason) (max by (job, reason) (linking_rejections_lifetime))",
               "legendFormat": "{{reason}}",
               "range": false,
               "instant": true,
@@ -3204,7 +3204,7 @@
                 "uid": "delecwvk2nfgga"
               },
               "editorMode": "code",
-              "expr": "sum by (game) (linked_accounts)",
+              "expr": "sum by (game) (max by (job, game) (linked_accounts))",
               "legendFormat": "{{game}}",
               "range": false,
               "instant": true,
@@ -3275,7 +3275,7 @@
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "Zenox V2",
-  "uid": "1fe3e018-98bc-4518-b2d8-94f923a0922c",
-  "version": 13
+  "title": "Zenox V3",
+  "uid": "14cf3bf8-b903-4716-8328-d60bf1e5b6df",
+  "version": 14
 }
