@@ -95,7 +95,10 @@ class LinkingUI(ui.View):
             code=random.randint(10000, 99999),
             interaction=interaction,
         )
-        await cache.add_entry(entry)
+        rejection = await cache.add_entry(entry)
+        if rejection is not None:
+            await self._send_add_entry_error(interaction, rejection)
+            return
 
         embed = DefaultEmbed(
             self.locale,
@@ -153,6 +156,22 @@ class LinkingUI(ui.View):
                 inline=False,
             )
         return embed
+
+    async def _send_add_entry_error(
+        self, interaction: Interaction, reason: str
+    ) -> None:
+        if reason == "user_linking":
+            await self._send_error(
+                interaction,
+                title_key="linking.uid.being_linked.title",
+                desc_key="linking.uid.being_linked.description",
+            )
+        else:
+            await self._send_error(
+                interaction,
+                title_key="linking.enka.api_error.title",
+                desc_key="linking.enka.api_error.description",
+            )
 
     async def _send_error(
         self,
@@ -253,7 +272,10 @@ class LinkingUI(ui.View):
             code=random.randint(10000, 99999),
             interaction=interaction,
         )
-        await cache.add_entry(entry)
+        rejection = await cache.add_entry(entry)
+        if rejection:
+            await self._send_add_entry_error(interaction, rejection)
+            return
 
         embed = DefaultEmbed(
             self.locale,
