@@ -10,3 +10,17 @@ class ZenoxException(Exception):
 class InvalidInputError(ZenoxException):
     def __init__(self, message: LocaleStr):
         super().__init__(title=LocaleStr(key="invalid_input.title"), message=message)
+
+
+class EnkaAPIError(ZenoxException):
+    def __init__(self, status_code: int | None = None) -> None:
+        desc = LocaleStr(key="enka_api_error.description", status_code=status_code or "?")
+        super().__init__(title=LocaleStr(key="enka_api_error.title"), message=desc)
+        self.status_code = status_code
+
+
+class SeelelandPageError(ZenoxException):
+    def __init__(self, message: str) -> None:
+        desc = LocaleStr(key="seeleland_page_error.description", message=message)
+        super().__init__(title=LocaleStr(key="seeleland_page_error.title"), message=desc)
+        self.raw_message = message

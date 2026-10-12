@@ -4,6 +4,7 @@ import discord
 from ..embeds import ErrorEmbed
 from ..l10n import LocaleStr
 from ..enums import PrintColors
+from ..exceptions import ZenoxException
 
 
 def get_error_embed(error: Exception, locale: discord.Locale):
@@ -12,6 +13,9 @@ def get_error_embed(error: Exception, locale: discord.Locale):
 
     if isinstance(error, ExceptionGroup):
         error = error.exceptions[0]
+    
+    if isinstance(error, ZenoxException):
+        embed = ErrorEmbed(locale, title=error.title, description=error.message)
 
     if embed is None:
         recognized = False

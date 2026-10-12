@@ -7,6 +7,7 @@ import itertools
 import psutil
 from discord.ext import commands, tasks
 from typing import TYPE_CHECKING
+from ..db.classes import UserConfig
 from ..embeds import DefaultEmbed
 from ..l10n import LocaleStr
 
@@ -59,7 +60,8 @@ class Others(commands.Cog):
     async def about(self, interaction: discord.Interaction) -> None:
         await interaction.response.defer(ephemeral=True)
 
-        locale = interaction.locale
+        user = await UserConfig.new(interaction.user.id)
+        locale = user.language
         embed = DefaultEmbed(
             locale,
             title=f"{self.client.user.name if self.client.user else 'Zenox'} {self.client.version}",

@@ -32,6 +32,7 @@ class YTBMonitor:
     _after_date: datetime.datetime = datetime.datetime(2026, 3, 15, 0, 0, 0) # Avoid backfill of old videos
     _client: ClassVar[Zenox]
     _lock: ClassVar[asyncio.Lock] = asyncio.Lock()
+    _first_run: ClassVar[bool] = True
     
     @classmethod
     async def execute(cls, client: Zenox) -> None:
@@ -65,17 +66,32 @@ class YTBMonitor:
                         continue
                     elif videos[0]["snippet"]["liveBroadcastContent"] == "none" and videos[0].get("liveStreamingDetails") is None:
                         """Normal Video"""
-                        await cls.notify_video(videos[0], game)
+                        if cls._first_run:
+                            await cls.backfill_video(videos[0], game)
+                        else:
+                            await cls.notify_video(videos[0], game)
                     else:
                         print(f"[YTBMonitor] Error - {PrintColors.FAIL}Unknown Video type:{PrintColors.ENDC} {videos[0]}")
                     
                     await asyncio.sleep(3)
+
+            cls._first_run = False
     
     @classmethod
     async def schedule_stream(cls, video_data: VideoDetails) -> None:
         print(f"[YTBMonitor] Info - {PrintColors.OKBLUE}Scheduling stream:{PrintColors.ENDC} {video_data['id']}")
         """Schedules a livestream for all guilds and internally in the database."""
         pass
+
+    @classmethod
+    async def backfill_video(cls, video_data: VideoDetails, game: Game) -> None:
+        """Records a video without notifying guilds, used to catch up after a gap in checks."""
+        print(f"[YTBMonitor] Info - {PrintColors.OKBLUE}Backfilling video without notifying:{PrintColors.ENDC} {video_data['id']}")
+        await Video.new(
+            video_id=video_data["id"],
+            game=game,
+            title=video_data["snippet"]["title"],
+        )
 
     @classmethod
     async def notify_video(cls, video_data: VideoDetails, game: Game) -> None:

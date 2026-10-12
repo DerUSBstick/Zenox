@@ -5,12 +5,12 @@ from discord.app_commands import locale_str
 from discord.ext import commands
 from typing import TYPE_CHECKING
 
-from ..ui.guilds.view import GuildSettingsUI
-from ..db.classes import Guild
+from zenox.ui.settings.guilds.view import GuildSettingsView
+from zenox.db.classes import Guild
 
 if TYPE_CHECKING:
-    from ..bot import Zenox
-    from ..types import Interaction
+    from zenox.bot import Zenox
+    from zenox.types import Interaction
 
 
 class Config(commands.Cog):
@@ -32,14 +32,10 @@ class Config(commands.Cog):
         assert interaction.guild is not None
 
         guild = await Guild.new(interaction.guild.id)
-        view = GuildSettingsUI(
+        view = GuildSettingsView(
             author=interaction.user, locale=guild.language, guild=guild
         )
-        await interaction.followup.send(
-            embed=view.get_embed(), file=view.get_brand_image_file(), view=view
-        )
-
-        view.message = await interaction.original_response()
+        await view.update(interaction)
 
 
 async def setup(client: Zenox) -> None:

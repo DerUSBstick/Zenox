@@ -1,3 +1,5 @@
+"""Old Code"""
+
 from __future__ import annotations
 
 import discord
@@ -355,7 +357,7 @@ class Select[V: View](discord.ui.Select):
 
     async def set_loading_state(self, interaction: discord.Interaction) -> None:
         """Sets the select to a loading state"""
-        # Try Modals to see if self.parent can detect it later
+        # Try Modals to see if self.parent can detect it later???
         self.original_options = self.options.copy()
         self.original_disabled = self.disabled
         self.original_placeholder = self.placeholder[:] if self.placeholder else None
