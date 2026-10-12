@@ -27,7 +27,7 @@ __all__ = ("LinkingUI",)
 logger = logging.getLogger(__name__)
 
 _MAX_ACCOUNTS = 10
-_SESSION_TTL_MINUTES = 15
+_SESSION_TTL_MINUTES = 12
 
 
 class LinkingUI(ui.View):
@@ -123,6 +123,7 @@ class LinkingUI(ui.View):
         embed.set_footer(text=LocaleStr(key="linking.uid.pending.footer"))
 
         await self._absolute_edit(interaction, embed=embed, view=None)
+        self.stop()
 
     # ------------------------------------------------------------------
     # Helpers
@@ -187,6 +188,7 @@ class LinkingUI(ui.View):
             description=LocaleStr(key=desc_key, **(desc_extras or {})),
         )
         await self._absolute_edit(interaction, embed=embed, view=None)
+        self.stop()
 
     # ------------------------------------------------------------------
     # Enka linking flow
@@ -251,6 +253,7 @@ class LinkingUI(ui.View):
                 linked_to_other_field="linking.enka.linked_to_other_field",
             )
             await self._absolute_edit(interaction, embed=embed, view=None)
+            self.stop()
             return
 
         user = await UserConfig.new(interaction.user.id)
@@ -305,3 +308,4 @@ class LinkingUI(ui.View):
         embed.set_footer(text=LocaleStr(key="linking.enka.pending.footer"))
 
         await self._absolute_edit(interaction, embed=embed, view=None)
+        self.stop()
