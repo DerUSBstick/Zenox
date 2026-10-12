@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import Any, ClassVar, Dict
 
 from ..mongodb import DB
+from ...metrics import CACHE_EVICTIONS_COUNTER, CACHE_LOOKUPS_COUNTER
 
 __all__ = ("CacheEntry",)
 
@@ -36,11 +37,14 @@ class CacheEntry:
         entry = cls.cache.get(identifier)
         if entry is not None:
             if cls._is_fresh(entry.timestamp, ttl_seconds):
+                CACHE_LOOKUPS_COUNTER.labels("memory_hit").inc()
                 return entry
             del cls.cache[identifier]
+            CACHE_EVICTIONS_COUNTER.labels("stale_memory").inc()
 
         data = await DB.cache.find_one({"identifier": identifier})
         if data is None:
+            CACHE_LOOKUPS_COUNTER.labels("miss").inc()
             return None
 
         entry = cls(
@@ -50,9 +54,12 @@ class CacheEntry:
             timestamp=data["timestamp"],
         )
         if not cls._is_fresh(entry.timestamp, ttl_seconds):
+            CACHE_EVICTIONS_COUNTER.labels("stale_db").inc()
+            CACHE_LOOKUPS_COUNTER.labels("miss").inc()
             return None
 
         cls.cache[identifier] = entry
+        CACHE_LOOKUPS_COUNTER.labels("db_hit").inc()
         return entry
 
     @classmethod

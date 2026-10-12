@@ -63,5 +63,10 @@ class Database:
         """Collection for caching data."""
         return self._db["cache"]
 
+    @DBProperty
+    def metrics(self) -> AsyncCollection:
+        """Collection for persisted lifetime metric totals."""
+        return self._db["metrics"]
+
 
 DB = Database()

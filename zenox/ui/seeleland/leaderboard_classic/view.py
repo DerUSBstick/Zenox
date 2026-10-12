@@ -7,6 +7,7 @@ from zenox.clients.sl.constants import SEELELAND_TEAM_NAMES
 from zenox.clients.sl.formatting import format_crit_stats, parse_category_key
 from zenox.embeds import DefaultEmbed
 from zenox.l10n import LocaleStr, translator
+from zenox.metrics import SL_LEADERBOARD_ATTEMPTS_COUNTER, SL_LEADERBOARD_FAILURES_COUNTER
 from zenox.utils.misc import blur_uid
 
 from .items import (
@@ -55,6 +56,16 @@ class SeelelandClassicPaginatorView(ui.View):
         self.highlight_name = highlight_name
         self.highlight_score = highlight_score
 
+    async def interaction_check(self, interaction: Interaction) -> bool:
+        allowed = await super().interaction_check(interaction)
+        if allowed:
+            SL_LEADERBOARD_ATTEMPTS_COUNTER.labels("view").inc()
+        return allowed
+
+    async def on_error(self, interaction: Interaction, error: Exception, item) -> None:
+        SL_LEADERBOARD_FAILURES_COUNTER.labels("view", type(error).__name__).inc()
+        await super().on_error(interaction, error, item)
+
     def _build_items(self) -> None:
         self.clear_items()
         self.add_item(FirstPageButton(disabled=self.page <= 1))
@@ -89,6 +100,7 @@ class SeelelandClassicPaginatorView(ui.View):
             light_cone = None
             lc_name = None
             title = full_key
+            SL_LEADERBOARD_FAILURES_COUNTER.labels("parse", "CategoryKeyUnparsable").inc()
 
         embed = DefaultEmbed(self.locale, title=title)
 

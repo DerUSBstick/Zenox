@@ -15,6 +15,12 @@ from zenox.enums import PrintColors, Game
 from zenox.db.classes import LinkingEntryTemplate, GameAccountTemplate, EnkaOwner, UserConfig
 from zenox.db.mongodb import DB
 from zenox.clients.linking import LinkingClient
+from zenox.metrics import (
+    LINKING_ACTIVE_GAUGE,
+    LINKING_QUEUE_GAUGE,
+    LINKING_REJECTIONS_COUNTER,
+    LINKING_SESSIONS_COUNTER,
+)
 
 if TYPE_CHECKING:
     from zenox.bot import Zenox
@@ -86,22 +92,28 @@ class LinkingCacheManager:
         """
         async with self._lock:
             if len(self._linking_cache) >= _MAX_CACHE_SIZE:
+                LINKING_REJECTIONS_COUNTER.labels("full").inc()
                 return "full"
 
             if any(e.user_id == entry.user_id for e in self._linking_cache):
+                LINKING_REJECTIONS_COUNTER.labels("user_linking").inc()
                 return "user_linking"
 
             reserved = {pair for e in self._linking_cache for pair in e.data}
             if any(pair in reserved for pair in entry.data):
+                LINKING_REJECTIONS_COUNTER.labels("uid_reserved").inc()
                 return "uid_reserved"
 
             self._linking_cache.append(entry)
+            LINKING_ACTIVE_GAUGE.set(len(self._linking_cache))
+            LINKING_SESSIONS_COUNTER.labels(entry.method, "started").inc()
             return None
 
     async def remove_entry(self, entry: LinkingEntryTemplate) -> None:
         async with self._lock:
             with contextlib.suppress(ValueError):
                 self._linking_cache.remove(entry)
+            LINKING_ACTIVE_GAUGE.set(len(self._linking_cache))
 
     def get_entries(self) -> list[LinkingEntryTemplate]:
         return self._linking_cache.copy()
@@ -203,6 +215,7 @@ class LinkingCacheManager:
     async def _drain_finalize_queue(self) -> None:
         while not self._queue.empty():
             entry = await self._queue.get()
+            LINKING_QUEUE_GAUGE.set(self._queue.qsize())
 
             if entry.method != "Enka":
                 continue  # Only Enka entries use the queue
@@ -227,7 +240,10 @@ class LinkingCacheManager:
                     await self._notify(entry, error=exc, always_capture=True)
 
             if not failed:
+                LINKING_SESSIONS_COUNTER.labels(entry.method, "success").inc()
                 await self._notify(entry, title_key=finished_title, desc_key=finished_desc)
+            else:
+                LINKING_SESSIONS_COUNTER.labels(entry.method, "failed").inc()
 
             # Reservation is only released once persistence has actually
             # completed (success or failure), closing the race window.
@@ -261,6 +277,7 @@ class LinkingCacheManager:
                 # Always check TTL — no cooldown needed here.
                 if entry.started < now - datetime.timedelta(minutes=_ENTRY_TTL_MINUTES):
                     await self.remove_entry(entry)
+                    LINKING_SESSIONS_COUNTER.labels(entry.method, "expired").inc()
                     await self._notify(
                         entry, title_key="linking.expired.title", desc_key="linking.expired.description"
                     )
@@ -282,6 +299,7 @@ class LinkingCacheManager:
 
             except Exception as exc:
                 await self.remove_entry(entry)
+                LINKING_SESSIONS_COUNTER.labels(entry.method, "failed").inc()
                 await self._notify(entry, error=exc)
 
     # ------------------------------------------------------------------ #
@@ -308,6 +326,7 @@ class LinkingCacheManager:
 
         await self._persist_account(entry, uid, game, nickname, enka_owner)
         await self.remove_entry(entry)
+        LINKING_SESSIONS_COUNTER.labels(entry.method, "success").inc()
         await self._notify(
             entry, title_key="linking.uid.success.title", desc_key="linking.uid.success.description"
         )
@@ -326,6 +345,7 @@ class LinkingCacheManager:
         # Verification confirmed
         entry.pending_finalization = True
         await self._queue.put(entry)
+        LINKING_QUEUE_GAUGE.set(self._queue.qsize())
         await self._notify(
             entry, title_key="linking.enka.verified.title", desc_key="linking.enka.verified.description"
         )

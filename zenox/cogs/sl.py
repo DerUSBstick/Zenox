@@ -17,6 +17,7 @@ from ..clients.sl.leaderboards_catalog import (
 from ..constants import Game, SEELELAND_REGEX
 from ..db.classes import GameAccount, UserConfig
 from ..exceptions import InvalidInputError
+from ..metrics import SL_LEADERBOARD_ATTEMPTS_COUNTER, SL_LEADERBOARD_FAILURES_COUNTER
 
 from zenox.l10n import LocaleStr
 
@@ -29,6 +30,15 @@ if TYPE_CHECKING:
 class Seele(commands.Cog):
     def __init__(self, client: Zenox):
         self.client = client
+
+    async def interaction_check(self, interaction: Interaction) -> bool:
+        SL_LEADERBOARD_ATTEMPTS_COUNTER.labels("command").inc()
+        return True
+
+    async def cog_app_command_error(self, interaction: Interaction, error: app_commands.AppCommandError) -> None:
+        original = error.original if isinstance(error, app_commands.CommandInvokeError) else error
+        if not isinstance(original, app_commands.CheckFailure):
+            SL_LEADERBOARD_FAILURES_COUNTER.labels("command", type(original).__name__).inc()
 
     @staticmethod
     def _starrail_accounts(user: UserConfig) -> list[GameAccount]:

@@ -17,6 +17,7 @@ from zenox.constants import (
     ENKA_LINKING_GUIDE_IMAGE,
 )
 from zenox.db.classes import LinkingEntryTemplate, UserConfig
+from zenox.metrics import LINKING_REJECTIONS_COUNTER
 from .items.method import MethodSelector
 
 if TYPE_CHECKING:
@@ -55,6 +56,7 @@ class LinkingUI(ui.View):
 
         is_linked = await cache.uid_is_already_linked(uid, game, interaction.user.id)
         if is_linked == 2:
+            LINKING_REJECTIONS_COUNTER.labels("uid_already_linked").inc()
             await self._send_error(
                 interaction,
                 title_key="linking.uid.already_linked.title",
@@ -62,6 +64,7 @@ class LinkingUI(ui.View):
             )
             return
         if is_linked == 1:
+            LINKING_REJECTIONS_COUNTER.labels("linked_to_other").inc()
             await self._send_error(
                 interaction,
                 title_key="linking.uid.linked_to_other.title",
@@ -70,6 +73,7 @@ class LinkingUI(ui.View):
             return
 
         if cache.get_linking_uids([(uid, game)]):
+            LINKING_REJECTIONS_COUNTER.labels("uid_reserved").inc()
             await self._send_error(
                 interaction,
                 title_key="linking.uid.being_linked.title",
@@ -79,6 +83,7 @@ class LinkingUI(ui.View):
 
         user = await UserConfig.new(interaction.user.id)
         if len(user.accounts) >= _MAX_ACCOUNTS:
+            LINKING_REJECTIONS_COUNTER.labels("max_accounts").inc()
             await self._send_error(
                 interaction,
                 title_key="linking.max_accounts.title",
@@ -203,6 +208,7 @@ class LinkingUI(ui.View):
         try:
             hoyos = await cache._linking_client.fetch_enka_hoyos(enka_username)
         except Exception:
+            LINKING_REJECTIONS_COUNTER.labels("api_error").inc()
             await self._send_error(
                 interaction,
                 title_key="linking.enka.api_error.title",
@@ -218,6 +224,7 @@ class LinkingUI(ui.View):
             and hoyo.get("public")
         ]
         if not supported:
+            LINKING_REJECTIONS_COUNTER.labels("no_accounts").inc()
             await self._send_error(
                 interaction,
                 title_key="linking.enka.no_accounts.title",
@@ -245,6 +252,7 @@ class LinkingUI(ui.View):
             pending.remove(pair)
 
         if not pending:
+            LINKING_REJECTIONS_COUNTER.labels("all_linked").inc()
             embed = self._build_all_linked_embed(
                 already_linked, linked_to_other,
                 all_linked_title="linking.enka.all_linked.title",
@@ -258,6 +266,7 @@ class LinkingUI(ui.View):
 
         user = await UserConfig.new(interaction.user.id)
         if len(user.accounts) + len(pending) > _MAX_ACCOUNTS:
+            LINKING_REJECTIONS_COUNTER.labels("max_accounts").inc()
             await self._send_error(
                 interaction,
                 title_key="linking.max_accounts.title",

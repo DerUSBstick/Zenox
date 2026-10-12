@@ -7,8 +7,16 @@ from psutil import cpu_percent, virtual_memory
 from typing import TYPE_CHECKING, cast
 
 from ..db.mongodb import DB
+from ..db.classes import CacheEntry
 
-from ..metrics import CONNECTION_GAUGE, LATENCY_GAUGE, GUILD_GAUGE, GUILD_MEMBER_GAUGE, RAM_USAGE_GAUGE, CPU_USAGE_GAUGE, UPTIME_GAUGE, GUILD_LOCALE_GAUGE
+from ..metrics import (
+    CONNECTION_GAUGE, LATENCY_GAUGE, GUILD_GAUGE, GUILD_MEMBER_GAUGE, RAM_USAGE_GAUGE, CPU_USAGE_GAUGE,
+    UPTIME_GAUGE, GUILD_LOCALE_GAUGE, CACHE_ENTRIES_GAUGE, CACHE_DB_DOCUMENTS_GAUGE,
+    LINKING_ACTIVE_GAUGE, LINKING_QUEUE_GAUGE, SL_CHARACTER_INFO_GAUGE, LINKED_ACCOUNTS_GAUGE,
+    flush_persistent_counters, load_persistent_counters,
+)
+from ..clients.sl.leaderboards_catalog import SEELELAND_LEADERBOARDS_CATALOG
+import discord
 
 if TYPE_CHECKING:
     from ..bot import Zenox
@@ -26,6 +34,36 @@ class PrometheusCog(commands.Cog):
             self.system_usage_loop.start()
         if not self.latency_loop.is_running():
             self.latency_loop.start()
+        if not self.cache_stats_loop.is_running():
+            self.cache_stats_loop.start()
+
+    async def cog_unload(self) -> None:
+        self.persist_metrics_loop.cancel()
+        try:
+            await flush_persistent_counters(DB.metrics)
+        except Exception as exc:
+            self.client.capture_exception(exc)
+
+    @tasks.loop(seconds=60)
+    async def persist_metrics_loop(self):
+        try:
+            await flush_persistent_counters(DB.metrics)
+        except Exception as exc:
+            self.client.capture_exception(exc)
+
+    @tasks.loop(seconds=60)
+    async def cache_stats_loop(self):
+        try:
+            CACHE_ENTRIES_GAUGE.set(len(CacheEntry.cache))
+            CACHE_DB_DOCUMENTS_GAUGE.set(await DB.cache.estimated_document_count())
+            async for doc in await DB.accounts.aggregate([{"$group": {"_id": "$game", "n": {"$sum": 1}}}]):
+                LINKED_ACCOUNTS_GAUGE.labels(str(doc["_id"])).set(doc["n"])
+            linking = self.client.linking_cache
+            if linking is not None:
+                LINKING_ACTIVE_GAUGE.set(len(linking.get_entries()))
+                LINKING_QUEUE_GAUGE.set(linking._queue.qsize())
+        except Exception as exc:
+            self.client.capture_exception(exc)
 
     @tasks.loop(minutes=30)
     async def update_gauges(self):
@@ -52,6 +90,20 @@ class PrometheusCog(commands.Cog):
         GUILD_MEMBER_GAUGE.set(sum(guild.member_count or 0 for guild in self.client.guilds))
 
         UPTIME_GAUGE.set(time.time())
+
+        try:
+            await load_persistent_counters(DB.metrics)
+        except Exception as exc:
+            self.client.capture_exception(exc)
+
+        self.persist_metrics_loop.start()
+
+        for char_id in SEELELAND_LEADERBOARDS_CATALOG:
+            try:
+                name = self.client.store.hsr.get_character_name(int(char_id), discord.Locale.american_english)
+            except ValueError:
+                name = None
+            SL_CHARACTER_INFO_GAUGE.labels(char_id, name or char_id).set(1)
 
         start_http_server(self.port)
     

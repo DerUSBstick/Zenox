@@ -801,13 +801,2473 @@
       ],
       "title": "Guild Locales",
       "type": "geomap"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 16
+      },
+      "id": 23,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "delecwvk2nfgga"
+          },
+          "description": "Requests actually sent to the Seeleland API in the selected range.",
+          "id": 10,
+          "gridPos": {
+            "h": 4,
+            "w": 6,
+            "x": 0,
+            "y": 17
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "unit": "short",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "blue",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "colorMode": "value",
+            "graphMode": "area",
+            "textMode": "auto"
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "expr": "sum(increase(seeleland_requests_total{endpoint=~\"$endpoint\"}[$__range]))",
+              "legendFormat": "Upstream Requests",
+              "range": true,
+              "instant": false,
+              "refId": "A"
+            }
+          ],
+          "title": "Upstream Requests",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "delecwvk2nfgga"
+          },
+          "description": "Share of lookups served from cache.",
+          "id": 11,
+          "gridPos": {
+            "h": 4,
+            "w": 6,
+            "x": 6,
+            "y": 17
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "unit": "percentunit",
+              "min": 0,
+              "max": 1,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "yellow",
+                    "value": 0.5
+                  },
+                  {
+                    "color": "green",
+                    "value": 0.8
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showThresholdMarkers": true
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "expr": "sum(increase(seeleland_cache_lookups_total{endpoint=~\"$endpoint\",result=\"hit\"}[$__range])) / sum(increase(seeleland_cache_lookups_total{endpoint=~\"$endpoint\"}[$__range]))",
+              "legendFormat": "Cache Hit Ratio",
+              "range": true,
+              "instant": false,
+              "refId": "A"
+            }
+          ],
+          "title": "Cache Hit Ratio",
+          "type": "gauge"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "delecwvk2nfgga"
+          },
+          "description": "Failed upstream requests / all upstream requests.",
+          "id": 12,
+          "gridPos": {
+            "h": 4,
+            "w": 6,
+            "x": 12,
+            "y": 17
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "unit": "percentunit",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "yellow",
+                    "value": 0.02
+                  },
+                  {
+                    "color": "red",
+                    "value": 0.1
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "colorMode": "value",
+            "graphMode": "area",
+            "textMode": "auto"
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "expr": "sum(increase(seeleland_requests_total{endpoint=~\"$endpoint\",outcome!=\"success\"}[$__range])) / sum(increase(seeleland_requests_total{endpoint=~\"$endpoint\"}[$__range]))",
+              "legendFormat": "Error Rate",
+              "range": true,
+              "instant": false,
+              "refId": "A"
+            }
+          ],
+          "title": "Error Rate",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "delecwvk2nfgga"
+          },
+          "description": "Cache hits, i.e. upstream calls avoided.",
+          "id": 13,
+          "gridPos": {
+            "h": 4,
+            "w": 6,
+            "x": 18,
+            "y": 17
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "unit": "short",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "blue",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "colorMode": "value",
+            "graphMode": "area",
+            "textMode": "auto"
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "expr": "sum(increase(seeleland_cache_lookups_total{endpoint=~\"$endpoint\",result=\"hit\"}[$__range]))",
+              "legendFormat": "Requests Saved by Cache",
+              "range": true,
+              "instant": false,
+              "refId": "A"
+            }
+          ],
+          "title": "Requests Saved by Cache",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "delecwvk2nfgga"
+          },
+          "description": "Upstream request rate. player = getPlayer, lb = getLbData, ach = getAchLbData.",
+          "id": 14,
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 21
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "unit": "reqps",
+              "custom": {
+                "lineWidth": 1,
+                "fillOpacity": 60,
+                "showPoints": "never",
+                "spanNulls": true,
+                "drawStyle": "line",
+                "stacking": {
+                  "mode": "normal",
+                  "group": "A"
+                }
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "expr": "sum by (endpoint) (rate(seeleland_requests_total{endpoint=~\"$endpoint\"}[$__rate_interval]))",
+              "legendFormat": "{{endpoint}}",
+              "range": true,
+              "instant": false,
+              "refId": "A"
+            }
+          ],
+          "title": "Requests by Endpoint",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "delecwvk2nfgga"
+          },
+          "description": "100% stacked: proportion of hits and misses over time.",
+          "id": 15,
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 21
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "unit": "ops",
+              "custom": {
+                "lineWidth": 1,
+                "fillOpacity": 60,
+                "showPoints": "never",
+                "spanNulls": true,
+                "drawStyle": "line",
+                "stacking": {
+                  "mode": "percent",
+                  "group": "A"
+                }
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "hit"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "mode": "fixed",
+                      "fixedColor": "green"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "miss"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "mode": "fixed",
+                      "fixedColor": "orange"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "expr": "sum by (result) (rate(seeleland_cache_lookups_total{endpoint=~\"$endpoint\"}[$__rate_interval]))",
+              "legendFormat": "{{result}}",
+              "range": true,
+              "instant": false,
+              "refId": "A"
+            }
+          ],
+          "title": "Cache Hits vs Misses",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "delecwvk2nfgga"
+          },
+          "description": "Upstream request duration percentiles.",
+          "id": 16,
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 29
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "unit": "s",
+              "custom": {
+                "lineWidth": 1,
+                "fillOpacity": 15,
+                "showPoints": "never",
+                "spanNulls": true,
+                "drawStyle": "line"
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.5, sum by (le) (rate(seeleland_request_duration_seconds_bucket{endpoint=~\"$endpoint\"}[$__rate_interval])))",
+              "legendFormat": "p50",
+              "range": true,
+              "instant": false,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.95, sum by (le) (rate(seeleland_request_duration_seconds_bucket{endpoint=~\"$endpoint\"}[$__rate_interval])))",
+              "legendFormat": "p95",
+              "range": true,
+              "instant": false,
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.99, sum by (le) (rate(seeleland_request_duration_seconds_bucket{endpoint=~\"$endpoint\"}[$__rate_interval])))",
+              "legendFormat": "p99",
+              "range": true,
+              "instant": false,
+              "refId": "C"
+            }
+          ],
+          "title": "Request Latency (Seeleland)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "delecwvk2nfgga"
+          },
+          "description": "Request outcomes plus the HTTP status code breakdown of errors.",
+          "id": 17,
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 29
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "unit": "reqps",
+              "custom": {
+                "lineWidth": 1,
+                "fillOpacity": 60,
+                "showPoints": "never",
+                "spanNulls": true,
+                "drawStyle": "line",
+                "stacking": {
+                  "mode": "normal",
+                  "group": "A"
+                }
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "expr": "sum by (outcome) (rate(seeleland_requests_total{endpoint=~\"$endpoint\"}[$__rate_interval]))",
+              "legendFormat": "{{outcome}}",
+              "range": true,
+              "instant": false,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "expr": "sum by (status) (rate(seeleland_http_errors_total{endpoint=~\"$endpoint\"}[$__rate_interval]))",
+              "legendFormat": "HTTP {{status}}",
+              "range": true,
+              "instant": false,
+              "refId": "B"
+            }
+          ],
+          "title": "Outcomes and HTTP Errors",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "delecwvk2nfgga"
+          },
+          "description": "Top 10 most looked-up characters (leaderboard pages, cached or not). Shown as name (ID).",
+          "id": 18,
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 37
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "unit": "short",
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "blue",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "displayMode": "gradient",
+            "orientation": "horizontal",
+            "showUnfilled": true,
+            "namePlacement": "left",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "expr": "sort_desc(topk(10, sum by (character) (increase(seeleland_character_lookups_total[$__range])) * on (character) group_left (name) max by (character, name) (seeleland_character_info)))",
+              "legendFormat": "{{name}} (ID {{character}})",
+              "range": false,
+              "instant": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Popular Characters",
+          "type": "bargauge"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "delecwvk2nfgga"
+          },
+          "description": "",
+          "id": 19,
+          "gridPos": {
+            "h": 8,
+            "w": 6,
+            "x": 12,
+            "y": 37
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "options": {
+            "pieType": "donut",
+            "displayLabels": [
+              "percent"
+            ],
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "values": [
+                "value"
+              ]
+            },
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "tooltip": {
+              "mode": "single"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "expr": "sum by (result) (increase(seeleland_cache_lookups_total{endpoint=~\"$endpoint\"}[$__range]))",
+              "legendFormat": "{{result}}",
+              "range": false,
+              "instant": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Cache Hits vs Misses (Share)",
+          "type": "piechart"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "delecwvk2nfgga"
+          },
+          "description": "",
+          "id": 20,
+          "gridPos": {
+            "h": 8,
+            "w": 6,
+            "x": 18,
+            "y": 37
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "options": {
+            "pieType": "donut",
+            "displayLabels": [
+              "percent"
+            ],
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "values": [
+                "value"
+              ]
+            },
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "tooltip": {
+              "mode": "single"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "expr": "sum by (status) (increase(seeleland_http_errors_total{endpoint=~\"$endpoint\"}[$__range]))",
+              "legendFormat": "{{status}}",
+              "range": false,
+              "instant": true,
+              "refId": "A"
+            }
+          ],
+          "title": "HTTP Errors by Status",
+          "type": "piechart"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "delecwvk2nfgga"
+          },
+          "description": "In-memory CacheEntry count vs documents stored in MongoDB.",
+          "id": 21,
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 45
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "unit": "short",
+              "custom": {
+                "lineWidth": 1,
+                "fillOpacity": 15,
+                "showPoints": "never",
+                "spanNulls": true,
+                "drawStyle": "line"
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "DB documents"
+                },
+                "properties": [
+                  {
+                    "id": "custom.axisPlacement",
+                    "value": "right"
+                  }
+                ]
+              }
+            ]
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "expr": "cache_entries",
+              "legendFormat": "In-memory entries",
+              "range": true,
+              "instant": false,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "expr": "cache_db_documents",
+              "legendFormat": "DB documents",
+              "range": true,
+              "instant": false,
+              "refId": "B"
+            }
+          ],
+          "title": "Cache Size",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "delecwvk2nfgga"
+          },
+          "description": "CacheEntry lookups by tier (memory/DB/miss) and stale evictions.",
+          "id": 22,
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 45
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "unit": "ops",
+              "custom": {
+                "lineWidth": 1,
+                "fillOpacity": 15,
+                "showPoints": "never",
+                "spanNulls": true,
+                "drawStyle": "line"
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "expr": "sum by (result) (rate(cache_lookups_total[$__rate_interval]))",
+              "legendFormat": "lookup {{result}}",
+              "range": true,
+              "instant": false,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "expr": "sum by (reason) (rate(cache_evictions_total[$__rate_interval]))",
+              "legendFormat": "evict {{reason}}",
+              "range": true,
+              "instant": false,
+              "refId": "B"
+            }
+          ],
+          "title": "Cache Tiers and Evictions",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "delecwvk2nfgga"
+          },
+          "description": "Failed /sl commands and leaderboard view interactions (API parsing, view building, button handlers) / all attempts.",
+          "id": 36,
+          "gridPos": {
+            "h": 8,
+            "w": 6,
+            "x": 0,
+            "y": 53
+          },
+          "title": "Leaderboard Failure Rate",
+          "type": "gauge",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "unit": "percentunit",
+              "min": 0,
+              "max": 1,
+              "noValue": "0",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "yellow",
+                    "value": 0.02
+                  },
+                  {
+                    "color": "red",
+                    "value": 0.1
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showThresholdMarkers": true
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "expr": "sum(increase(seeleland_leaderboard_failures_total{stage!=\"parse\"}[$__range])) / sum(increase(seeleland_leaderboard_attempts_total[$__range]))",
+              "legendFormat": "Failure rate",
+              "range": true,
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "delecwvk2nfgga"
+          },
+          "description": "Failures by stage (command, view, parse) and exception type. parse = category key could not be decoded.",
+          "id": 37,
+          "gridPos": {
+            "h": 8,
+            "w": 18,
+            "x": 6,
+            "y": 53
+          },
+          "title": "Leaderboard Failures by Stage and Error",
+          "type": "timeseries",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "unit": "short",
+              "min": 0,
+              "noValue": "0",
+              "custom": {
+                "drawStyle": "bars",
+                "fillOpacity": 60,
+                "lineWidth": 1,
+                "showPoints": "never",
+                "stacking": {
+                  "mode": "normal",
+                  "group": "A"
+                }
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "calcs": [
+                "sum"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "expr": "sum by (stage, error) (increase(seeleland_leaderboard_failures_total[$__interval]))",
+              "legendFormat": "{{stage}}: {{error}}",
+              "range": true,
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "delecwvk2nfgga"
+          },
+          "description": "Lifetime leaderboard lookups per character, persisted across restarts.",
+          "id": 38,
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 61
+          },
+          "title": "Popular Characters (All Time)",
+          "type": "bargauge",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "unit": "short",
+              "min": 0
+            },
+            "overrides": []
+          },
+          "options": {
+            "displayMode": "gradient",
+            "orientation": "horizontal",
+            "showUnfilled": true,
+            "namePlacement": "left",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "expr": "sort_desc(topk(10, sum by (character) (seeleland_character_lookups_lifetime) * on (character) group_left (name) max by (character, name) (seeleland_character_info)))",
+              "legendFormat": "{{name}} (ID {{character}})",
+              "range": false,
+              "instant": true,
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "delecwvk2nfgga"
+          },
+          "description": "Total character leaderboard page lookups ever.",
+          "id": 39,
+          "gridPos": {
+            "h": 4,
+            "w": 6,
+            "x": 12,
+            "y": 61
+          },
+          "title": "Leaderboard Lookups (All Time)",
+          "type": "stat",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "unit": "short",
+              "noValue": "0",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "blue",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "colorMode": "value",
+            "graphMode": "none",
+            "textMode": "auto"
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "expr": "sum(seeleland_character_lookups_lifetime)",
+              "legendFormat": "Lookups",
+              "range": false,
+              "instant": true,
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "delecwvk2nfgga"
+          },
+          "description": "Command and view failures / attempts, all time.",
+          "id": 40,
+          "gridPos": {
+            "h": 4,
+            "w": 6,
+            "x": 18,
+            "y": 61
+          },
+          "title": "Leaderboard Failure Rate (All Time)",
+          "type": "stat",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "unit": "percentunit",
+              "noValue": "0",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "yellow",
+                    "value": 0.02
+                  },
+                  {
+                    "color": "red",
+                    "value": 0.1
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "colorMode": "value",
+            "graphMode": "none",
+            "textMode": "auto"
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "expr": "sum(seeleland_leaderboard_failures_lifetime{stage!=\"parse\"}) / sum(seeleland_leaderboard_attempts_lifetime)",
+              "legendFormat": "Failure rate",
+              "range": false,
+              "instant": true,
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "delecwvk2nfgga"
+          },
+          "description": "Lifetime failures grouped by stage and error type.",
+          "id": 41,
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 65
+          },
+          "title": "Leaderboard Failures by Error (All Time)",
+          "type": "piechart",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "options": {
+            "pieType": "donut",
+            "displayLabels": [
+              "percent"
+            ],
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "values": [
+                "value"
+              ]
+            },
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "tooltip": {
+              "mode": "single"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "expr": "sum by (stage, error) (seeleland_leaderboard_failures_lifetime)",
+              "legendFormat": "{{stage}}: {{error}}",
+              "range": false,
+              "instant": true,
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "delecwvk2nfgga"
+          },
+          "description": "Top 10 characters by leaderboard lookups in the last 7d. Needs Prometheus retention of at least 7d.",
+          "id": 45,
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 73
+          },
+          "title": "Popular Characters (7d)",
+          "type": "bargauge",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "unit": "short",
+              "min": 0
+            },
+            "overrides": []
+          },
+          "options": {
+            "displayMode": "gradient",
+            "orientation": "horizontal",
+            "showUnfilled": true,
+            "namePlacement": "left",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "instant": true,
+              "range": false,
+              "refId": "A",
+              "legendFormat": "{{name}} (ID {{character}})",
+              "expr": "sort_desc(topk(10, sum by (character) (increase(seeleland_character_lookups_total[7d])) * on (character) group_left (name) max by (character, name) (seeleland_character_info)))"
+            }
+          ]
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "delecwvk2nfgga"
+          },
+          "description": "Top 10 characters by leaderboard lookups in the last 30d. Needs Prometheus retention of at least 30d.",
+          "id": 46,
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 73
+          },
+          "title": "Popular Characters (30d)",
+          "type": "bargauge",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "unit": "short",
+              "min": 0
+            },
+            "overrides": []
+          },
+          "options": {
+            "displayMode": "gradient",
+            "orientation": "horizontal",
+            "showUnfilled": true,
+            "namePlacement": "left",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "instant": true,
+              "range": false,
+              "refId": "A",
+              "legendFormat": "{{name}} (ID {{character}})",
+              "expr": "sort_desc(topk(10, sum by (character) (increase(seeleland_character_lookups_total[30d])) * on (character) group_left (name) max by (character, name) (seeleland_character_info)))"
+            }
+          ]
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "delecwvk2nfgga"
+          },
+          "description": "Lookups over time for the 5 most popular characters in the selected time range.",
+          "id": 47,
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 81
+          },
+          "title": "Top Characters Over Time",
+          "type": "timeseries",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "unit": "short",
+              "min": 0,
+              "custom": {
+                "drawStyle": "line",
+                "lineWidth": 1,
+                "fillOpacity": 10,
+                "showPoints": "never",
+                "spanNulls": true
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "calcs": [
+                "sum"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "range": true,
+              "refId": "A",
+              "legendFormat": "{{name}} (ID {{character}})",
+              "interval": "1h",
+              "expr": "(sum by (character) (increase(seeleland_character_lookups_total[$__interval])) and on (character) topk(5, sum by (character) (increase(seeleland_character_lookups_total[$__range])))) * on (character) group_left (name) max by (character, name) (seeleland_character_info)"
+            }
+          ]
+        }
+      ],
+      "title": "Seeleland API",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 17
+      },
+      "id": 35,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "delecwvk2nfgga"
+          },
+          "description": "Linking sessions that passed all pre-checks.",
+          "id": 24,
+          "gridPos": {
+            "h": 4,
+            "w": 6,
+            "x": 0,
+            "y": 18
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "unit": "short",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "blue",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "colorMode": "value",
+            "graphMode": "area",
+            "textMode": "auto"
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "expr": "sum(increase(linking_sessions_total{method=~\"$method\",event=\"started\"}[$__range]))",
+              "legendFormat": "Sessions Started",
+              "range": true,
+              "instant": false,
+              "refId": "A"
+            }
+          ],
+          "title": "Sessions Started",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "delecwvk2nfgga"
+          },
+          "description": "Successful / started sessions.",
+          "id": 25,
+          "gridPos": {
+            "h": 4,
+            "w": 6,
+            "x": 6,
+            "y": 18
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "unit": "percentunit",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "yellow",
+                    "value": 0.5
+                  },
+                  {
+                    "color": "green",
+                    "value": 0.8
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "colorMode": "value",
+            "graphMode": "area",
+            "textMode": "auto"
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "expr": "sum(increase(linking_sessions_total{method=~\"$method\",event=\"success\"}[$__range])) / sum(increase(linking_sessions_total{method=~\"$method\",event=\"started\"}[$__range]))",
+              "legendFormat": "Conversion Rate",
+              "range": true,
+              "instant": false,
+              "refId": "A"
+            }
+          ],
+          "title": "Conversion Rate",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "delecwvk2nfgga"
+          },
+          "description": "Capacity is 75 concurrent sessions.",
+          "id": 26,
+          "gridPos": {
+            "h": 4,
+            "w": 6,
+            "x": 12,
+            "y": 18
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "unit": "short",
+              "min": 0,
+              "max": 75,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "yellow",
+                    "value": 50
+                  },
+                  {
+                    "color": "red",
+                    "value": 70
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showThresholdMarkers": true
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "expr": "linking_active_sessions",
+              "legendFormat": "Active Sessions",
+              "range": true,
+              "instant": false,
+              "refId": "A"
+            }
+          ],
+          "title": "Active Sessions",
+          "type": "gauge"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "delecwvk2nfgga"
+          },
+          "description": "",
+          "id": 27,
+          "gridPos": {
+            "h": 4,
+            "w": 6,
+            "x": 18,
+            "y": 18
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "unit": "percentunit",
+              "min": 0,
+              "max": 1,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "yellow",
+                    "value": 0.5
+                  },
+                  {
+                    "color": "green",
+                    "value": 0.8
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showThresholdMarkers": true
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "expr": "sum(increase(enka_cache_lookups_total{result=\"hit\"}[$__range])) / sum(increase(enka_cache_lookups_total[$__range]))",
+              "legendFormat": "Enka Cache Hit Ratio",
+              "range": true,
+              "instant": false,
+              "refId": "A"
+            }
+          ],
+          "title": "Enka Cache Hit Ratio",
+          "type": "gauge"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "delecwvk2nfgga"
+          },
+          "description": "started, then success / expired / failed.",
+          "id": 28,
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 22
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "unit": "short",
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "blue",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "displayMode": "gradient",
+            "orientation": "horizontal",
+            "showUnfilled": true,
+            "namePlacement": "left",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "expr": "sum by (event) (increase(linking_sessions_total{method=~\"$method\"}[$__range]))",
+              "legendFormat": "{{event}}",
+              "range": false,
+              "instant": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Linking Funnel",
+          "type": "bargauge"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "delecwvk2nfgga"
+          },
+          "description": "Attempts stopped before a session started.",
+          "id": 29,
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 22
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "options": {
+            "pieType": "donut",
+            "displayLabels": [
+              "percent"
+            ],
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "values": [
+                "value"
+              ]
+            },
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "tooltip": {
+              "mode": "single"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "expr": "sum by (reason) (increase(linking_rejections_total[$__range]))",
+              "legendFormat": "{{reason}}",
+              "range": false,
+              "instant": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Rejections by Reason",
+          "type": "piechart"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "delecwvk2nfgga"
+          },
+          "description": "Active sessions with queue of verified entries awaiting finalization.",
+          "id": 30,
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 30
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "unit": "short",
+              "custom": {
+                "lineWidth": 1,
+                "fillOpacity": 15,
+                "showPoints": "never",
+                "spanNulls": true,
+                "drawStyle": "line"
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "expr": "linking_active_sessions",
+              "legendFormat": "Active sessions",
+              "range": true,
+              "instant": false,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "expr": "linking_queue_size",
+              "legendFormat": "Finalize queue",
+              "range": true,
+              "instant": false,
+              "refId": "B"
+            }
+          ],
+          "title": "Active Sessions and Queue",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "delecwvk2nfgga"
+          },
+          "description": "",
+          "id": 31,
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 30
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "unit": "short",
+              "custom": {
+                "lineWidth": 1,
+                "fillOpacity": 60,
+                "showPoints": "never",
+                "spanNulls": true,
+                "drawStyle": "bars",
+                "stacking": {
+                  "mode": "normal",
+                  "group": "A"
+                }
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "expr": "sum by (method, event) (increase(linking_sessions_total{method=~\"$method\"}[$__interval]))",
+              "legendFormat": "{{method}} {{event}}",
+              "range": true,
+              "instant": false,
+              "refId": "A"
+            }
+          ],
+          "title": "Session Events",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "delecwvk2nfgga"
+          },
+          "description": "",
+          "id": 32,
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 0,
+            "y": 38
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "unit": "reqps",
+              "custom": {
+                "lineWidth": 1,
+                "fillOpacity": 60,
+                "showPoints": "never",
+                "spanNulls": true,
+                "drawStyle": "line",
+                "stacking": {
+                  "mode": "normal",
+                  "group": "A"
+                }
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "expr": "sum by (endpoint, outcome) (rate(enka_requests_total[$__rate_interval]))",
+              "legendFormat": "{{endpoint}} {{outcome}}",
+              "range": true,
+              "instant": false,
+              "refId": "A"
+            }
+          ],
+          "title": "Enka Requests",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "delecwvk2nfgga"
+          },
+          "description": "",
+          "id": 33,
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 8,
+            "y": 38
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "unit": "s",
+              "custom": {
+                "lineWidth": 1,
+                "fillOpacity": 15,
+                "showPoints": "never",
+                "spanNulls": true,
+                "drawStyle": "line"
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.5, sum by (le) (rate(enka_request_duration_seconds_bucket[$__rate_interval])))",
+              "legendFormat": "p50",
+              "range": true,
+              "instant": false,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.95, sum by (le) (rate(enka_request_duration_seconds_bucket[$__rate_interval])))",
+              "legendFormat": "p95",
+              "range": true,
+              "instant": false,
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.99, sum by (le) (rate(enka_request_duration_seconds_bucket[$__rate_interval])))",
+              "legendFormat": "p99",
+              "range": true,
+              "instant": false,
+              "refId": "C"
+            }
+          ],
+          "title": "Enka Latency",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "delecwvk2nfgga"
+          },
+          "description": "",
+          "id": 34,
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 16,
+            "y": 38
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "options": {
+            "pieType": "donut",
+            "displayLabels": [
+              "percent"
+            ],
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "values": [
+                "value"
+              ]
+            },
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "tooltip": {
+              "mode": "single"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "expr": "sum by (status) (increase(enka_http_errors_total[$__range]))",
+              "legendFormat": "{{endpoint}} {{status}}",
+              "range": false,
+              "instant": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Enka HTTP Errors by Status",
+          "type": "piechart"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "delecwvk2nfgga"
+          },
+          "description": "Lifetime linking session events, persisted across restarts.",
+          "id": 42,
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 0,
+            "y": 46
+          },
+          "title": "Linking Funnel (All Time)",
+          "type": "bargauge",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "unit": "short",
+              "min": 0
+            },
+            "overrides": []
+          },
+          "options": {
+            "displayMode": "gradient",
+            "orientation": "horizontal",
+            "showUnfilled": true,
+            "namePlacement": "left",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "expr": "sum by (event) (linking_sessions_lifetime)",
+              "legendFormat": "{{event}}",
+              "range": false,
+              "instant": true,
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "delecwvk2nfgga"
+          },
+          "description": "Lifetime rejections by reason.",
+          "id": 43,
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 8,
+            "y": 46
+          },
+          "title": "Linking Rejections (All Time)",
+          "type": "piechart",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "options": {
+            "pieType": "donut",
+            "displayLabels": [
+              "percent"
+            ],
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "values": [
+                "value"
+              ]
+            },
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "tooltip": {
+              "mode": "single"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "expr": "sum by (reason) (linking_rejections_lifetime)",
+              "legendFormat": "{{reason}}",
+              "range": false,
+              "instant": true,
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "delecwvk2nfgga"
+          },
+          "description": "Accounts currently stored in the database.",
+          "id": 44,
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 16,
+            "y": 46
+          },
+          "title": "Linked Accounts by Game",
+          "type": "piechart",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "options": {
+            "pieType": "donut",
+            "displayLabels": [
+              "percent"
+            ],
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "values": [
+                "value"
+              ]
+            },
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "tooltip": {
+              "mode": "single"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "delecwvk2nfgga"
+              },
+              "editorMode": "code",
+              "expr": "sum by (game) (linked_accounts)",
+              "legendFormat": "{{game}}",
+              "range": false,
+              "instant": true,
+              "refId": "A"
+            }
+          ]
+        }
+      ],
+      "title": "Linking and Enka",
+      "type": "row"
     }
   ],
   "preload": false,
   "schemaVersion": 41,
   "tags": [],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "type": "query",
+        "name": "endpoint",
+        "label": "SL endpoint",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "delecwvk2nfgga"
+        },
+        "query": {
+          "query": "label_values(seeleland_requests_total, endpoint)",
+          "refId": "ep"
+        },
+        "refresh": 2,
+        "includeAll": true,
+        "multi": true,
+        "allValue": ".*",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "sort": 1
+      },
+      {
+        "type": "query",
+        "name": "method",
+        "label": "Linking method",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "delecwvk2nfgga"
+        },
+        "query": {
+          "query": "label_values(linking_sessions_total, method)",
+          "refresh": 2,
+          "refId": "m"
+        },
+        "refresh": 2,
+        "includeAll": true,
+        "multi": true,
+        "allValue": ".*",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "sort": 1
+      }
+    ]
   },
   "time": {
     "from": "now-6h",
