@@ -103,32 +103,24 @@
             "type": "prometheus",
             "uid": "delecwvk2nfgga"
           },
-          "disableTextWrap": false,
-          "editorMode": "builder",
+          "editorMode": "code",
           "expr": "max by (job) (discord_connected{shard=\"None\"})",
-          "fullMetaSearch": false,
-          "includeNullMetadata": true,
           "legendFormat": "{{job}}",
           "range": true,
-          "refId": "A",
-          "useBackend": false
+          "refId": "A"
         },
         {
           "datasource": {
             "type": "prometheus",
             "uid": "delecwvk2nfgga"
           },
-          "disableTextWrap": false,
-          "editorMode": "builder",
+          "editorMode": "code",
           "expr": "max by (job, shard) (discord_connected{shard!=\"None\"})",
-          "fullMetaSearch": false,
           "hide": false,
-          "includeNullMetadata": true,
           "instant": false,
           "legendFormat": "{{job}} - Shard {{shard}}",
           "range": true,
-          "refId": "B",
-          "useBackend": false
+          "refId": "B"
         }
       ],
       "timeFrom": "24h",
@@ -191,7 +183,8 @@
               }
             ]
           },
-          "unit": "s"
+          "unit": "s",
+          "noValue": "0"
         },
         "overrides": []
       },
@@ -222,18 +215,14 @@
             "type": "prometheus",
             "uid": "delecwvk2nfgga"
           },
-          "disableTextWrap": false,
-          "editorMode": "builder",
+          "editorMode": "code",
           "expr": "max by (job, shard) (discord_latency{shard!=\"None\"})",
-          "fullMetaSearch": false,
           "hide": false,
-          "includeNullMetadata": true,
           "instant": false,
           "interval": "",
           "legendFormat": "{{job}} - Shard {{shard}}",
           "range": true,
-          "refId": "B",
-          "useBackend": false
+          "refId": "B"
         }
       ],
       "title": "Discord Latency",
@@ -267,7 +256,8 @@
               }
             ]
           },
-          "unit": "percent"
+          "unit": "percent",
+          "noValue": "0"
         },
         "overrides": []
       },
@@ -296,15 +286,11 @@
       "pluginVersion": "12.0.0",
       "targets": [
         {
-          "disableTextWrap": false,
-          "editorMode": "builder",
+          "editorMode": "code",
           "expr": "max by (job) (discord_ram_usage)",
-          "fullMetaSearch": false,
-          "includeNullMetadata": true,
           "legendFormat": "{{job}}",
           "range": true,
-          "refId": "A",
-          "useBackend": false
+          "refId": "A"
         }
       ],
       "title": "RAM Usage",
@@ -331,7 +317,8 @@
               }
             ]
           },
-          "unit": "dtdurations"
+          "unit": "dtdurations",
+          "noValue": "0"
         },
         "overrides": []
       },
@@ -366,18 +353,14 @@
             "type": "prometheus",
             "uid": "delecwvk2nfgga"
           },
-          "disableTextWrap": false,
           "editorMode": "code",
           "expr": "time() - max by (job) (discord_uptime)",
           "format": "time_series",
-          "fullMetaSearch": false,
           "hide": false,
-          "includeNullMetadata": true,
           "instant": false,
           "legendFormat": "{{job}}",
           "range": true,
-          "refId": "A",
-          "useBackend": false
+          "refId": "A"
         }
       ],
       "title": "Uptime",
@@ -449,7 +432,8 @@
                 "value": 80
               }
             ]
-          }
+          },
+          "noValue": "0"
         },
         "overrides": []
       },
@@ -476,15 +460,11 @@
       "pluginVersion": "12.0.0",
       "targets": [
         {
-          "disableTextWrap": false,
-          "editorMode": "builder",
+          "editorMode": "code",
           "expr": "max by (job) (discord_guild_members)",
-          "fullMetaSearch": false,
-          "includeNullMetadata": true,
           "legendFormat": "{{job}}",
           "range": true,
-          "refId": "A",
-          "useBackend": false
+          "refId": "A"
         }
       ],
       "timeFrom": "1w",
@@ -546,7 +526,8 @@
                 "value": 80
               }
             ]
-          }
+          },
+          "noValue": "0"
         },
         "overrides": []
       },
@@ -574,15 +555,11 @@
       "pluginVersion": "12.0.0",
       "targets": [
         {
-          "disableTextWrap": false,
-          "editorMode": "builder",
+          "editorMode": "code",
           "expr": "max by (job) (discord_guilds)",
-          "fullMetaSearch": false,
-          "includeNullMetadata": true,
           "legendFormat": "{{job}}",
           "range": true,
-          "refId": "A",
-          "useBackend": false
+          "refId": "A"
         }
       ],
       "timeFrom": "1w",
@@ -618,7 +595,8 @@
               }
             ]
           },
-          "unit": "percent"
+          "unit": "percent",
+          "noValue": "0"
         },
         "overrides": []
       },
@@ -650,18 +628,14 @@
       "pluginVersion": "12.0.0",
       "targets": [
         {
-          "disableTextWrap": false,
-          "editorMode": "builder",
+          "editorMode": "code",
           "exemplar": false,
           "expr": "max by (job) (discord_cpu_usage)",
           "format": "time_series",
-          "fullMetaSearch": false,
-          "includeNullMetadata": true,
           "instant": false,
           "legendFormat": "{{job}}",
           "range": true,
-          "refId": "A",
-          "useBackend": false
+          "refId": "A"
         }
       ],
       "title": "CPU Activity",
@@ -787,16 +761,12 @@
       "pluginVersion": "12.0.0",
       "targets": [
         {
-          "disableTextWrap": false,
-          "editorMode": "builder",
+          "editorMode": "code",
           "expr": "max by (job, country) (discord_guild_locale)",
           "format": "table",
-          "fullMetaSearch": false,
-          "includeNullMetadata": true,
           "legendFormat": "__auto",
           "range": true,
-          "refId": "Get Guild Locales",
-          "useBackend": false
+          "refId": "Get Guild Locales"
         }
       ],
       "title": "Guild Locales",
@@ -840,7 +810,8 @@
                     "value": null
                   }
                 ]
-              }
+              },
+              "noValue": "0"
             },
             "overrides": []
           },
@@ -911,7 +882,8 @@
                     "value": 0.8
                   }
                 ]
-              }
+              },
+              "noValue": "N/A"
             },
             "overrides": []
           },
@@ -932,7 +904,7 @@
                 "uid": "delecwvk2nfgga"
               },
               "editorMode": "code",
-              "expr": "sum(increase(seeleland_cache_lookups_total{endpoint=~\"$endpoint\",result=\"hit\"}[$__range])) / sum(increase(seeleland_cache_lookups_total{endpoint=~\"$endpoint\"}[$__range]))",
+              "expr": "sum(increase(seeleland_cache_lookups_total{endpoint=~\"$endpoint\",result=\"hit\"}[$__range])) / (sum(increase(seeleland_cache_lookups_total{endpoint=~\"$endpoint\"}[$__range])) > 0)",
               "legendFormat": "Cache Hit Ratio",
               "range": true,
               "instant": false,
@@ -978,7 +950,8 @@
                     "value": 0.1
                   }
                 ]
-              }
+              },
+              "noValue": "N/A"
             },
             "overrides": []
           },
@@ -1001,7 +974,7 @@
                 "uid": "delecwvk2nfgga"
               },
               "editorMode": "code",
-              "expr": "sum(increase(seeleland_requests_total{endpoint=~\"$endpoint\",outcome!=\"success\"}[$__range])) / sum(increase(seeleland_requests_total{endpoint=~\"$endpoint\"}[$__range]))",
+              "expr": "sum(increase(seeleland_requests_total{endpoint=~\"$endpoint\",outcome!=\"success\"}[$__range])) / (sum(increase(seeleland_requests_total{endpoint=~\"$endpoint\"}[$__range])) > 0)",
               "legendFormat": "Error Rate",
               "range": true,
               "instant": false,
@@ -1039,7 +1012,8 @@
                     "value": null
                   }
                 ]
-              }
+              },
+              "noValue": "0"
             },
             "overrides": []
           },
@@ -1102,7 +1076,8 @@
                   "mode": "normal",
                   "group": "A"
                 }
-              }
+              },
+              "noValue": "0"
             },
             "overrides": []
           },
@@ -1164,7 +1139,8 @@
                   "mode": "percent",
                   "group": "A"
                 }
-              }
+              },
+              "noValue": "0"
             },
             "overrides": [
               {
@@ -1253,7 +1229,8 @@
                 "showPoints": "never",
                 "spanNulls": true,
                 "drawStyle": "line"
-              }
+              },
+              "noValue": "0"
             },
             "overrides": []
           },
@@ -1339,7 +1316,8 @@
                   "mode": "normal",
                   "group": "A"
                 }
-              }
+              },
+              "noValue": "0"
             },
             "overrides": []
           },
@@ -1412,7 +1390,8 @@
                     "value": null
                   }
                 ]
-              }
+              },
+              "noValue": "0"
             },
             "overrides": []
           },
@@ -1465,7 +1444,8 @@
                 "mode": "palette-classic"
               },
               "mappings": [],
-              "unit": "short"
+              "unit": "short",
+              "noValue": "0"
             },
             "overrides": []
           },
@@ -1529,32 +1509,23 @@
                 "mode": "palette-classic"
               },
               "mappings": [],
-              "unit": "short"
+              "unit": "short",
+              "min": 0,
+              "noValue": "0"
             },
             "overrides": []
           },
           "options": {
-            "pieType": "donut",
-            "displayLabels": [
-              "percent"
-            ],
-            "legend": {
-              "displayMode": "table",
-              "placement": "right",
-              "showLegend": true,
-              "values": [
-                "value"
-              ]
-            },
+            "displayMode": "gradient",
+            "orientation": "horizontal",
+            "showUnfilled": true,
+            "namePlacement": "left",
             "reduceOptions": {
               "calcs": [
                 "lastNotNull"
               ],
               "fields": "",
               "values": false
-            },
-            "tooltip": {
-              "mode": "single"
             }
           },
           "targets": [
@@ -1572,7 +1543,7 @@
             }
           ],
           "title": "HTTP Errors by Status",
-          "type": "piechart"
+          "type": "bargauge"
         },
         {
           "datasource": {
@@ -1600,7 +1571,8 @@
                 "showPoints": "never",
                 "spanNulls": true,
                 "drawStyle": "line"
-              }
+              },
+              "noValue": "0"
             },
             "overrides": [
               {
@@ -1683,7 +1655,8 @@
                 "showPoints": "never",
                 "spanNulls": true,
                 "drawStyle": "line"
-              }
+              },
+              "noValue": "0"
             },
             "overrides": []
           },
@@ -1751,7 +1724,7 @@
               "unit": "percentunit",
               "min": 0,
               "max": 1,
-              "noValue": "0",
+              "noValue": "N/A",
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
@@ -1789,7 +1762,7 @@
                 "uid": "delecwvk2nfgga"
               },
               "editorMode": "code",
-              "expr": "sum(increase(seeleland_leaderboard_failures_total{stage!=\"parse\"}[$__range])) / sum(increase(seeleland_leaderboard_attempts_total[$__range]))",
+              "expr": "sum(increase(seeleland_leaderboard_failures_total{stage!=\"parse\"}[$__range])) / (sum(increase(seeleland_leaderboard_attempts_total[$__range])) > 0)",
               "legendFormat": "Failure rate",
               "range": true,
               "refId": "A"
@@ -1883,7 +1856,8 @@
               },
               "mappings": [],
               "unit": "short",
-              "min": 0
+              "min": 0,
+              "noValue": "0"
             },
             "overrides": []
           },
@@ -1999,7 +1973,7 @@
               },
               "mappings": [],
               "unit": "percentunit",
-              "noValue": "0",
+              "noValue": "N/A",
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
@@ -2039,7 +2013,7 @@
                 "uid": "delecwvk2nfgga"
               },
               "editorMode": "code",
-              "expr": "sum(max by (job, stage, error) (seeleland_leaderboard_failures_lifetime{stage!=\"parse\"})) / sum(max by (job, stage) (seeleland_leaderboard_attempts_lifetime))",
+              "expr": "sum(max by (job, stage, error) (seeleland_leaderboard_failures_lifetime{stage!=\"parse\"})) / (sum(max by (job, stage) (seeleland_leaderboard_attempts_lifetime)) > 0)",
               "legendFormat": "Failure rate",
               "range": false,
               "instant": true,
@@ -2061,39 +2035,30 @@
             "y": 65
           },
           "title": "Leaderboard Failures by Error (All Time)",
-          "type": "piechart",
+          "type": "bargauge",
           "fieldConfig": {
             "defaults": {
               "color": {
                 "mode": "palette-classic"
               },
               "mappings": [],
-              "unit": "short"
+              "unit": "short",
+              "min": 0,
+              "noValue": "0"
             },
             "overrides": []
           },
           "options": {
-            "pieType": "donut",
-            "displayLabels": [
-              "percent"
-            ],
-            "legend": {
-              "displayMode": "table",
-              "placement": "right",
-              "showLegend": true,
-              "values": [
-                "value"
-              ]
-            },
+            "displayMode": "gradient",
+            "orientation": "horizontal",
+            "showUnfilled": true,
+            "namePlacement": "left",
             "reduceOptions": {
               "calcs": [
                 "lastNotNull"
               ],
               "fields": "",
               "values": false
-            },
-            "tooltip": {
-              "mode": "single"
             }
           },
           "targets": [
@@ -2133,7 +2098,8 @@
               },
               "mappings": [],
               "unit": "short",
-              "min": 0
+              "min": 0,
+              "noValue": "0"
             },
             "overrides": []
           },
@@ -2187,7 +2153,8 @@
               },
               "mappings": [],
               "unit": "short",
-              "min": 0
+              "min": 0,
+              "noValue": "0"
             },
             "overrides": []
           },
@@ -2248,7 +2215,8 @@
                 "fillOpacity": 10,
                 "showPoints": "never",
                 "spanNulls": true
-              }
+              },
+              "noValue": "0"
             },
             "overrides": []
           },
@@ -2323,7 +2291,8 @@
                     "value": null
                   }
                 ]
-              }
+              },
+              "noValue": "0"
             },
             "overrides": []
           },
@@ -2392,7 +2361,8 @@
                     "value": 0.8
                   }
                 ]
-              }
+              },
+              "noValue": "N/A"
             },
             "overrides": []
           },
@@ -2415,7 +2385,7 @@
                 "uid": "delecwvk2nfgga"
               },
               "editorMode": "code",
-              "expr": "sum(increase(linking_sessions_total{method=~\"$method\",event=\"success\"}[$__range])) / sum(increase(linking_sessions_total{method=~\"$method\",event=\"started\"}[$__range]))",
+              "expr": "sum(increase(linking_sessions_total{method=~\"$method\",event=\"success\"}[$__range])) / (sum(increase(linking_sessions_total{method=~\"$method\",event=\"started\"}[$__range])) > 0)",
               "legendFormat": "Conversion Rate",
               "range": true,
               "instant": false,
@@ -2463,7 +2433,8 @@
                     "value": 70
                   }
                 ]
-              }
+              },
+              "noValue": "0"
             },
             "overrides": []
           },
@@ -2532,7 +2503,8 @@
                     "value": 0.8
                   }
                 ]
-              }
+              },
+              "noValue": "N/A"
             },
             "overrides": []
           },
@@ -2553,7 +2525,7 @@
                 "uid": "delecwvk2nfgga"
               },
               "editorMode": "code",
-              "expr": "sum(increase(enka_cache_lookups_total{result=\"hit\"}[$__range])) / sum(increase(enka_cache_lookups_total[$__range]))",
+              "expr": "sum(increase(enka_cache_lookups_total{result=\"hit\"}[$__range])) / (sum(increase(enka_cache_lookups_total[$__range])) > 0)",
               "legendFormat": "Enka Cache Hit Ratio",
               "range": true,
               "instant": false,
@@ -2592,7 +2564,8 @@
                     "value": null
                   }
                 ]
-              }
+              },
+              "noValue": "0"
             },
             "overrides": []
           },
@@ -2645,32 +2618,23 @@
                 "mode": "palette-classic"
               },
               "mappings": [],
-              "unit": "short"
+              "unit": "short",
+              "min": 0,
+              "noValue": "0"
             },
             "overrides": []
           },
           "options": {
-            "pieType": "donut",
-            "displayLabels": [
-              "percent"
-            ],
-            "legend": {
-              "displayMode": "table",
-              "placement": "right",
-              "showLegend": true,
-              "values": [
-                "value"
-              ]
-            },
+            "displayMode": "gradient",
+            "orientation": "horizontal",
+            "showUnfilled": true,
+            "namePlacement": "left",
             "reduceOptions": {
               "calcs": [
                 "lastNotNull"
               ],
               "fields": "",
               "values": false
-            },
-            "tooltip": {
-              "mode": "single"
             }
           },
           "targets": [
@@ -2688,7 +2652,7 @@
             }
           ],
           "title": "Rejections by Reason",
-          "type": "piechart"
+          "type": "bargauge"
         },
         {
           "datasource": {
@@ -2716,7 +2680,8 @@
                 "showPoints": "never",
                 "spanNulls": true,
                 "drawStyle": "line"
-              }
+              },
+              "noValue": "0"
             },
             "overrides": []
           },
@@ -2790,7 +2755,8 @@
                   "mode": "normal",
                   "group": "A"
                 }
-              }
+              },
+              "noValue": "0"
             },
             "overrides": []
           },
@@ -2852,7 +2818,8 @@
                   "mode": "normal",
                   "group": "A"
                 }
-              }
+              },
+              "noValue": "0"
             },
             "overrides": []
           },
@@ -2910,7 +2877,8 @@
                 "showPoints": "never",
                 "spanNulls": true,
                 "drawStyle": "line"
-              }
+              },
+              "noValue": "0"
             },
             "overrides": []
           },
@@ -2985,32 +2953,23 @@
                 "mode": "palette-classic"
               },
               "mappings": [],
-              "unit": "short"
+              "unit": "short",
+              "min": 0,
+              "noValue": "0"
             },
             "overrides": []
           },
           "options": {
-            "pieType": "donut",
-            "displayLabels": [
-              "percent"
-            ],
-            "legend": {
-              "displayMode": "table",
-              "placement": "right",
-              "showLegend": true,
-              "values": [
-                "value"
-              ]
-            },
+            "displayMode": "gradient",
+            "orientation": "horizontal",
+            "showUnfilled": true,
+            "namePlacement": "left",
             "reduceOptions": {
               "calcs": [
                 "lastNotNull"
               ],
               "fields": "",
               "values": false
-            },
-            "tooltip": {
-              "mode": "single"
             }
           },
           "targets": [
@@ -3028,7 +2987,7 @@
             }
           ],
           "title": "Enka HTTP Errors by Status",
-          "type": "piechart"
+          "type": "bargauge"
         },
         {
           "datasource": {
@@ -3052,7 +3011,8 @@
               },
               "mappings": [],
               "unit": "short",
-              "min": 0
+              "min": 0,
+              "noValue": "0"
             },
             "overrides": []
           },
@@ -3098,39 +3058,30 @@
             "y": 46
           },
           "title": "Linking Rejections (All Time)",
-          "type": "piechart",
+          "type": "bargauge",
           "fieldConfig": {
             "defaults": {
               "color": {
                 "mode": "palette-classic"
               },
               "mappings": [],
-              "unit": "short"
+              "unit": "short",
+              "min": 0,
+              "noValue": "0"
             },
             "overrides": []
           },
           "options": {
-            "pieType": "donut",
-            "displayLabels": [
-              "percent"
-            ],
-            "legend": {
-              "displayMode": "table",
-              "placement": "right",
-              "showLegend": true,
-              "values": [
-                "value"
-              ]
-            },
+            "displayMode": "gradient",
+            "orientation": "horizontal",
+            "showUnfilled": true,
+            "namePlacement": "left",
             "reduceOptions": {
               "calcs": [
                 "lastNotNull"
               ],
               "fields": "",
               "values": false
-            },
-            "tooltip": {
-              "mode": "single"
             }
           },
           "targets": [
@@ -3153,7 +3104,7 @@
             "type": "prometheus",
             "uid": "delecwvk2nfgga"
           },
-          "description": "Accounts currently stored in the database.",
+          "description": "Accounts stored in the database per game over time; the legend shows the current count.",
           "id": 44,
           "gridPos": {
             "h": 8,
@@ -3162,39 +3113,42 @@
             "y": 46
           },
           "title": "Linked Accounts by Game",
-          "type": "piechart",
+          "type": "timeseries",
           "fieldConfig": {
             "defaults": {
               "color": {
                 "mode": "palette-classic"
               },
               "mappings": [],
-              "unit": "short"
+              "unit": "short",
+              "custom": {
+                "drawStyle": "line",
+                "lineWidth": 1,
+                "fillOpacity": 40,
+                "showPoints": "never",
+                "spanNulls": true,
+                "stacking": {
+                  "mode": "normal",
+                  "group": "A"
+                }
+              },
+              "min": 0,
+              "noValue": "0"
             },
             "overrides": []
           },
           "options": {
-            "pieType": "donut",
-            "displayLabels": [
-              "percent"
-            ],
             "legend": {
               "displayMode": "table",
-              "placement": "right",
+              "placement": "bottom",
               "showLegend": true,
-              "values": [
-                "value"
-              ]
-            },
-            "reduceOptions": {
               "calcs": [
                 "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
+              ]
             },
             "tooltip": {
-              "mode": "single"
+              "mode": "multi",
+              "sort": "desc"
             }
           },
           "targets": [
@@ -3206,8 +3160,8 @@
               "editorMode": "code",
               "expr": "sum by (game) (max by (job, game) (linked_accounts))",
               "legendFormat": "{{game}}",
-              "range": false,
-              "instant": true,
+              "range": true,
+              "instant": false,
               "refId": "A"
             }
           ]
@@ -3223,49 +3177,77 @@
   "templating": {
     "list": [
       {
-        "type": "query",
+        "type": "custom",
         "name": "endpoint",
         "label": "SL endpoint",
-        "datasource": {
-          "type": "prometheus",
-          "uid": "delecwvk2nfgga"
-        },
-        "query": {
-          "query": "label_values(seeleland_requests_total, endpoint)",
-          "refId": "ep"
-        },
-        "refresh": 2,
         "includeAll": true,
         "multi": true,
         "allValue": ".*",
         "current": {
-          "text": "All",
-          "value": "$__all"
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
         },
-        "sort": 1
+        "query": "player,lb,ach",
+        "options": [
+          {
+            "selected": true,
+            "text": "All",
+            "value": "$__all"
+          },
+          {
+            "selected": false,
+            "text": "player",
+            "value": "player"
+          },
+          {
+            "selected": false,
+            "text": "lb",
+            "value": "lb"
+          },
+          {
+            "selected": false,
+            "text": "ach",
+            "value": "ach"
+          }
+        ]
       },
       {
-        "type": "query",
+        "type": "custom",
         "name": "method",
         "label": "Linking method",
-        "datasource": {
-          "type": "prometheus",
-          "uid": "delecwvk2nfgga"
-        },
-        "query": {
-          "query": "label_values(linking_sessions_total, method)",
-          "refresh": 2,
-          "refId": "m"
-        },
-        "refresh": 2,
         "includeAll": true,
         "multi": true,
         "allValue": ".*",
         "current": {
-          "text": "All",
-          "value": "$__all"
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
         },
-        "sort": 1
+        "query": "UID,Enka",
+        "options": [
+          {
+            "selected": true,
+            "text": "All",
+            "value": "$__all"
+          },
+          {
+            "selected": false,
+            "text": "UID",
+            "value": "UID"
+          },
+          {
+            "selected": false,
+            "text": "Enka",
+            "value": "Enka"
+          }
+        ]
       }
     ]
   },
@@ -3277,5 +3259,6 @@
   "timezone": "browser",
   "title": "Zenox V3",
   "uid": "14cf3bf8-b903-4716-8328-d60bf1e5b6df",
-  "version": 14
+  "version": 14,
+  "refresh": "30s"
 }
