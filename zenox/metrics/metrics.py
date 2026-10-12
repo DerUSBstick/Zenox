@@ -1,7 +1,11 @@
+from itertools import product
+from typing import Iterable
+
 from prometheus_client import Counter, Gauge, Histogram
 
 from .persistent import PersistentCounter
 __all__ = (
+    "initialize_series",
     "LINKED_ACCOUNTS_GAUGE",
     "SL_REQUESTS_COUNTER",
     "SL_CACHE_LOOKUPS_COUNTER",
@@ -210,3 +214,41 @@ LINKING_QUEUE_GAUGE = Gauge(
     "linking_queue_size",
     "Verified linking entries waiting to be finalized.",
 )
+
+
+def initialize_series(characters: Iterable[str], games: Iterable[str]) -> None:
+    """Export known label combinations at 0 so panels show 0 instead of No data."""
+    sl_endpoints = ("player", "lb", "ach")
+    enka_endpoints = ("uid", "profile", "hoyos")
+    outcomes = ("success", "http_error", "timeout", "error")
+
+    for endpoint in sl_endpoints:
+        SL_REQUEST_DURATION.labels(endpoint)
+        for outcome in outcomes:
+            SL_REQUESTS_COUNTER.labels(endpoint, outcome)
+        for result in ("hit", "miss"):
+            SL_CACHE_LOOKUPS_COUNTER.labels(endpoint, result)
+    for endpoint in enka_endpoints:
+        ENKA_REQUEST_DURATION.labels(endpoint)
+        for outcome in outcomes:
+            ENKA_REQUESTS_COUNTER.labels(endpoint, outcome)
+        for result in ("hit", "miss"):
+            ENKA_CACHE_LOOKUPS_COUNTER.labels(endpoint, result)
+    for result in ("memory_hit", "db_hit", "miss"):
+        CACHE_LOOKUPS_COUNTER.labels(result)
+    for reason in ("stale_memory", "stale_db"):
+        CACHE_EVICTIONS_COUNTER.labels(reason)
+
+    for character in characters:
+        SL_CHARACTER_LOOKUPS_COUNTER.touch(character)
+    for stage in ("command", "view"):
+        SL_LEADERBOARD_ATTEMPTS_COUNTER.touch(stage)
+    for method, event in product(("UID", "Enka"), ("started", "success", "expired", "failed")):
+        LINKING_SESSIONS_COUNTER.touch(method, event)
+    for reason in ("full", "user_linking", "uid_reserved", "uid_already_linked", "linked_to_other",
+                   "max_accounts", "no_accounts", "api_error", "all_linked"):
+        LINKING_REJECTIONS_COUNTER.touch(reason)
+    for game in games:
+        LINKED_ACCOUNTS_GAUGE.labels(game).set(0)
+    LINKING_ACTIVE_GAUGE.set(0)
+    LINKING_QUEUE_GAUGE.set(0)

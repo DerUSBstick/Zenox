@@ -13,8 +13,9 @@ from ..metrics import (
     CONNECTION_GAUGE, LATENCY_GAUGE, GUILD_GAUGE, GUILD_MEMBER_GAUGE, RAM_USAGE_GAUGE, CPU_USAGE_GAUGE,
     UPTIME_GAUGE, GUILD_LOCALE_GAUGE, CACHE_ENTRIES_GAUGE, CACHE_DB_DOCUMENTS_GAUGE,
     LINKING_ACTIVE_GAUGE, LINKING_QUEUE_GAUGE, SL_CHARACTER_INFO_GAUGE, LINKED_ACCOUNTS_GAUGE,
-    flush_persistent_counters, load_persistent_counters,
+    flush_persistent_counters, load_persistent_counters, initialize_series,
 )
+from ..enums import Game
 from ..clients.sl.leaderboards_catalog import SEELELAND_LEADERBOARDS_CATALOG
 import discord
 
@@ -56,8 +57,11 @@ class PrometheusCog(commands.Cog):
         try:
             CACHE_ENTRIES_GAUGE.set(len(CacheEntry.cache))
             CACHE_DB_DOCUMENTS_GAUGE.set(await DB.cache.estimated_document_count())
+            counts = {game.value: 0 for game in Game}
             async for doc in await DB.accounts.aggregate([{"$group": {"_id": "$game", "n": {"$sum": 1}}}]):
-                LINKED_ACCOUNTS_GAUGE.labels(str(doc["_id"])).set(doc["n"])
+                counts[str(doc["_id"])] = doc["n"]
+            for game, count in counts.items():
+                LINKED_ACCOUNTS_GAUGE.labels(game).set(count)
             linking = self.client.linking_cache
             if linking is not None:
                 LINKING_ACTIVE_GAUGE.set(len(linking.get_entries()))
@@ -90,6 +94,8 @@ class PrometheusCog(commands.Cog):
         GUILD_MEMBER_GAUGE.set(sum(guild.member_count or 0 for guild in self.client.guilds))
 
         UPTIME_GAUGE.set(time.time())
+
+        initialize_series(SEELELAND_LEADERBOARDS_CATALOG, [game.value for game in Game])
 
         try:
             await load_persistent_counters(DB.metrics)

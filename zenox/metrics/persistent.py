@@ -38,6 +38,12 @@ class PersistentCounter:
     def labels(self, *label_values: str) -> _Child:
         return _Child(self, tuple(str(v) for v in label_values))
 
+    def touch(self, *label_values: str) -> None:
+        """Create the series at 0 so it is exported before the first increment."""
+        labels = tuple(str(v) for v in label_values)
+        self._counter.labels(*labels)
+        self._lifetime.labels(*labels)
+
     def _inc(self, labels: tuple[str, ...], amount: float) -> None:
         self._counter.labels(*labels).inc(amount)
         self._lifetime.labels(*labels).inc(amount)
