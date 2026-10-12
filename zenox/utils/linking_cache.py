@@ -24,8 +24,7 @@ __all__ = ("LinkingCacheManager",)
 logger = logging.getLogger(__name__)
 
 _MAX_CACHE_SIZE = 75
-_ENTRY_TTL_MINUTES = 15
-#: Minimum time between consecutive API polls for the same entry.
+_ENTRY_TTL_MINUTES = 12
 _CHECK_INTERVAL_SECONDS = 300  # 5 minutes
 
 
@@ -140,6 +139,29 @@ class LinkingCacheManager:
             value = value[k]  # type: ignore[assignment]
         return str(value)
 
+    async def _notify(
+        self,
+        entry: LinkingEntryTemplate,
+        *,
+        title_key: str = "",
+        desc_key: str = "",
+        error: Exception | None = None,
+        always_capture: bool = False,
+    ) -> None:
+        try:
+            locale = await self._get_locale(entry)
+            if error is not None:
+                embed, recognized = _get_error_embed(error, locale)
+                if always_capture or not recognized:
+                    self.client.capture_exception(error)
+            else:
+                embed = _default_embed(locale, title_key=title_key, desc_key=desc_key)
+            await entry.interaction.edit_original_response(embed=embed, view=None)
+        except discord.HTTPException:
+            pass
+        except Exception as exc:
+            self.client.capture_exception(exc)
+
     # ------------------------------------------------------------------ #
     # Internal: account creation                                          #
     # ------------------------------------------------------------------ #
@@ -173,6 +195,12 @@ class LinkingCacheManager:
     @tasks.loop(seconds=10)
     async def _finalize_entries(self) -> None:
         """Drain the queue of verified entries and persist their accounts to DB."""
+        try:
+            await self._drain_finalize_queue()
+        except Exception as exc:
+            self.client.capture_exception(exc)
+
+    async def _drain_finalize_queue(self) -> None:
         while not self._queue.empty():
             entry = await self._queue.get()
 
@@ -196,29 +224,10 @@ class LinkingCacheManager:
                     await self._persist_account(entry, uid, game, nickname, enka_owner)
                 except Exception as exc:
                     failed = True
-                    self.client.capture_exception(exc)
-                    embed, _ = _get_error_embed(exc, await self._get_locale(entry))
-                    with contextlib.suppress(discord.NotFound, discord.HTTPException):
-                        if entry.interaction.message is not None:
-                            await entry.interaction.followup.edit_message(
-                                message_id=entry.interaction.message.id,
-                                embed=embed,
-                                view=None,
-                            )
+                    await self._notify(entry, error=exc, always_capture=True)
 
             if not failed:
-                embed = _default_embed(
-                    await self._get_locale(entry),
-                    title_key=finished_title,
-                    desc_key=finished_desc,
-                )
-                with contextlib.suppress(discord.NotFound, discord.HTTPException):
-                    if entry.interaction.message is not None:
-                        await entry.interaction.followup.edit_message(
-                            message_id=entry.interaction.message.id,
-                            embed=embed,
-                            view=None,
-                        )
+                await self._notify(entry, title_key=finished_title, desc_key=finished_desc)
 
             # Reservation is only released once persistence has actually
             # completed (success or failure), closing the race window.
@@ -236,6 +245,12 @@ class LinkingCacheManager:
         actual external API calls are rate-limited to once per
         ``_CHECK_INTERVAL_SECONDS`` per entry to avoid spam.
         """
+        try:
+            await self._poll_entries()
+        except Exception as exc:
+            self.client.capture_exception(exc)
+
+    async def _poll_entries(self) -> None:
         now = discord.utils.utcnow()
         for entry in self._linking_cache.copy():
             # Already verified and queued for finalization: keep its
@@ -245,15 +260,10 @@ class LinkingCacheManager:
             try:
                 # Always check TTL — no cooldown needed here.
                 if entry.started < now - datetime.timedelta(minutes=_ENTRY_TTL_MINUTES):
-                    embed = _default_embed(
-                        await self._get_locale(entry),
-                        title_key="linking.expired.title",
-                        desc_key="linking.expired.description",
-                    )
-                    with contextlib.suppress(discord.NotFound, discord.HTTPException):
-                        if entry.interaction.message is not None:
-                            await entry.interaction.message.edit(embed=embed, view=None)
                     await self.remove_entry(entry)
+                    await self._notify(
+                        entry, title_key="linking.expired.title", desc_key="linking.expired.description"
+                    )
                     continue
 
                 # Rate-limit external API calls: skip until cooldown expires.
@@ -271,17 +281,8 @@ class LinkingCacheManager:
                     await self._check_enka_entry(entry)
 
             except Exception as exc:
-                embed, recognized = _get_error_embed(exc, await self._get_locale(entry))
-                if not recognized:
-                    self.client.capture_exception(exc)
-                with contextlib.suppress(discord.NotFound, discord.HTTPException):
-                    if entry.interaction.message is not None:
-                        await entry.interaction.followup.edit_message(
-                            message_id=entry.interaction.message.id,
-                            embed=embed,
-                            view=None,
-                        )
                 await self.remove_entry(entry)
+                await self._notify(entry, error=exc)
 
     # ------------------------------------------------------------------ #
     # Internal: per-method check logic                                    #
@@ -307,19 +308,9 @@ class LinkingCacheManager:
 
         await self._persist_account(entry, uid, game, nickname, enka_owner)
         await self.remove_entry(entry)
-
-        embed = _default_embed(
-            await self._get_locale(entry),
-            title_key="linking.uid.success.title",
-            desc_key="linking.uid.success.description",
+        await self._notify(
+            entry, title_key="linking.uid.success.title", desc_key="linking.uid.success.description"
         )
-        with contextlib.suppress(discord.NotFound, discord.HTTPException):
-            if entry.interaction.message is not None:
-                await entry.interaction.followup.edit_message(
-                    message_id=entry.interaction.message.id,
-                    embed=embed,
-                    view=None,
-                )
 
     async def _check_enka_entry(self, entry: LinkingEntryTemplate) -> None:
         """Check whether the user has placed the verification code in their Enka profile bio."""
@@ -333,21 +324,11 @@ class LinkingCacheManager:
             return  # Code not in bio yet — wait for next poll
 
         # Verification confirmed
-        embed = _default_embed(
-            await self._get_locale(entry),
-            title_key="linking.enka.verified.title",
-            desc_key="linking.enka.verified.description",
-        )
-        with contextlib.suppress(discord.NotFound, discord.HTTPException):
-            if entry.interaction.message is not None:
-                await entry.interaction.followup.edit_message(
-                    message_id=entry.interaction.message.id,
-                    embed=embed,
-                    view=None,
-                )
-
         entry.pending_finalization = True
         await self._queue.put(entry)
+        await self._notify(
+            entry, title_key="linking.enka.verified.title", desc_key="linking.enka.verified.description"
+        )
 
 
 # ------------------------------------------------------------------ #
