@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 
 from ..ui.seeleland.leaderboard_classic.view import SeelelandClassicPaginatorView
 from ..clients.sl import SLClient
-from ..clients.sl.constants import SEELELAND_TEAM_NAMES
+from ..clients.sl.constants import SEELELAND_TEAM_NAMES, get_category_order
 from ..clients.sl.leaderboards_catalog import (
     SEELELAND_LEADERBOARDS_CATALOG,
     get_catalog_brackets,
@@ -44,13 +44,14 @@ class Seele(commands.Cog):
     def _starrail_accounts(user: UserConfig) -> list[GameAccount]:
         return [account for account in user.accounts if account.game == Game.STARRAIL]
 
-    def _resolve_account_uid(self, user: UserConfig, requested_uid: str | None) -> str | None:
-        """Resolve which uid to use: the requested one if it's actually one of the
-        user's linked Star Rail accounts, otherwise their first linked account.
+    def _resolve_account_uid(self, user: UserConfig, requested_index: str | None) -> str | None:
+        """Resolve which uid to use: the account at the requested index (an opaque
+        value, so the uid never shows in the executed command), otherwise the first
+        linked Star Rail account.
         """
         starrail_accounts = self._starrail_accounts(user)
-        if requested_uid and any(account.uid == requested_uid for account in starrail_accounts):
-            return requested_uid
+        if requested_index and requested_index.isdigit() and int(requested_index) < len(starrail_accounts):
+            return starrail_accounts[int(requested_index)].uid
         return starrail_accounts[0].uid if starrail_accounts else None
 
     @staticmethod
@@ -132,7 +133,10 @@ class Seele(commands.Cog):
             match = re.match(SEELELAND_REGEX, f"{character}_{base_ctgr}")
             if match is not None:
                 _, bracket, lc_id, existing_team, existing_speed = match.groups()
-                team_code = existing_team if not variant or variant == "none" else variant
+                if not variant or variant == "none":
+                    team_code = existing_team
+                else:
+                    team_code = "" if variant == "base" else variant
                 speed_value = existing_speed if not speed or speed == "none" else speed
                 speed_value = None if speed_value == "Base" else speed_value
                 base_ctgr = f"{bracket}_{lc_id}{team_code}" + (f"_{speed_value}" if speed_value else "")
@@ -213,11 +217,16 @@ class Seele(commands.Cog):
         match = re.match(SEELELAND_REGEX, f"{char_id}_{entry.resolve_ctgr()}")
         team_code = match.group(4) if match else ""
 
+        team_codes = list(get_category_order(char_id))
+        if team_code not in team_codes:
+            team_codes.insert(0, team_code)
+
         choices = [
             app_commands.Choice(
-                name="No team" if not team_code else SEELELAND_TEAM_NAMES.get(team_code, team_code),
-                value=team_code or "none",
+                name="No team" if not code else SEELELAND_TEAM_NAMES.get(code, code),
+                value=code or "base",
             )
+            for code in team_codes
         ]
         return self._matching(choices, current)
 
@@ -244,8 +253,8 @@ class Seele(commands.Cog):
     async def sl_account_autocomplete(self, interaction: Interaction, current: str) -> list[app_commands.Choice[str]]:
         user = await UserConfig.new(interaction.user.id)
         choices = [
-            app_commands.Choice(name=f"{account.username} ({account.uid})", value=account.uid)
-            for account in self._starrail_accounts(user)
+            app_commands.Choice(name=f"{account.username} ({account.uid})", value=str(index))
+            for index, account in enumerate(self._starrail_accounts(user))
         ]
         if not choices:
             return self._matching([app_commands.Choice(name="No linked Star Rail accounts", value="none")], current)
