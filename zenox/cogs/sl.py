@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 
 from ..ui.seeleland.leaderboard_classic.view import SeelelandClassicPaginatorView
 from ..clients.sl import SLClient
-from ..clients.sl.constants import SEELELAND_TEAM_NAMES, get_category_order
+from ..clients.sl.constants import SEELELAND_TEAM_NAMES, get_category_order, get_speed_breakpoints
 from ..clients.sl.leaderboards_catalog import (
     SEELELAND_LEADERBOARDS_CATALOG,
     get_catalog_brackets,
@@ -61,6 +61,16 @@ class Seele(commands.Cog):
     @staticmethod
     def _matching(choices: list[app_commands.Choice[str]], current: str) -> list[app_commands.Choice[str]]:
         return [choice for choice in choices if current.lower() in choice.name.lower()][:25]
+
+    @staticmethod
+    def _team_code(variant: str | None, entry_team: str) -> str:
+        if not variant or variant == "none":
+            return entry_team
+        return "" if variant == "base" else variant
+
+    @staticmethod
+    def _allowed_speeds(char_id: str, base_ctgr: str) -> list[str]:
+        return [*get_speed_breakpoints(char_id, base_ctgr), "999"]
 
     @staticmethod
     async def _resolve_highlight(
@@ -133,11 +143,16 @@ class Seele(commands.Cog):
             match = re.match(SEELELAND_REGEX, f"{character}_{base_ctgr}")
             if match is not None:
                 _, bracket, lc_id, existing_team, existing_speed = match.groups()
-                if not variant or variant == "none":
-                    team_code = existing_team
+                team_code = self._team_code(variant, existing_team)
+                allowed = self._allowed_speeds(character, f"{bracket}_{lc_id}{team_code}")
+                if speed and speed != "none":
+                    if speed not in allowed:
+                        raise InvalidInputError(LocaleStr(key="seeleland_lb.invalid_selection", field="speed"))
+                    speed_value = speed
                 else:
-                    team_code = "" if variant == "base" else variant
-                speed_value = existing_speed if not speed or speed == "none" else speed
+                    speed_value = existing_speed or "Base"
+                    if speed_value not in allowed:
+                        speed_value = allowed[0]
                 speed_value = None if speed_value == "Base" else speed_value
                 base_ctgr = f"{bracket}_{lc_id}{team_code}" + (f"_{speed_value}" if speed_value else "")
 
@@ -244,9 +259,20 @@ class Seele(commands.Cog):
             return self._error_choice("Select a valid weapon first")
 
         match = re.match(SEELELAND_REGEX, f"{char_id}_{entry.resolve_ctgr()}")
-        speed = (match.group(5) if match else None) or "Base"
+        if match is None:
+            return self._error_choice("Speed breakpoints unavailable for this build")
 
-        choices = [app_commands.Choice(name=speed, value=speed)]
+        _, entry_bracket, lc_id, entry_team, _ = match.groups()
+        team_code = self._team_code(getattr(interaction.namespace, "variant", None), entry_team)
+        allowed = self._allowed_speeds(char_id, f"{entry_bracket}_{lc_id}{team_code}")
+
+        choices = [
+            app_commands.Choice(
+                name="Base" if value == "Base" else "AV" if value == "999" else f"Spd {value}",
+                value=value,
+            )
+            for value in allowed
+        ]
         return self._matching(choices, current)
 
     @sl_command.autocomplete("account")

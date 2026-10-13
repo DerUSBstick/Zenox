@@ -469,6 +469,26 @@ _RAW_CATALOG: dict[int, list[tuple[int, str]]] = {
         (21058, 'E0S5_xxxxx'),
         (24000, 'E0S5_xxxxx'),
     ],
+    1513: [
+        (23064, 'E0S1_xxxxx'),
+        (23057, 'E0S1_xxxxx'),
+        (23058, 'E0S1_xxxxx'),
+        (21065, 'E0S5_xxxxx'),
+        (21064, 'E0S5_xxxxx'),
+        (21066, 'E0S5_xxxxx'),
+    ],
+    1512: [
+        (23063, 'E0S1_xxxxx'),
+        (24005, 'E0S5_xxxxx'),
+        (23042, 'E0S1_xxxxx'),
+        (21050, 'E0S5_xxxxx'),
+    ],
+    1503: [
+        (23055, 'E0S1_xxxxx'),
+        (23054, 'E0S1_xxxxx'),
+        (23058, 'E0S1_xxxxx'),
+        (21064, 'E0S5_xxxxx'),
+    ],
 }
 
 SEELELAND_LEADERBOARDS_CATALOG: dict[str, list[CatalogEntry]] = {

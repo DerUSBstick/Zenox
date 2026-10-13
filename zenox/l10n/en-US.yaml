@@ -193,6 +193,7 @@ seeleland_lb.classic.details.speed_field: "Speed"
 seeleland_lb.classic.details.category_key_field: "Category key"
 seeleland_lb.classic.no_variant: "None"
 seeleland_lb.classic.base_speed: "Base"
+seeleland_lb.classic.av_speed: "AV"
 seeleland_lb.classic.you_header: "You ({percrank}, {position})"
 seeleland_lb.classic.you_label: "You"
 

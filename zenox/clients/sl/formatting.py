@@ -62,7 +62,7 @@ def format_category_label(hsr: HSRStore, full_key: str, locale: discord.Locale) 
     parts = [bracket, lc_name]
     if team_code:
         parts.append(SEELELAND_TEAM_NAMES.get(team_code, team_code))
-    parts.append(f"Spd {speed}" if speed else "Base")
+    parts.append("AV" if speed == "999" else f"Spd {speed}" if speed else "Base")
 
     return " · ".join(parts)
 

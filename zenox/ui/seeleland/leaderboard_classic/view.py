@@ -93,7 +93,8 @@ class SeelelandClassicPaginatorView(ui.View):
             lc_name = self.hsr.get_light_cone_name(key.light_cone_id, self.locale) or str(key.light_cone_id)
             team_name = SEELELAND_TEAM_NAMES.get(key.team_code, key.team_code) if key.team_code else None
             base_label = translator.translate(LocaleStr(key="seeleland_lb.classic.base_speed"), self.locale)
-            speed_label = f"Spd {key.speed}" if key.speed else base_label
+            av_label = translator.translate(LocaleStr(key="seeleland_lb.classic.av_speed"), self.locale)
+            speed_label = av_label if key.speed == "999" else f"Spd {key.speed}" if key.speed else base_label
             title_parts = [part for part in (key.bracket, team_name, speed_label) if part]
             title = " · ".join(title_parts) if title_parts else char_name
         else:
@@ -194,7 +195,12 @@ class SeelelandClassicPaginatorView(ui.View):
                 if key.team_code
                 else translator.translate(LocaleStr(key="seeleland_lb.classic.no_variant"), self.locale)
             )
-            speed_value = key.speed or translator.translate(LocaleStr(key="seeleland_lb.classic.base_speed"), self.locale)
+            if key.speed == "999":
+                speed_value = translator.translate(LocaleStr(key="seeleland_lb.classic.av_speed"), self.locale)
+            else:
+                speed_value = key.speed or translator.translate(
+                    LocaleStr(key="seeleland_lb.classic.base_speed"), self.locale
+                )
             embed.add_field(name=LocaleStr(key="seeleland_lb.classic.details.light_cone_field"), value=lc_name, inline=True)
             embed.add_field(name=LocaleStr(key="seeleland_lb.classic.details.bracket_field"), value=key.bracket, inline=True)
             embed.add_field(name=LocaleStr(key="seeleland_lb.classic.details.variant_field"), value=team_name, inline=True)

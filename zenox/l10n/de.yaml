@@ -193,6 +193,7 @@ seeleland_lb.classic.details.speed_field: "Tempo"
 seeleland_lb.classic.details.category_key_field: "Kategorie-Schlüssel"
 seeleland_lb.classic.no_variant: "Keine"
 seeleland_lb.classic.base_speed: "Basis"
+seeleland_lb.classic.av_speed: "AV"
 seeleland_lb.classic.you_header: "Du ({percrank}, {position})"
 seeleland_lb.classic.you_label: "Du"
 
