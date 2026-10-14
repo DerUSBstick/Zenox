@@ -30,6 +30,7 @@ class Config(BaseSettings):
     env: EnvType = "dev"
     db_url: str
     webhook_url: str = Field(validation_alias="discord_webhook")
+    seeleland_feedback_channel_id: int | None = None
 
     # Command-line arguments
     schedule: bool = False
