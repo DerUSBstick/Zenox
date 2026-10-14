@@ -20,6 +20,8 @@ services:
         target: db_url
       - source: zenox_staging_discord_webhook
         target: discord_webhook
+      - source: zenox_staging_seeleland_feedback_channel_id
+        target: seeleland_feedback_channel_id
     networks:
       - swarm-ops_private
       - zenox-staging_private
@@ -65,4 +67,6 @@ secrets:
   zenox_staging_db_url:
     external: true
   zenox_staging_discord_webhook:
+    external: true
+  zenox_staging_seeleland_feedback_channel_id:
     external: true
