@@ -183,6 +183,7 @@ sl_command.weapon_param_desc: "Lichtkegel, für den die Bestenliste angezeigt we
 sl_command.variant_param_desc: "Team-/Build-Variante überschreiben, standardmäßig der empfohlene Build dieser Waffe"
 sl_command.speed_param_desc: "Tempo-Grenzwert überschreiben, standardmäßig der empfohlene Build dieser Waffe"
 sl_command.account_param_desc: "Account, um deinen eigenen Rang hervorzuheben, falls du in dieser Bestenliste vertreten bist"
+sl_command.uid_param_desc: "UID, die in dieser Bestenliste hervorgehoben werden soll"
 seeleland_lb.classic.details_button.label: "Bestenlisten-Details anzeigen"
 seeleland_lb.classic.details_title: "Bestenlisten-Details"
 seeleland_lb.classic.details.character_field: "Charakter"

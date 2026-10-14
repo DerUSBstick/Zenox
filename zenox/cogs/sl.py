@@ -11,11 +11,12 @@ from ..clients.sl import SLClient
 from ..clients.sl.constants import SEELELAND_TEAM_NAMES, get_category_order, get_speed_breakpoints
 from ..clients.sl.leaderboards_catalog import (
     SEELELAND_LEADERBOARDS_CATALOG,
-    get_catalog_brackets,
     get_catalog_entries_for_bracket,
 )
-from ..constants import Game, SEELELAND_REGEX
-from ..db.classes import GameAccount, UserConfig
+# from ..constants import Game, SEELELAND_REGEX
+from ..constants import SEELELAND_REGEX
+# from ..db.classes import GameAccount, UserConfig
+from ..db.classes import UserConfig
 from ..exceptions import InvalidInputError
 from ..metrics import SL_LEADERBOARD_ATTEMPTS_COUNTER, SL_LEADERBOARD_FAILURES_COUNTER
 
@@ -40,19 +41,16 @@ class Seele(commands.Cog):
         if not isinstance(original, app_commands.CheckFailure):
             SL_LEADERBOARD_FAILURES_COUNTER.labels("command", type(original).__name__).inc()
 
-    @staticmethod
-    def _starrail_accounts(user: UserConfig) -> list[GameAccount]:
-        return [account for account in user.accounts if account.game == Game.STARRAIL]
-
-    def _resolve_account_uid(self, user: UserConfig, requested_index: str | None) -> str | None:
-        """Resolve which uid to use: the account at the requested index (an opaque
-        value, so the uid never shows in the executed command), otherwise the first
-        linked Star Rail account.
-        """
-        starrail_accounts = self._starrail_accounts(user)
-        if requested_index and requested_index.isdigit() and int(requested_index) < len(starrail_accounts):
-            return starrail_accounts[int(requested_index)].uid
-        return starrail_accounts[0].uid if starrail_accounts else None
+    # @staticmethod
+    # def _starrail_accounts(user: UserConfig) -> list[GameAccount]:
+    #     return [account for account in user.accounts if account.game == Game.STARRAIL]
+    #
+    # def _resolve_account_uid(self, user: UserConfig, requested_index: str | None) -> str | None:
+    #     """Resolve a requested index, otherwise use the first linked Star Rail account."""
+    #     starrail_accounts = self._starrail_accounts(user)
+    #     if requested_index and requested_index.isdigit() and int(requested_index) < len(starrail_accounts):
+    #         return starrail_accounts[int(requested_index)].uid
+    #     return starrail_accounts[0].uid if starrail_accounts else None
 
     @staticmethod
     def _error_choice(message: str) -> list[app_commands.Choice[str]]:
@@ -94,10 +92,10 @@ class Seele(commands.Cog):
     )
     @app_commands.describe(
         character=locale_str("Character to view the leaderboard for", key="sl_command.character_param_desc"),
+        lightcone=locale_str("Light cone to view the leaderboard for", key="sl_command.weapon_param_desc"),
         leaderboard=locale_str(
             "Eidolon/Superimposition bracket, e.g. E0S5", key="sl_command.leaderboard_param_desc"
         ),
-        weapon=locale_str("Light cone to view the leaderboard for", key="sl_command.weapon_param_desc"),
         variant=locale_str(
             "Team/build variant override, defaults to this weapon's featured build",
             key="sl_command.variant_param_desc",
@@ -106,10 +104,11 @@ class Seele(commands.Cog):
             "Speed breakpoint override, defaults to this weapon's featured build",
             key="sl_command.speed_param_desc",
         ),
-        account=locale_str(
-            "Account to highlight your own rank, if you're on this leaderboard",
-            key="sl_command.account_param_desc",
-        ),
+        uid=locale_str("UID to highlight on this leaderboard", key="sl_command.uid_param_desc"),
+        # account=locale_str(
+        #     "Account to highlight your own rank, if you're on this leaderboard",
+        #     key="sl_command.account_param_desc",
+        # ),
     )
     @app_commands.user_install()
     @app_commands.guild_install()
@@ -118,25 +117,26 @@ class Seele(commands.Cog):
         self,
         interaction: Interaction,
         character: str,
+        lightcone: str,
         leaderboard: str,
-        weapon: str,
         variant: str | None = None,
         speed: str | None = None,
-        account: str | None = None,
+        uid: str | None = None,
+        # account: str | None = None,
     ) -> None:
-        if character == "none" or leaderboard == "none" or weapon == "none" or not weapon.isdigit():
-            raise InvalidInputError(LocaleStr(key="seeleland_lb.invalid_selection", field="character/leaderboard/weapon"))
+        if character == "none" or leaderboard == "none" or lightcone == "none" or not lightcone.isdigit():
+            raise InvalidInputError(LocaleStr(key="seeleland_lb.invalid_selection", field="character/leaderboard/lightcone"))
 
         entries = get_catalog_entries_for_bracket(character, leaderboard)
-        entry = next((entry for entry in entries if str(entry.light_cone_id) == weapon), None)
+        entry = next((entry for entry in entries if str(entry.light_cone_id) == lightcone), None)
         if entry is None:
             raise InvalidInputError(LocaleStr(key="seeleland_lb.no_leaderboard_found"))
 
         await interaction.response.defer(ephemeral=False)
 
         user = await UserConfig.new(interaction.user.id)
-        account = account if account != "none" else None
-        uid = self._resolve_account_uid(user, account)
+        # account = account if account != "none" else None
+        # uid = self._resolve_account_uid(user, account)
 
         base_ctgr = entry.resolve_ctgr()
         if variant or speed:
@@ -190,29 +190,37 @@ class Seele(commands.Cog):
     @sl_command.autocomplete("leaderboard")
     async def sl_leaderboard_autocomplete(self, interaction: Interaction, current: str) -> list[app_commands.Choice[str]]:
         char_id = interaction.namespace.character
-        if not char_id or char_id == "none":
-            return self._error_choice("Select a character first")
+        lightcone = interaction.namespace.lightcone
+        if not char_id or char_id == "none" or not lightcone or lightcone == "none":
+            return self._error_choice("Select a character and light cone first")
 
-        brackets = get_catalog_brackets(char_id)
+        brackets = list(
+            dict.fromkeys(
+                entry.bracket
+                for entry in SEELELAND_LEADERBOARDS_CATALOG.get(char_id, [])
+                if str(entry.light_cone_id) == lightcone
+            )
+        )
         choices = [app_commands.Choice(name=bracket, value=bracket) for bracket in brackets]
         return self._matching(choices, current)
 
-    @sl_command.autocomplete("weapon")
-    async def sl_weapon_autocomplete(self, interaction: Interaction, current: str) -> list[app_commands.Choice[str]]:
+    @sl_command.autocomplete("lightcone")
+    async def sl_lightcone_autocomplete(self, interaction: Interaction, current: str) -> list[app_commands.Choice[str]]:
         char_id = interaction.namespace.character
-        bracket = interaction.namespace.leaderboard
-        if not char_id or char_id == "none" or not bracket or bracket == "none":
-            return self._error_choice("Select a character and leaderboard first")
+        if not char_id or char_id == "none":
+            return self._error_choice("Select a character first")
 
         hsr = interaction.client.store.hsr
         user = await UserConfig.new(interaction.user.id)
-        entries = get_catalog_entries_for_bracket(char_id, bracket)
+        lightcone_ids = dict.fromkeys(
+            entry.light_cone_id for entry in SEELELAND_LEADERBOARDS_CATALOG.get(char_id, [])
+        )
         choices = [
             app_commands.Choice(
-                name=hsr.get_light_cone_name(entry.light_cone_id, user.language) or str(entry.light_cone_id),
-                value=str(entry.light_cone_id),
+                name=hsr.get_light_cone_name(lightcone_id, user.language) or str(lightcone_id),
+                value=str(lightcone_id),
             )
-            for entry in entries
+            for lightcone_id in lightcone_ids
         ]
         return self._matching(choices, current)
 
@@ -220,14 +228,14 @@ class Seele(commands.Cog):
     async def sl_variant_autocomplete(self, interaction: Interaction, current: str) -> list[app_commands.Choice[str]]:
         char_id = interaction.namespace.character
         bracket = interaction.namespace.leaderboard
-        weapon = interaction.namespace.weapon
-        if not char_id or char_id == "none" or not bracket or bracket == "none" or not weapon or weapon == "none":
-            return self._error_choice("Select a character, leaderboard and weapon first")
+        lightcone = interaction.namespace.lightcone
+        if not char_id or char_id == "none" or not bracket or bracket == "none" or not lightcone or lightcone == "none":
+            return self._error_choice("Select a character, light cone and leaderboard first")
 
         entries = get_catalog_entries_for_bracket(char_id, bracket)
-        entry = next((entry for entry in entries if str(entry.light_cone_id) == weapon), None)
+        entry = next((entry for entry in entries if str(entry.light_cone_id) == lightcone), None)
         if entry is None:
-            return self._error_choice("Select a valid weapon first")
+            return self._error_choice("Select a valid light cone first")
 
         match = re.match(SEELELAND_REGEX, f"{char_id}_{entry.resolve_ctgr()}")
         team_code = match.group(4) if match else ""
@@ -249,14 +257,14 @@ class Seele(commands.Cog):
     async def sl_speed_autocomplete(self, interaction: Interaction, current: str) -> list[app_commands.Choice[str]]:
         char_id = interaction.namespace.character
         bracket = interaction.namespace.leaderboard
-        weapon = interaction.namespace.weapon
-        if not char_id or char_id == "none" or not bracket or bracket == "none" or not weapon or weapon == "none":
-            return self._error_choice("Select a character, leaderboard and weapon first")
+        lightcone = interaction.namespace.lightcone
+        if not char_id or char_id == "none" or not bracket or bracket == "none" or not lightcone or lightcone == "none":
+            return self._error_choice("Select a character, light cone and leaderboard first")
 
         entries = get_catalog_entries_for_bracket(char_id, bracket)
-        entry = next((entry for entry in entries if str(entry.light_cone_id) == weapon), None)
+        entry = next((entry for entry in entries if str(entry.light_cone_id) == lightcone), None)
         if entry is None:
-            return self._error_choice("Select a valid weapon first")
+            return self._error_choice("Select a valid light cone first")
 
         match = re.match(SEELELAND_REGEX, f"{char_id}_{entry.resolve_ctgr()}")
         if match is None:
@@ -275,16 +283,18 @@ class Seele(commands.Cog):
         ]
         return self._matching(choices, current)
 
-    @sl_command.autocomplete("account")
-    async def sl_account_autocomplete(self, interaction: Interaction, current: str) -> list[app_commands.Choice[str]]:
-        user = await UserConfig.new(interaction.user.id)
-        choices = [
-            app_commands.Choice(name=f"{account.username} ({account.uid})", value=str(index))
-            for index, account in enumerate(self._starrail_accounts(user))
-        ]
-        if not choices:
-            return self._matching([app_commands.Choice(name="No linked Star Rail accounts", value="none")], current)
-        return self._matching(choices, current)
+    # @sl_command.autocomplete("account")
+    # async def sl_account_autocomplete(
+    #     self, interaction: Interaction, current: str
+    # ) -> list[app_commands.Choice[str]]:
+    #     user = await UserConfig.new(interaction.user.id)
+    #     choices = [
+    #         app_commands.Choice(name=f"{account.username} ({account.uid})", value=str(index))
+    #         for index, account in enumerate(self._starrail_accounts(user))
+    #     ]
+    #     if not choices:
+    #         return self._matching([app_commands.Choice(name="No linked Star Rail accounts", value="none")], current)
+    #     return self._matching(choices, current)
 
 
 async def setup(client: Zenox) -> None:
