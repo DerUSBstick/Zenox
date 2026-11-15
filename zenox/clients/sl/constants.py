@@ -52,6 +52,8 @@ SEELELAND_TEAM_NAMES: dict[str, str] = {
     'HIMED': 'Himeko Nova (Decimation)',
     'ARCH': 'Archer',
     'SABER': 'Saber',
+    'LING': 'Lingsha',
+    'FUGLR': 'Fugue',
     'RSPATK': 'Robin • Summeretto (ATK)',
     'RSPCD': 'Robin • Summeretto (CRIT DMG)',
     'RMHHBS': 'Ruan Mei + Huohuo + Black Swan',
@@ -93,6 +95,8 @@ SEELELAND_TEAM_NAMES: dict[str, str] = {
     'RMCHNBDDD': 'Memblazer (Remembrance) + Sparkle',
     'HNBYAO': 'Sparkle + Yao Guang',
     'FUGDAHL': 'Fugue + The Dahlia',
+    'DAHLLING': 'The Dahlia + Lingsha',
+    'FUGLRLING': 'Fugue + Lingsha',
     'ASHSNDHYA': 'Ashveil + Sunday + Hyacine',
     'ASHSND': 'Ashveil + Sunday',
     'HIMEVSND': 'Himeko Nova (Verdict) + Sunday',
@@ -102,6 +106,8 @@ SEELELAND_TEAM_NAMES: dict[str, str] = {
     'LUSH': 'Lushaka',
     'VON': 'Vonwacq',
     'EAGL': 'Eagle',
+    'BK': 'Broken Keel',
+    'PEN': 'Penacony',
 }
 
 # Canonical per-character display order for build/team codes, "" = base
@@ -165,6 +171,9 @@ SEELELAND_CATEGORY_ORDER: dict[str, list[str]] = {
     '1513': ['', 'YAO', 'ASH'],
     '1512': [''],
     '1503': [''],
+    '1309': ['', 'LUSH', 'VON', 'BK', 'PEN'],
+    '1225': ['', 'DAHLLING'],
+    '1321': ['', 'FUGLRLING'],
     '8007': ['', 'MEM'],
 }
 
@@ -295,6 +304,12 @@ def get_speed_breakpoints(char_id: str, ctgr: str) -> list[str]:
         return ['Base', '160']
     if char_id == '1503':
         return ['Base', '160', '172']
+    if char_id == '1309':
+        return ['Base', '120']
+    if char_id == '1225':
+        return ['Base', '143', '161']
+    if char_id == '1321':
+        return ['Base', '143', '161']
     return ['Base', '121', '134', '143']
 
 

@@ -482,12 +482,33 @@ _RAW_CATALOG: dict[int, list[tuple[int, str]]] = {
         (24005, 'E0S5_xxxxx'),
         (23042, 'E0S1_xxxxx'),
         (21050, 'E0S5_xxxxx'),
+        (21054, 'E0S5_xxxxx'),
     ],
     1503: [
         (23055, 'E0S1_xxxxx'),
         (23054, 'E0S1_xxxxx'),
         (23058, 'E0S1_xxxxx'),
         (21064, 'E0S5_xxxxx'),
+    ],
+    1309: [
+        (23026, 'E0S1_xxxxx'),
+        (22002, 'E0S5_xxxxx'),
+        (21046, 'E0S5_xxxxx'),
+        (21018, 'E0S5_xxxxx'),
+    ],
+    1225: [
+        (23035, 'E0S1_xxxxx'),
+        (23050, 'E0S1_xxxxx'),
+        (21015, 'E0S5_xxxxx'),
+    ],
+    1321: [
+        (23050, 'E0S1_xxxxx'),
+        (23050, 'E6S1_xxxxx'),
+        (23035, 'E0S1_xxxxx'),
+        (23043, 'E0S1_xxxxx'),
+        (21015, 'E0S5_xxxxx'),
+        (22000, 'E0S5_xxxxx'),
+        (21061, 'E0S5_xxxxx'),
     ],
 }
 
