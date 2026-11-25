@@ -216,10 +216,19 @@ class HSRSkillNode:
         for level, level_data in (props_data or {}).items():
             props[level] = level_data.get("props", {})
 
+        try:
+            point_type = PointType(data["PointType"])
+        except ValueError as exc:
+            exc.add_note(
+                f"HSR skills.json node {node_id}: "
+                f"PointType={data['PointType']!r}, IconPath={data.get('IconPath')!r}"
+            )
+            raise
+
         return cls(
             id=node_id,
             icon_path=data.get("IconPath", ""),
-            point_type=PointType(data["PointType"]),
+            point_type=point_type,
             props=props,
         )
 

@@ -72,3 +72,4 @@ class PointType(IntEnum):
     MAJOR_TRACE = 3
     SERVANT_SKILL = 4
     ALTERNATE_SKILL = 5
+    TYPE_6 = 6
